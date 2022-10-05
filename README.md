@@ -17,3 +17,38 @@ Forum website to share recipes and other cooking related things
 | Niilo Vuokila | 260926706 |
 | Jasmine Cheung | 260985168 |
 
+## Setting up the environment
+
+### Prerequisites
+
+Python 3
+
+### Steps
+
+1.  Clone the repo and navigate into the repo directory
+2.  Create a Python virtual environment (***optional, but good idea***)
+
+```sh
+python3 -m venv venv
+```
+
+3.  Activate the venv
+
+```sh
+source venv/bin/activate    # for linux or mac
+venv\Scripts\activate.bat   # for cmd.exe
+venv\Scripts\Activate.ps1   # for powershell
+```
+
+4.  Install the dependencies
+
+```sh
+pip3 install -r requirements.txt
+```
+
+As a side note,
+to exit / deactivate the venv, do
+
+```sh
+deactivate
+```
