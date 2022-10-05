@@ -45,3 +45,10 @@ venv\Scripts\Activate.ps1   # for powershell
 ```sh
 pip3 install -r requirements.txt
 ```
+
+As a side note,
+to exit / deactivate the venv, do
+
+```sh
+deactivate
+```
