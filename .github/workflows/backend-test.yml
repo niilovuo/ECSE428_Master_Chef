@@ -1,0 +1,25 @@
+name: Test Backend
+
+on:
+  push:
+  pull_request:
+    branches: main
+
+# probably don't need defaults for now
+# but in case we need to change things like the cwd
+# we can add it in
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+# thus completes the boilerplate for setting up py3 + deps
