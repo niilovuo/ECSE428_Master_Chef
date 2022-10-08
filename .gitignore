@@ -3,3 +3,7 @@
 *.py[cod]
 __pycache__/
 venv/
+
+# minimal list of pytest-cov stuff
+.coverage
+coverage.xml
