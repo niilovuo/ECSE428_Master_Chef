@@ -47,6 +47,14 @@ venv\Scripts\Activate.ps1   # for powershell
 pip3 install -r requirements.txt
 ```
 
+5.	Running the app
+
+```sh
+python3 app.py
+```
+
+To run in debug mode (which, among other things, means the app will automatically load changes to the code without needing to be rerun), set the enviornment variable `DEBUG=true`
+
 As a side note,
 to exit / deactivate the venv, do
 
