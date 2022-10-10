@@ -21,5 +21,21 @@ jobs:
         cache: 'pip'
     - name: Install dependencies
       run: pip install -r requirements.txt
+    - name: Run tests
+      run: pytest --cov=project --cov-branch --cov-report xml --cov-report term
+    - name: Generate readable coverage report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: coverage.xml
+        badge: true
+        format: 'markdown'
+        output: 'file'
+    - name: Add PR comment
+      uses: marocchino/sticky-pull-request-comment@v2.2.0
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: code-coverage-results.md
+    - name: Update job summary
+      run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
 
-# thus completes the boilerplate for setting up py3 + deps
