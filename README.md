@@ -23,6 +23,7 @@ Forum website to share recipes and other cooking related things
 ### Prerequisites
 
 Python 3
+Postgresql 14
 
 ### Steps
 
