@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
     - name: Run tests
-      run: pytest --cov=. --cov-branch --cov-report xml --cov-report term
+      run: pytest --cov=project --cov-branch --cov-report xml --cov-report term
     - name: Generate readable coverage report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
