@@ -1,4 +1,3 @@
-# XXX: THIS IS SOME HIGHLY UNTESTED STUFF!
 import psycopg2
 
 _conn = None
