@@ -69,12 +69,12 @@ python3 app.py
 
 Parts of the app's behavior must / can be configured via environment variables
 
-| Variable setup | Purpose |
-|--------------|---------|
-| `DEBUG=true`   | Run in debug mode (which, among other things, means the app will automatically load changes to the code without needing to be rerun) |
-| `POSTGRES_USER=...` | Credentials for postgres server, replace `...` with the actual username, defaults to `postgres` |
-| `POSTGRES_PASSWORD=...` | Credentials for postgres server, replace `...` with the actual password, ***you need to supply it*** |
-| `POSTGRES_DB=...` | Database name for the postgres server, replace `...` with the actual name, defaults to the username before |
-| `POSTGRES_HOST=...` | Host of the postgres server, replace `...` with the actual host, defaults to `localhost` |
-| `POSTGRES_PORT=...` | Port of the postgres server, replace `...` with the actual port, defaults to `5432` |
+| Environment Variable | Values | Default Value | Purpose |
+|----------------------|--------|-----------|---------|
+| `DEBUG` | boolean | `false` | Run in debug mode when true (which, among other things, means the app will automatically load changes to the code without needing to be rerun) |
+| `POSTGRES_USER` | db login username | `postgres` | The app uses this to login to the postgres server |
+| `POSTGRES_PASSWORD` | db login password | ***Mandatory*** | The app uses this to login to the postgres server |
+| `POSTGRES_DB` | db name | follows variable `POSTGRES_USER` | The database name in which the tables exist / will be created under |
+| `POSTGRES_HOST` | hostname or IP | `localhost` | The address of the postgres server |
+| `POSTGRES_PORT` | port number | `5432` | The port of the postgres server |
 
