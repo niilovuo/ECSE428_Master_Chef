@@ -66,10 +66,10 @@ def normalize_account_info(name, email, password):
         return (None, "The account name must be alphanumeric or underscore")
 
     try:
-      email = str(email).strip()
-      email = validate_email(email, check_deliverability=False).email
+        email = str(email).strip()
+        email = validate_email(email, check_deliverability=False).email
     except:
-      return (None, "The email is malformed")
+        return (None, "The email is malformed")
 
     password = str(password).strip()
     if not password:
