@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import os
 import random
-from project.db import init_db_session, deinit_db_session
+from project.db import init_db_session, deinit_db_session, setup_db_tables
 from project.account import add_new_account
 
 app = Flask(__name__)
@@ -38,6 +38,8 @@ if __name__ == "__main__":
     }
 
     init_db_session(**db_args)
+    setup_db_tables()
+
     app.debug = os.getenv("DEBUG") == "true"
     app.run()
     deinit_db_session()

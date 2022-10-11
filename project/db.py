@@ -27,6 +27,20 @@ def deinit_db_session():
     _conn.close()
     _conn = None
 
+def setup_db_tables():
+    """
+    Creates the tables defined in schema.sql if they are absent
+    """
+
+    global _conn
+    try:
+        cur = _conn.cursor()
+        cur.execute(open('./project/schema.sql', 'r').read())
+        _conn.commit()
+    except Exception as e:
+        _conn.rollback()
+        raise e
+
 def get_db_session():
     """
     Returns a connection to a database
