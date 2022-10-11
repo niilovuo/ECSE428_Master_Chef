@@ -51,3 +51,38 @@ def get_db_session():
 
     global _conn
     return _conn
+
+class AccountRepo:
+
+    @staticmethod
+    def insert_row(name, email, password):
+        global _conn
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                INSERT INTO accounts
+                VALUES (DEFAULT, %s, %s, %s) RETURNING id
+                """, (name, email, password))
+            _conn.commit()
+            return cur.fetchone()[0]
+        except Exception as e:
+            # rollback so continue (postgres's safety feature)
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def select_by_name(name):
+        global _conn
+        cur = _conn.cursor()
+        return cur.execute("""
+            SELECT * FROM accounts WHERE name = %s
+            """, (name,)).fetchone()
+
+    @staticmethod
+    def select_by_email(email):
+        global _conn
+        cur = _conn.cursor()
+        return cur.execute("""
+            SELECT * FROM accounts WHERE email = %s
+            """, (email,)).fetchone()
+

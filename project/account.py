@@ -1,6 +1,6 @@
 from werkzeug.security import generate_password_hash
 from email_validator import validate_email
-from project.db import get_db_session
+from project.db import AccountRepo
 
 def add_new_account(name, email, password):
     """
@@ -29,7 +29,7 @@ def add_new_account(name, email, password):
 
     (name, email, password) = r
     try:
-        (r, err) = db_save_account(get_db_session(), name, email, password)
+        (r, err) = db_save_account(name, email, password)
         if r is None:
             return err
     except Exception as e:
@@ -81,7 +81,7 @@ def normalize_account_info(name, email, password):
 
     return ((name, email, password), None)
 
-def db_save_account(db_session, name, email, password):
+def db_save_account(name, email, password):
     """
     Attempts to save an account to the database.
 
@@ -91,8 +91,6 @@ def db_save_account(db_session, name, email, password):
 
     Parameters
     ----------
-    db_session:
-      database connection
     name:
       name of user
     email:
@@ -112,31 +110,14 @@ def db_save_account(db_session, name, email, password):
     """
 
     try:
-        cur = db_session.cursor()
-        cur.execute("""
-            INSERT INTO accounts
-            VALUES (DEFAULT, %s, %s, %s) RETURNING id
-            """, (name, email, generate_password_hash(password)))
-        db_session.commit()
-        new_id = cur.fetchone()[0]
+        new_id = AccountRepo.insert_row(
+            name, email, generate_password_hash(password))
         return (new_id, None)
     except Exception as e:
-        # rollback so continue (postgres's safety feature)
-        db_session.rollback()
-
-        # try to see if it was because of a duplicate name or email
-        cur = db_session.cursor()
-        cur.execute("""
-            SELECT * FROM accounts WHERE name = %s
-            """, (name,))
-        if cur.fetchone() is not None:
+        if AccountRepo.select_by_name(name) is not None:
             return (None, "This account name is already in use")
 
-        cur = db_session.cursor()
-        cur.execute("""
-            SELECT * FROM accounts WHERE email = %s
-            """, (email,))
-        if cur.fetchone() is not None:
+        if AccountRepo.select_by_email(email) is not None:
             return (None, "This email is already bound to an account")
 
         # if we can't determine why, just re-raise the old error
