@@ -23,7 +23,7 @@ Forum website to share recipes and other cooking related things
 ### Prerequisites
 
 Python 3
-Postgres 14 (can be remote, but access is necessary)
+Postgres 14 (for running the app only)
 
 ### Steps
 
@@ -78,3 +78,10 @@ Parts of the app's behavior must / can be configured via environment variables
 | `POSTGRES_HOST` | hostname or IP | `localhost` | The address of the postgres server |
 | `POSTGRES_PORT` | port number | `5432` | The port of the postgres server |
 
+## Run the tests
+
+Once the environment is setup, you can also run the tests:
+
+```sh
+pytest --cov=project --cov-branch --cov-report term
+```
