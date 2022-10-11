@@ -1,6 +1,95 @@
 from project.account import *
 from werkzeug.security import check_password_hash
 
+def gen_scenario_helper():
+    entries = [
+        # id acc     email               passwd
+        (0, "Test",  "test1@gmail.com", "Test1"),
+        (1, "Test2", "test2@gmail.com", "Test2")
+    ]
+
+    def insert_row(name, email, password):
+        for entry in entries:
+            if entry[1] == name or entry[2] == email:
+                raise Exception("Bad")
+
+        id = len(entries)
+        entries.append((id, name, email, password))
+        return id
+
+    def select_by_name(name):
+        for entry in entries:
+            if entry[1] == name:
+                return entry
+        return None
+
+    def select_by_email(email):
+        for entry in entries:
+            if entry[2] == email:
+                return entry
+        return None
+
+    return (insert_row, select_by_name, select_by_email)
+
+def test_scenario_New_user_creates_an_account(monkeypatch):
+    """
+    Given the user is not logged into the system
+    When attempting to create an account "newAccount1", with email "newAccount1@gmail.com" and password "newAccount1"
+    Then the account name shall exist in the system
+    And the system will remember my email
+    And the system will remember my password
+    """
+
+    (insert_row, select_by_name, select_by_email) = gen_scenario_helper()
+    monkeypatch.setattr("project.db.AccountRepo.insert_row", insert_row)
+    monkeypatch.setattr("project.db.AccountRepo.select_by_name", select_by_name)
+    monkeypatch.setattr("project.db.AccountRepo.select_by_email", select_by_email)
+
+    err = add_new_account("newAccount1", "newAccount1@gmail.com", "newAccount1")
+    assert err is None
+
+    res = select_by_name("newAccount1")
+    assert res[1] == "newAccount1"
+    assert res[2] == "newAccount1@gmail.com"
+    assert check_password_hash(res[3], "newAccount1")
+
+def test_scenario_New_user_creates_an_account_with_used_account_name(monkeypatch):
+    """
+    Given the user is not logged into the system
+    When attempting to create an account "Test", with email "newAccount2@gmail.com" and password "newAccount2"
+    Then the "This account name is already in use" error message is issued
+    And the account name "Test" is associated with the email "test1@gmail.com"
+    """
+
+    (insert_row, select_by_name, select_by_email) = gen_scenario_helper()
+    monkeypatch.setattr("project.db.AccountRepo.insert_row", insert_row)
+    monkeypatch.setattr("project.db.AccountRepo.select_by_name", select_by_name)
+    monkeypatch.setattr("project.db.AccountRepo.select_by_email", select_by_email)
+
+    err = add_new_account("Test", "newAccount2@gmail.com", "newAccount2")
+    assert err == "This account name is already in use"
+
+    res = select_by_name("Test")
+    assert res[2] == "test1@gmail.com"
+
+def test_scenario_A_user_creates_another_account(monkeypatch):
+    """
+    Given the user is not logged into the system
+    When attempting to create an account "newAccount3", with email "test1@gmail.com" and password "newAccount3"
+    Then the "This email is already bound to an account" error message is issued
+    And the account name "Test" is associated with the email "test1@gmail.com"
+    """
+
+    (insert_row, select_by_name, select_by_email) = gen_scenario_helper()
+    monkeypatch.setattr("project.db.AccountRepo.insert_row", insert_row)
+    monkeypatch.setattr("project.db.AccountRepo.select_by_name", select_by_name)
+    monkeypatch.setattr("project.db.AccountRepo.select_by_email", select_by_email)
+
+    err = add_new_account("newAccount3", "test1@gmail.com", "newAccount3")
+    assert err == "This email is already bound to an account"
+
+    res = select_by_name("Test")
+    assert res[2] == "test1@gmail.com"
 
 
 def test_normalize_valid_info():
