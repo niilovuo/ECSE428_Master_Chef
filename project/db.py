@@ -74,15 +74,17 @@ class AccountRepo:
     def select_by_name(name):
         global _conn
         cur = _conn.cursor()
-        return cur.execute("""
+        cur.execute("""
             SELECT * FROM accounts WHERE name = %s
-            """, (name,)).fetchone()
+            """, (name,))
+        return cur.fetchone()
 
     @staticmethod
     def select_by_email(email):
         global _conn
         cur = _conn.cursor()
-        return cur.execute("""
+        cur.execute("""
             SELECT * FROM accounts WHERE email = %s
-            """, (email,)).fetchone()
+            """, (email,))
+        return cur.fetchone()
 
