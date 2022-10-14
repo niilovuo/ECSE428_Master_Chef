@@ -88,3 +88,49 @@ class AccountRepo:
             """, (email,))
         return cur.fetchone()
 
+class RecipeRepo:
+
+    @staticmethod
+    def select_many_filtered(title, tags=[], offset=0, limit=None):
+        if limit is None:
+            limit = "ALL"
+
+        global _conn
+        cur = _conn.cursor()
+        cur.execute(f"""
+            SELECT * FROM recipes WHERE title ~ %s AND id IN (
+              SELECT recipe FROM recipe_tags
+              GROUP BY recipe
+              HAVING ARRAY_AGG(tag) @> %s)
+            ORDER BY id
+            LIMIT {limit} OFFSET {offset}
+            """, (title, tags, len(tags)))
+        return cur.fetchall()
+
+    @staticmethod
+    def select_by_id(id):
+        global _conn
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM recipes WHERE id = %s
+            """, (id,))
+        return cur.fetchone()
+
+class TagRepo:
+
+    @staticmethod
+    def select_all():
+        global _conn
+        cur = _conn.cursor()
+        cur.execute("SELECT * FROM tags")
+        return cur.fetchall()
+
+    @staticmethod
+    def select_by_names(names):
+        global _conn
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM tags WHERE name in ANY(%s)
+            """, (names,))
+        return cur.fetchall()
+
