@@ -18,7 +18,7 @@ You should then be able to access SQL Shell (psql) from the start menu; open thi
 
 # Creating the PostgreSQL database
 
-In the psql shell, create a database for our grocery system: ```CREATE DATABASE grocerysystem;```. You can verify this database has been created with ```\l```. Use ```\q``` to exit psql.
+In the psql shell, create a database for our grocery system: ```CREATE DATABASE my_database_name;```. You can verify this database has been created with ```\l```. Use ```\q``` to exit psql. my_database_name will need to be specified in the corresponding enviornment value as well.
 
 # Configuring the app to run with PostgreSQL
 
