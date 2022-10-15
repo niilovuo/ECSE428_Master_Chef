@@ -22,23 +22,4 @@ In the psql shell, create a database for our grocery system: ```CREATE DATABASE 
 
 # Configuring the app to run with PostgreSQL
 
-You need to set environment variables for gradle to recognize the postgres instance running locally; If you are using eclipse, the tutorials give an example on how to configure enviornment variables for gradle. You will need to set the following variables:
-
-```
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/grocerysystem
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=postgres
-```
-
-Or whatever password you used. Here, 5432 is the default port. If you are using a different port, you will have to modify to that.
-
-For running this through shell, I noticed that simply having an .env file with these values was not sufficient; your .env file needs to export these values as well, so my .env file looks like (if my password was postgres, port was 5432)
-
-```
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/grocerysystem
-SPRING_DATASOURCE_USERNAME=postgres
-SPRING_DATASOURCE_PASSWORD=postgres
-export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/grocerysystem SPRING_DATASOURCE_USERNAME=postgres SPRING_DATASOURCE_PASSWORD=postgres
-```
-
-and this now works after running ```source .env```.
+See README.md
