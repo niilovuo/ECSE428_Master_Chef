@@ -1,0 +1,18 @@
+{% extends "root.html" %}
+{% block content %}
+
+<div class="container">
+  <h3>Add a Comment</h3>
+
+  <form action="./register" method="post" class="py-3">
+    <div class="col-12 pb-3">
+      <input type="text" name="commentTitle" class="form-control" placeholder="Title">
+    </div>
+    <div class="col-12 pb-3">
+      <textarea name="commentDirections" class="form-control" style="min-height: 8rem"></textarea>
+    </div>
+    <input type="submit" value="Submit" class="btn btn-primary" />
+  </form>
+</div>
+
+{% endblock %}
