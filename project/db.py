@@ -108,7 +108,7 @@ class RecipeRepo:
                 """, (title,))
         else:
             cur.execute(f"""
-                SELECT * FROM recipes WHERE title ~ %s AND id IN (
+                SELECT * FROM recipes WHERE title ~* %s AND id IN (
                   SELECT recipe FROM recipe_tags
                   GROUP BY recipe
                   HAVING ARRAY_AGG(tag) @> %s)

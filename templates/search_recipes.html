@@ -33,10 +33,7 @@ function init_model() {
     fetch_tags() {
       fetch("./api/tags")
         .then(response => { if (response.ok) return response.json() })
-        .then(data => {
-          this.recipe_tags = data
-          this.pending_tags = (data || []) .map(e => e[0])
-        })
+        .then(data => this.recipe_tags = data)
     },
 
     hit_search_btn() {
