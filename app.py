@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 import os
 import random
 from project.db import init_db_session, deinit_db_session, setup_db_tables
 from project.account import add_new_account
 
 app = Flask(__name__)
+app.secret_key = b'_123kjhmnb23!!'
 
 @app.route("/")
 def home():
@@ -19,10 +20,12 @@ def register():
 
         err = add_new_account(name, email, password)
         if err is not None:
-            return render_template("/register.html", value=err)
+            flash(err)
+            return render_template("/register.html")
 
         # return to register page with "Success" for now
-        return render_template("/register.html", value="Success")
+        flash("Success")
+        return render_template("/register.html")
 
     return render_template("/register.html")
 
