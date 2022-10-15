@@ -9,6 +9,9 @@ def home():
     return render_template("/home.html", value = random.randrange(1024))
 
 
+@app.route("/login")
+def login():
+
+
 if __name__ == "__main__":
     app.debug = os.getenv("DEBUG") == "true"
-    app.run()

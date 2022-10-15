@@ -3,6 +3,9 @@
 *.py[cod]
 __pycache__/
 venv/
+.idea/
+
+
 
 # minimal list of pytest-cov stuff
 .coverage
