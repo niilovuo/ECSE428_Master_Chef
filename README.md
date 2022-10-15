@@ -50,6 +50,16 @@ pip3 install -r requirements.txt
 
 At this point, you are ready to [run the app](#running-the-app).
 
+5.	Running the app
+
+```sh
+python3 app.py
+```
+
+(If that gives `flask` cannot be found, try `flask run` instead)
+
+To run in debug mode (which, among other things, means the app will automatically load changes to the code without needing to be rerun), set the enviornment variable `DEBUG=true`
+
 As a side note,
 to exit / deactivate the venv, do
 

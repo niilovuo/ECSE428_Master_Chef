@@ -32,7 +32,7 @@ jobs:
         format: 'markdown'
         output: 'file'
     - name: Add PR comment
-      uses: marocchino/sticky-pull-request-comment@v2.2.0
+      uses: marocchino/sticky-pull-request-comment@v2.2.1
       if: github.event_name == 'pull_request'
       with:
         recreate: true
