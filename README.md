@@ -53,6 +53,8 @@ pip3 install -r requirements.txt
 python3 app.py
 ```
 
+(If that gives `flask` cannot be found, try `flask run` instead)
+
 To run in debug mode (which, among other things, means the app will automatically load changes to the code without needing to be rerun), set the enviornment variable `DEBUG=true`
 
 As a side note,
