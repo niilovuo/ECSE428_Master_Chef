@@ -16,6 +16,10 @@ If not, download PSQL through [the installer](https://www.enterprisedb.com/downl
 
 You should then be able to access SQL Shell (psql) from the start menu; open this app, it will prompt you to enter info such as server, database, etc.. Just press enter to accept the default values (in square brackets, will be the values you set in app setup). Then you will be prompted to enter your password, and you will find yourself in an interactive command prompt. You can change the password with ```\password postgres```, if you desire.
 
+## Mac
+
+Using [homebrew](https://brew.sh/), install with ```brew install postgresql@14```
+
 # Creating the PostgreSQL database
 
 In the psql shell, create a database for our grocery system: ```CREATE DATABASE my_database_name;```. You can verify this database has been created with ```\l```. Use ```\q``` to exit psql. my_database_name will need to be specified in the corresponding enviornment value as well.
