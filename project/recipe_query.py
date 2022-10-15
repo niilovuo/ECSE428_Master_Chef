@@ -15,7 +15,7 @@ def search_recipes_by_filter(title, tags, start):
     Parameters
     ----------
     title:
-      recipes' names will contain this
+      recipes' names will contain this (case ignored)
     tags:
       recipes' tags will contain ALL of these
     offset:
@@ -58,4 +58,28 @@ def search_recipe_by_id(id):
     """
 
     return RecipeRepo.select_by_id(id)
+
+def convert_recipe_obj(recipe):
+    """
+    Converts recipe to a dict that can be jsonified
+    (notably, flask does not know what to do about time)
+
+    Parameters
+    ----------
+    recipe:
+      returned from the database
+
+    Returns
+    -------
+    a dict, time fields are strings of HH:MM:SS
+    """
+
+    return {
+        'id': recipe[0],
+        'title': recipe[1],
+        'prep_time': str(recipe[2]) if recipe[2] else None,
+        'cook_time': str(recipe[3]) if recipe[3] else None,
+        'directions': recipe[4],
+        'author': recipe[5]
+    }
 

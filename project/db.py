@@ -97,14 +97,24 @@ class RecipeRepo:
 
         global _conn
         cur = _conn.cursor()
-        cur.execute(f"""
-            SELECT * FROM recipes WHERE title ~ %s AND id IN (
-              SELECT recipe FROM recipe_tags
-              GROUP BY recipe
-              HAVING ARRAY_AGG(tag) @> %s)
-            ORDER BY id
-            LIMIT {limit} OFFSET {offset}
-            """, (title, tags, len(tags)))
+
+        if not tags:
+            # avoid querying recipe tags if we are not filtering based on tags
+            # otherwise an empty recipe_tags table will cause trouble
+            cur.execute(f"""
+                SELECT * FROM recipes WHERE title ~* %s
+                ORDER BY id
+                LIMIT {limit} OFFSET {offset}
+                """, (title,))
+        else:
+            cur.execute(f"""
+                SELECT * FROM recipes WHERE title ~ %s AND id IN (
+                  SELECT recipe FROM recipe_tags
+                  GROUP BY recipe
+                  HAVING ARRAY_AGG(tag) @> %s)
+                ORDER BY id
+                LIMIT {limit} OFFSET {offset}
+                """, (title, tags))
         return cur.fetchall()
 
     @staticmethod
@@ -130,7 +140,7 @@ class TagRepo:
         global _conn
         cur = _conn.cursor()
         cur.execute("""
-            SELECT * FROM tags WHERE name in ANY(%s)
+            SELECT * FROM tags WHERE name = ANY(%s)
             """, (names,))
         return cur.fetchall()
 

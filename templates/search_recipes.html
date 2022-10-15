@@ -40,10 +40,9 @@ function init_model() {
     },
 
     hit_search_btn() {
-        alert(this.pending_tags)
       this.search_page = 0
-      this.search_page = pending_pattern
-      this.search_tags = pending_tags
+      this.search_pattern = this.pending_pattern
+      this.search_tags = this.pending_tags
       this.fetch_recipes()
     },
 
@@ -62,8 +61,8 @@ function init_model() {
     },
 
     init() {
-      this.fetch_recipes()
       this.fetch_tags()
+      this.fetch_recipes()
     }
   }
 }
@@ -86,17 +85,17 @@ function init_model() {
   </table>
 
   <p x-show="!fetch_success">Something went wrong. Please try again later!</p>
-  <template x-for="recipe in recipes" :key="recipe[0]">
+  <template x-for="recipe in recipes" :key="recipe.id">
     <article>
-      <h3><p x-text="recipe[1]"/></h3>
+      <h3><p x-text="recipe.title"/></h3>
       <table>
         <tr>
           <td>Prep time:</td>
-          <td x-text="recipe[2] || '(unknown)'"/>
+          <td x-text="recipe.prep_time || '(unknown)'"/>
         </tr>
         <tr>
           <td>Cook time:</td>
-          <td x-text="recipe[3] || '(unknown)'"/>
+          <td x-text="recipe.cook_time || '(unknown)'"/>
         </tr>
       </table>
     </article>
