@@ -102,7 +102,7 @@ class RecipeRepo:
         if limit is None:
             limit = "ALL"
 
-        global _conn
+        _conn = Db.get_session()
         cur = _conn.cursor()
 
         if not tags:
@@ -126,7 +126,7 @@ class RecipeRepo:
 
     @staticmethod
     def select_by_id(id):
-        global _conn
+        _conn = Db.get_session()
         cur = _conn.cursor()
         cur.execute("""
             SELECT * FROM recipes WHERE id = %s
@@ -137,14 +137,14 @@ class TagRepo:
 
     @staticmethod
     def select_all():
-        global _conn
+        _conn = Db.get_session()
         cur = _conn.cursor()
         cur.execute("SELECT * FROM tags")
         return cur.fetchall()
 
     @staticmethod
     def select_by_names(names):
-        global _conn
+        _conn = Db.get_session()
         cur = _conn.cursor()
         cur.execute("""
             SELECT * FROM tags WHERE name = ANY(%s)

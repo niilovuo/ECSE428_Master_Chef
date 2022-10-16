@@ -36,42 +36,41 @@ def create_app():
 
         return render_template("/register.html")
 
+    @app.route("/search")
+    def search():
+        return render_template("/search_recipes.html")
+
+    @app.route("/api/search")
+    def api_search():
+        try:
+            title = request.args.get("q", type=str)
+            start = request.args.get("start", 0, type=int)
+            tags = request.args.getlist("tags[]", type=str)
+
+            assert title is not None
+        except:
+            return "Invalid request parameters", 400
+
+        (recipes, err) = search_recipes_by_filter(title, tags, start)
+        if recipes is None:
+            return err, 400
+
+        # we need to explicitly convert the time fields to strings
+        return [convert_recipe_obj(recipe) for recipe in recipes]
+
+    @app.route("/api/tags")
+    def api_list_tags():
+        return get_all_tags()
+
+    @app.route("/api/recipes/<int:id>")
+    def api_lookup_recipe(id):
+        recipe = search_recipe_by_id(id)
+        if recipe is None:
+            return "Invalid recipe id", 404
+
+        return convert_recipe_obj(recipe)
+
     return app
-
-@app.route("/search")
-def search():
-    return render_template("/search_recipes.html")
-
-@app.route("/api/search")
-def api_search():
-    try:
-        title = request.args.get("q", type=str)
-        start = request.args.get("start", 0, type=int)
-        tags = request.args.getlist("tags[]", type=str)
-
-        assert title is not None
-    except:
-        return "Invalid request parameters", 400
-
-    (recipes, err) = search_recipes_by_filter(title, tags, start)
-    if recipes is None:
-        return err, 400
-
-    # we need to explicitly convert the time fields to strings
-    return [convert_recipe_obj(recipe) for recipe in recipes]
-
-@app.route("/api/tags")
-def api_list_tags():
-    return get_all_tags()
-
-@app.route("/api/recipes/<int:id>")
-def api_lookup_recipe(id):
-    recipe = search_recipe_by_id(id)
-    if recipe is None:
-        return "Invalid recipe id", 404
-
-    return convert_recipe_obj(recipe)
-
 
 if __name__ == "__main__":
     pg_user = os.getenv("POSTGRES_USER", "postgres")
