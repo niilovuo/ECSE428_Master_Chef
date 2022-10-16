@@ -65,38 +65,68 @@ function init_model() {
 </script>
 
 <div x-data="init_model()">
-  <input type="text" x-model="pending_pattern" placeholder="Type recipe name here"/>
-  <button @click="hit_search_btn()">Search</button>
-  <button @click="hit_prevpg_btn()">&lt;</button>
-  <button @click="hit_nextpg_btn()">&gt;</button>
-  <br/>
+  <div class="row">
+    <div class="col">
+      <div class="input-group">
+        <input type="text" class="form-control" x-model="pending_pattern"
+               placeholder="Type recipe name here" aria-describedby="button-search">
+        <button class="btn btn-outline-primary" id="button-search" @click="hit_search_btn()">
+          Search
+        </button>
+      </div>
+    </div>
+    <div class="col-2 btn-group" role="group-pagination" aria-label="Pagination">
+      <button class="btn btn-secondary" @click="hit_prevpg_btn()">&laquo;</button>
+      <button class="btn btn-secondary" @click="hit_nextpg_btn()">&raquo;</button>
+    </div>
+  </div>
 
-  <table>
-    <template x-for="rtag in recipe_tags" :key="rtag[0]">
-      <tr>
-        <td x-text="rtag[1]"/>
-        <td><input type="checkbox" :value="encodeURIComponent(rtag[1])" x-model="pending_tags"/></td>
-      </tr>
-    </template>
-  </table>
+  <div class="accordion" id="accordionTags">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="tag-section">
+        <button class="accordion-button collapsed"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapse-tags"
+                aria-expanded="false"
+                aria-controls="collapse-tags">
+          Filter tags
+        </button>
+      </h2>
+      <div id="collapse-tags" class="accordion-collapse collapse"
+           aria-labelledby="tag-section"
+           data-bs-parent="#accordionTags">
+        <div class="accordion-body">
+          <template x-for="rtag in recipe_tags" :key="rtag[0]">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" :id="'cb-' + rtag[0]"
+                     :value="encodeURIComponent(rtag[1])" x-model="pending_tags">
+              <label class="form-check-label" :for="'cb-' + rtag[0]" x-text="rtag[1]"></label>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <hr/>
   <p x-show="!fetch_success">Something went wrong. Please try again later!</p>
   <p x-show="fetch_success && !recipes.length">(none on this page)</p>
+
   <template x-for="recipe in recipes" :key="recipe.id">
-    <article>
-      <h3><p x-text="recipe.title"/></h3>
-      <table>
-        <tr>
-          <td>Prep time:</td>
-          <td x-text="recipe.prep_time || '(unknown)'"/>
-        </tr>
-        <tr>
-          <td>Cook time:</td>
-          <td x-text="recipe.cook_time || '(unknown)'"/>
-        </tr>
-      </table>
-    </article>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title" x-text="recipe.title"></h5>
+        <h6 class="card-subtitle mb-2 text-muted" x-text="'Prep time: ' + (recipe.prep_time || '(unknown)')"></h6>
+        <h6 class="card-subtitle mb-2 text-muted" x-text="'Cook time: ' + (recipe.cook_time || '(unknown)')"></h6>
+        <p class="card-text" x-text="recipe.directions"></p>
+      </div>
+    </div>
   </template>
+
+  <div class="btn-group" role="group-pagination" aria-label="Pagination">
+    <button class="btn btn-secondary" @click="hit_prevpg_btn()">&laquo;</button>
+    <button class="btn btn-secondary" @click="hit_nextpg_btn()">&raquo;</button>
+  </div>
 </div>
 {% endblock %}
 
