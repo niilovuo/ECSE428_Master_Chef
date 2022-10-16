@@ -1,0 +1,102 @@
+{% extends "root.html" %}
+{% block content %}
+
+<script>
+function init_model() {
+  return {
+    search_pattern: '',
+    search_tags: [],
+    search_page: 0,
+
+    pending_pattern: '',
+    pending_tags: [],
+
+    recipes: [],
+    recipe_tags: [],
+    fetch_success: true,
+
+    fetch_recipes() {
+      fetch("./api/search" +
+          "?q=" + encodeURIComponent(this.search_pattern) +
+          "&start=" + this.search_page +
+          this.search_tags.map(e => "&tags[]=" + e).join(''))
+        .then(response => {
+          this.fetch_success = response.ok
+          this.recipes = []
+          if (response.ok)
+            return response.json()
+        })
+        .then(data => this.recipes = data)
+    },
+
+    fetch_tags() {
+      fetch("./api/tags")
+        .then(response => { if (response.ok) return response.json() })
+        .then(data => this.recipe_tags = data)
+    },
+
+    hit_search_btn() {
+      this.search_page = 0
+      this.search_pattern = this.pending_pattern
+      this.search_tags = this.pending_tags
+      this.fetch_recipes()
+    },
+
+    hit_prevpg_btn() {
+      if (this.search_page > 0) {
+        this.search_page--
+        this.fetch_recipes()
+      }
+    },
+
+    hit_nextpg_btn() {
+      if (this.recipes.length) {
+        this.search_page++
+        this.fetch_recipes()
+      }
+    },
+
+    init() {
+      this.fetch_tags()
+      this.fetch_recipes()
+    }
+  }
+}
+</script>
+
+<div x-data="init_model()">
+  <input type="text" x-model="pending_pattern" placeholder="Type recipe name here"/>
+  <button @click="hit_search_btn()">Search</button>
+  <button @click="hit_prevpg_btn()">&lt;</button>
+  <button @click="hit_nextpg_btn()">&gt;</button>
+  <br/>
+
+  <table>
+    <template x-for="rtag in recipe_tags" :key="rtag[0]">
+      <tr>
+        <td x-text="rtag[1]"/>
+        <td><input type="checkbox" :value="encodeURIComponent(rtag[1])" x-model="pending_tags"/></td>
+      </tr>
+    </template>
+  </table>
+
+  <p x-show="!fetch_success">Something went wrong. Please try again later!</p>
+  <p x-show="fetch_success && !recipes.length">(none on this page)</p>
+  <template x-for="recipe in recipes" :key="recipe.id">
+    <article>
+      <h3><p x-text="recipe.title"/></h3>
+      <table>
+        <tr>
+          <td>Prep time:</td>
+          <td x-text="recipe.prep_time || '(unknown)'"/>
+        </tr>
+        <tr>
+          <td>Cook time:</td>
+          <td x-text="recipe.cook_time || '(unknown)'"/>
+        </tr>
+      </table>
+    </article>
+  </template>
+</div>
+{% endblock %}
+

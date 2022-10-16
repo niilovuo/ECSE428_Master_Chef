@@ -95,3 +95,59 @@ class AccountRepo:
             """, (email,))
         return cur.fetchone()
 
+class RecipeRepo:
+
+    @staticmethod
+    def select_many_filtered(title, tags=[], offset=0, limit=None):
+        if limit is None:
+            limit = "ALL"
+
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+
+        if not tags:
+            # avoid querying recipe tags if we are not filtering based on tags
+            # otherwise an empty recipe_tags table will cause trouble
+            cur.execute(f"""
+                SELECT * FROM recipes WHERE title ~* %s
+                ORDER BY id
+                LIMIT {limit} OFFSET {offset}
+                """, (title,))
+        else:
+            cur.execute(f"""
+                SELECT * FROM recipes WHERE title ~* %s AND id IN (
+                  SELECT recipe FROM recipe_tags
+                  GROUP BY recipe
+                  HAVING ARRAY_AGG(tag) @> %s)
+                ORDER BY id
+                LIMIT {limit} OFFSET {offset}
+                """, (title, tags))
+        return cur.fetchall()
+
+    @staticmethod
+    def select_by_id(id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM recipes WHERE id = %s
+            """, (id,))
+        return cur.fetchone()
+
+class TagRepo:
+
+    @staticmethod
+    def select_all():
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("SELECT * FROM tags")
+        return cur.fetchall()
+
+    @staticmethod
+    def select_by_names(names):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM tags WHERE name = ANY(%s)
+            """, (names,))
+        return cur.fetchall()
+
