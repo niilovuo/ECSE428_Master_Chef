@@ -1,0 +1,80 @@
+{% extends "root.html" %}
+{% block content %}
+
+<script>
+function init_model() {
+  return {
+    recipe: null,
+    author: null,
+    tags: [],
+    ingredients: [],
+
+    fetch_recipe() {
+      fetch("/api/recipes/{{ recipe_id }}")
+        .then(response => { if (response.ok) return response.json() })
+        .then(data => {
+          this.recipe = data
+          this.fetch_author()
+        })
+    },
+
+    fetch_author() {
+      if (this.recipe == null)
+        return
+
+      fetch("/api/users/" + this.recipe.author)
+        .then(response => { if (response.ok) return response.json() })
+        .then(data => this.author = data)
+    },
+
+    fetch_tags() {
+      fetch("/api/recipes/{{ recipe_id }}/tags")
+        .then(response => { if (response.ok) return response.json() })
+        .then(data => this.tags = data || [])
+    },
+
+    fetch_ingredients() {
+      fetch("/api/recipes/{{ recipe_id }}/ingredients")
+        .then(response => { if (response.ok) return response.json() })
+        .then(data => this.ingredients = data || [])
+    },
+
+    init() {
+      this.fetch_recipe()
+      this.fetch_tags()
+      this.fetch_ingredients()
+    }
+  }
+}
+</script>
+
+<div x-data="init_model()">
+  <h1 x-text="recipe && recipe.title"></h1>
+  <p x-text="author && author.name"></p>
+  <div class="row">
+    <div class="col">
+      <p x-text="'Prep time: ' + (recipe && recipe.prep_time || '(unknown)')"></p>
+      <p x-text="'Cook time: ' + (recipe && recipe.cook_time || '(unknown)')"></p>
+
+      <ul class="list-group">
+        <template x-for="ingredient in ingredients" :key="ingredient[0]">
+          <li class="list-group-item">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold" x-text="ingredient[1]"></div>
+              <label x-text="ingredient[2]"></label>
+            </div>
+          </li>
+        </template>
+      </ul>
+      <p x-text="recipe && recipe.directions"></p>
+    </div>
+
+    <div class="col-2">
+      <template x-for="tag in tags" :key="tag[0]">
+        <button class="btn btn-outline-secondary" x-text="tag[1]"></button>
+      </template>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

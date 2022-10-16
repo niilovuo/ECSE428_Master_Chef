@@ -10,3 +10,20 @@ def get_all_tags():
     """
 
     return TagRepo.select_all()
+
+def get_tags_of_recipe(recipe_id):
+    """
+    Returns all the tags of the specified recipe
+
+    Parameters
+    ----------
+    recipe_id:
+      the id of the recipe
+
+    Returns
+    -------
+    list of all recipe-associated-tags
+    will happily return an empty list if id is does not exist
+    """
+
+    return TagRepo.select_by_recipe(recipe_id)

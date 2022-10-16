@@ -95,6 +95,15 @@ class AccountRepo:
             """, (email,))
         return cur.fetchone()
 
+    @staticmethod
+    def select_by_id(id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM accounts WHERE id = %s
+            """, (id,))
+        return cur.fetchone()
+
 class RecipeRepo:
 
     @staticmethod
@@ -149,5 +158,30 @@ class TagRepo:
         cur.execute("""
             SELECT * FROM tags WHERE name = ANY(%s)
             """, (names,))
+        return cur.fetchall()
+
+    @staticmethod
+    def select_by_recipe(recipe_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+
+        cur.execute("""
+            SELECT * FROM tags WHERE id in (
+              SELECT tag from recipe_tags
+              WHERE recipe = %s)
+            """, (recipe_id,))
+        return cur.fetchall()
+
+class IngredientRepo:
+
+    @staticmethod
+    def select_by_recipe(recipe_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+
+        cur.execute("""
+            SELECT * FROM ingredients
+            WHERE recipe = %s
+            """, (recipe_id,))
         return cur.fetchall()
 
