@@ -38,7 +38,7 @@ def search_recipes_by_filter(title, tags, start):
         return ([], None)
 
     title = re.escape(title.strip())
-    tag_ids = [ent[0] for ent in tag_ids]
+    tag_ids = [int(ent[0]) for ent in tag_ids]
     results = RecipeRepo.select_many_filtered(
             title, tag_ids, start * PAGE_ENTRIES, PAGE_ENTRIES)
     return (results, None)
