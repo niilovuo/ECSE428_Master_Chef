@@ -83,8 +83,8 @@ function init_model() {
   <p x-show="!fetch_success">Something went wrong. Please try again later!</p>
   <p x-show="fetch_success && !recipes.length">(none on this page)</p>
   <template x-for="recipe in recipes" :key="recipe.id">
-    <article>
-      <h3><p x-text="recipe.title"/></h3>
+    <article @click="window.location.href='/recipes/' + recipe.id">
+      <h3 x-text="recipe.title"></h3>
       <table>
         <tr>
           <td>Prep time:</td>
