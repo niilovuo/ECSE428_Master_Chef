@@ -23,7 +23,7 @@ Forum website to share recipes and other cooking related things
 ### Prerequisites
 
 *  Python 3
-*  Postgres 14 (for running the app only)
+*  Postgres 14
 
 ### Steps
 
