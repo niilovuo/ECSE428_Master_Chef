@@ -1,62 +1,69 @@
 import psycopg2
 
+# XXX: If you don't belong in Db, you very likely should not be accessing this
 _conn = None
 
-def init_db_session(**kwargs):
-    """
-    Initializes a database connection
+class Db:
 
-    Parameters
-    ----------
-    **kwargs:
-      forwarded to psycopg2 connect
-    """
+    @staticmethod
+    def init_session(**kwargs):
+        """
+        Initializes a database connection
 
-    global _conn
-    _conn = psycopg2.connect(**kwargs)
+        Parameters
+        ----------
+        **kwargs:
+          forwarded to psycopg2 connect
+        """
 
-def deinit_db_session():
-    """
-    Deinitializes a database connection
+        global _conn
+        _conn = psycopg2.connect(**kwargs)
 
-    Further calls to get_db_session is undefined
-    """
+    @staticmethod
+    def deinit_session():
+        """
+        Deinitializes a database connection
 
-    global _conn
-    _conn.close()
-    _conn = None
+        Further calls to get_db_session is undefined
+        """
 
-def setup_db_tables():
-    """
-    Creates the tables defined in schema.sql if they are absent
-    """
+        global _conn
+        _conn.close()
+        _conn = None
 
-    global _conn
-    try:
-        cur = _conn.cursor()
-        cur.execute(open('./project/schema.sql', 'r').read())
-        _conn.commit()
-    except Exception as e:
-        _conn.rollback()
-        raise e
+    @staticmethod
+    def setup_tables():
+        """
+        Creates the tables defined in schema.sql if they are absent
+        """
 
-def get_db_session():
-    """
-    Returns a connection to a database
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute(open('./project/schema.sql', 'r').read())
+            _conn.commit()
+        except Exception as e:
+            _conn.rollback()
+            raise e
 
-    Returns
-    -------
-    connection to a database
-    """
+    @staticmethod
+    def get_session():
+        """
+        Returns a connection to a database
 
-    global _conn
-    return _conn
+        Returns
+        -------
+        connection to a database
+        """
+
+        global _conn
+        return _conn
 
 class AccountRepo:
 
     @staticmethod
     def insert_row(name, email, password):
-        global _conn
+        _conn = Db.get_session()
         try:
             cur = _conn.cursor()
             cur.execute("""
@@ -72,7 +79,7 @@ class AccountRepo:
 
     @staticmethod
     def select_by_name(name):
-        global _conn
+        _conn = Db.get_session()
         cur = _conn.cursor()
         cur.execute("""
             SELECT * FROM accounts WHERE name = %s
@@ -81,7 +88,7 @@ class AccountRepo:
 
     @staticmethod
     def select_by_email(email):
-        global _conn
+        _conn = Db.get_session()
         cur = _conn.cursor()
         cur.execute("""
             SELECT * FROM accounts WHERE email = %s
