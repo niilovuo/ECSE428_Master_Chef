@@ -16,7 +16,8 @@ Given the following recipes exist in the system
 
 Scenario: Search a recipe by name (Normal Flow)
 
-When searching for recipes with the query string "Good recipe"
+Given the query string "Good recipe"
+When a user requests the list of recipes
 Then the following list of recipes is returned
     [
         [ "recipe_id", "recipe_author", "recipe_title", "recipe_body" ],
@@ -25,7 +26,8 @@ Then the following list of recipes is returned
 
 Scenario: Search for a term matching multiple recipes (Alternate Flow)
 
-When searching for recipes with the query string "recipe"
+Given the query string "recipe"
+When a user requests the list of recipes
 Then the following list of recipes is returned
     [
         [ "recipe_id", "recipe_author", "recipe_title", "recipe_body" ],
@@ -36,7 +38,8 @@ Then the following list of recipes is returned
 
 Scenario: Search for recipes with invalid search parameter (Error Flow)
 
-When searching for recipes with the query string " "
+Given the query string " "
+When a user requests the list of recipes
 Then the following list of recipes is returned
     [
         [ "recipe_id", "recipe_author", "recipe_title", "recipe_body" ]

@@ -14,7 +14,7 @@ Given the following recipes exist in the system
         [ 3, "Person Guy",         "Wow food",       "Insane recipe never seen before" ]
     ]
 
-When a user requests the list of all recipes
+When a user requests the list of recipes
 Then the following list of recipes is returned
     [
         [ "recipe_id", "recipe_author", "recipe_title", "recipe_body" ],
@@ -30,7 +30,7 @@ Given the following recipes exist in the system
         [ "recipe_id", "recipe_author", "recipe_title", "recipe_body" ]
     ]
 
-When a user requests the list of all recipes
+When a user requests the list of recipes
 Then the following list of recipes is returned
     [
         [ "recipe_id", "recipe_author", "recipe_title", "recipe_body" ]

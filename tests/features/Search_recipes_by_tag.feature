@@ -42,7 +42,8 @@ Feature: Filter recipes by tags
       ]
 
   Scenario: Filter recipes by tag (Normal Flow)
-    When attempting to filter recipes with just the tag "vegan"
+    Given the query tag "vegan"
+    When a user requests the list of recipes
     Then the following list of recipes is returned
       [
         [ "recipe_id", "recipe_author", "recipe_title", "recipe_body" ],
@@ -51,7 +52,9 @@ Feature: Filter recipes by tags
       ]
 
   Scenario: Filter a recipe with multiple tags (Alternate Flow)
-    When attempting to filter recipes with the tags "vegan" and "gluten-free"
+    Given the query tag "vegan"
+    And the query tag "gluten-free"
+    When a user requests the list of recipes
     Then the following list of recipes is returned
       [
         [ "recipe_id", "recipe_author", "recipe_title", "recipe_body" ],
@@ -59,7 +62,9 @@ Feature: Filter recipes by tags
       ]
 
   Scenario: Filter a recipe by tags and search for title (Alternate Flow)
-    When attempting to filter recipes with the tag "vegan" and search parameter "recipe"
+    Given the query string "recipe"
+    And the query tag "vegan"
+    When a user requests the list of recipes
     Then the following list of recipes is returned
       [
         [ "recipe_id", "recipe_author", "recipe_title", "recipe_body" ],
@@ -67,9 +72,12 @@ Feature: Filter recipes by tags
       ]
 
   Scenario: Filter a recipe with invalid tag (Error Flow)
-    When attempting to filter recipes with just the tag "apoplexy-inducing"
+    Given the query tag "apoplexy-inducing"
+    When a user requests the list of recipes
     Then the "This tag does not exist" error message is issued
 
   Scenario: Filter a recipe with multiple tags, one of which is invalid (Error Flow)
-    When attempting to filter recipes with the tags "vegan" and "100% organic certified cortical homunculus meat"
+    Given the query tag "vegan"
+    And the query tag "100% organic certified cortical homunculus meat"
+    When a user requests the list of recipes
     Then the "This tag does not exist" error message is issued

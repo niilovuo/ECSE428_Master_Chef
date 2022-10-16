@@ -1,9 +1,11 @@
 """Search recipes by tag tests."""
 
 import json
+import pytest
 from pytest_bdd import (
     given,
     scenario,
+    scenarios,
     then,
     when,
     parsers
@@ -12,6 +14,25 @@ from project.db import AccountRepo, RecipeRepo, TagRepo
 from project.recipe_query import *
 from project.tag_query import *
 
+@scenario('features/Search_recipes_by_name.feature', 'Search a recipe by name (Normal Flow)')
+def test_search_a_recipe_by_name(app):
+    pass
+
+@scenario('features/Search_recipes_by_name.feature', 'Search for a term matching multiple recipes (Alternate Flow)')
+def test_search_for_a_term_matching_multiple_recipes(app):
+    pass
+
+@scenario('features/Search_recipes_by_name.feature', 'Search for recipes with invalid search parameter (Error Flow)')
+def test_search_for_recipes_with_invalid_search_parameter(app):
+    pass
+
+@scenario('features/View_List_of_All_recipes.feature', 'User Requests List of Recipes (Normal Flow)')
+def test_user_requests_list_of_recipes(app):
+    pass
+
+@scenario('features/View_List_of_All_recipes.feature', 'User Requests List of Recipes When There Are No Recipes (Alternative Flow)')
+def test_user_requests_list_of_recipes_when_there_are_no_recipes(app):
+    pass
 
 @scenario('features/Search_recipes_by_tag.feature', 'Query all possible tags (Normal Flow)')
 def test_query_all_possible_tags(app):
@@ -67,9 +88,29 @@ def the_following_associations_between_recipes_and_tags_exist_in_the_system(tabl
         cur.execute("INSERT INTO recipe_tags VALUES (%s, %s)", (recipe, tag))
     postgresql.commit()
 
+@pytest.fixture
+def query_string():
+    return ""
+
+@pytest.fixture
+def query_tags():
+    return []
+
+@given(parsers.parse('the query string "{query}"'), target_fixture='query_string')
+def the_query_string(query):
+    return query
+
+@given(parsers.parse('the query tag "{tag}"'), target_fixture='query_tags')
+def the_query_tag(tag, query_tags):
+    return query_tags + [tag]
+
 @when('the user requests the list of all possible tags', target_fixture='res')
 def the_user_reqeusts_the_list_of_all_possible_tags():
     return get_all_tags()
+
+@when('a user requests the list of recipes', target_fixture='res')
+def a_user_requests_the_list_of_all_recipes(query_string, query_tags):
+    return search_recipes_by_filter(query_string, query_tags, 0)
 
 @then(parsers.parse('the system returns the following list of tags\n{table_data}'))
 def the_system_returns_the_following_list_of_tags(table_data, res):
@@ -77,19 +118,6 @@ def the_system_returns_the_following_list_of_tags(table_data, res):
     assert len(res) == len(table_data)
     for (id, name) in table_data:
         assert (id, name) in res
-
-@when(parsers.parse('attempting to filter recipes with just the tag "{tag}"'), target_fixture='res')
-def attempting_to_filter_recipes_with_just_the_tag(tag):
-    return search_recipes_by_filter("", [tag], 0)
-
-@when(parsers.parse('attempting to filter recipes with the tags "{tag1}" and "{tag2}"'), target_fixture='res')
-def attempting_to_filter_recipes_with_the_tag__and(tag1, tag2):
-    return search_recipes_by_filter("", [tag1, tag2], 0)
-
-@when(parsers.parse('attempting to filter recipes with the tag "{tag}" and search parameter "{title}"'),
-      target_fixture='res')
-def attempting_to_filter_recipes_with_the_tag__and_search_parameter(tag, title):
-    return search_recipes_by_filter(title, [tag], 0)
 
 @then(parsers.parse('the following list of recipes is returned\n{table_data}'))
 def the_following_list_of_recipes_is_returned(table_data, res):
