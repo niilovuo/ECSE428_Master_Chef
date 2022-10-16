@@ -5,12 +5,11 @@ import pytest
 from pytest_bdd import (
     given,
     scenario,
-    scenarios,
     then,
     when,
     parsers
 )
-from project.db import AccountRepo, RecipeRepo, TagRepo
+from project.db import AccountRepo
 from project.recipe_query import *
 from project.tag_query import *
 
