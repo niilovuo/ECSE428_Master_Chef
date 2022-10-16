@@ -50,26 +50,45 @@ function init_model() {
 
 <div x-data="init_model()">
   <h1 x-text="recipe && recipe.title"></h1>
-  <p x-text="author && author.name"></p>
   <div class="row">
     <div class="col">
-      <p x-text="'Prep time: ' + (recipe && recipe.prep_time || '(unknown)')"></p>
-      <p x-text="'Cook time: ' + (recipe && recipe.cook_time || '(unknown)')"></p>
+      <h4>Estimated Time</h4>
+      <div class="row">
+        <div class="col">
+          <p x-text="'Prep time: ' + (recipe && recipe.prep_time || '(unknown)')"></p>
+        </div>
+        <div class="col">
+          <p x-text="'Cook time: ' + (recipe && recipe.cook_time || '(unknown)')"></p>
+        </div>
+      </div>
 
-      <ul class="list-group">
-        <template x-for="ingredient in ingredients" :key="ingredient[0]">
-          <li class="list-group-item">
-            <div class="ms-2 me-auto">
-              <div class="fw-bold" x-text="ingredient[1]"></div>
-              <label x-text="ingredient[2]"></label>
-            </div>
-          </li>
-        </template>
-      </ul>
-      <p x-text="recipe && recipe.directions"></p>
+      <h4>Ingredients</h4>
+      <div class="container">
+        <p x-show="(ingredients || []).length === 0">(none)</p>
+        <ul class="list-group">
+          <template x-for="ingredient in ingredients" :key="ingredient[0]">
+            <li class="list-group-item">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold" x-text="ingredient[1]"></div>
+                <label x-text="ingredient[2]"></label>
+              </div>
+            </li>
+          </template>
+        </ul>
+      </div>
+
+      <h4>Directions</h4>
+      <div class="container">
+        <p x-text="recipe && recipe.directions"></p>
+      </div>
     </div>
 
     <div class="col-2">
+      <h4>Author</h4>
+      <p x-text="author && author.name"></p>
+
+      <h4>Tags</h4>
+      <p x-show="(tags || []).length === 0">(none)</p>
       <template x-for="tag in tags" :key="tag[0]">
         <button class="btn btn-outline-secondary" x-text="tag[1]"></button>
       </template>
