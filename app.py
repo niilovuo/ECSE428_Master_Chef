@@ -100,7 +100,7 @@ def create_app():
 
     @app.route("/api/recipes/<int:id>/ingredients")
     def api_lookup_recipe_ingredients(id):
-        if search_account_by_id(id) is None:
+        if search_recipe_by_id(id) is None:
             return "Invalid recipe id", 404
 
         ingredients = get_ingredients_of_recipe(id)
