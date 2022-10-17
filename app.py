@@ -50,7 +50,17 @@ def create_app():
 
     @app.route("/recipes/<int:id>")
     def lookup_recipe(id):
-        return render_template("/recipe.html", recipe_id=id)
+        recipe = search_recipe_by_id(id)
+        if recipe is None:
+            return render_template("/recipe.html",
+                                   recipe=None, author=None, tags=[], ingredients=[])
+
+        recipe = convert_recipe_obj(recipe)
+        author = convert_account_obj(search_account_by_id(recipe["author"]))
+        tags = get_tags_of_recipe(id)
+        ingredients = get_ingredients_of_recipe(id)
+        return render_template("/recipe.html",
+                               recipe=recipe, author=author, tags=tags, ingredients=ingredients)
 
     @app.route("/api/search")
     def api_search():
