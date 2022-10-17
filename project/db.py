@@ -118,7 +118,7 @@ class RecipeRepo:
                 SELECT * FROM recipes WHERE title ~* %s AND id IN (
                   SELECT recipe FROM recipe_tags
                   GROUP BY recipe
-                  HAVING ARRAY_AGG(tag) @> %s)
+                  HAVING ARRAY_AGG(tag) @> %s::integer[])
                 ORDER BY id
                 LIMIT {limit} OFFSET {offset}
                 """, (title, tags))
