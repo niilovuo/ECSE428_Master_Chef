@@ -51,10 +51,9 @@ def with_an_ingredient__of(name, quant, recipe_id, postgresql):
     postgresql.commit()
 
 @when(parsers.parse('I query ingredients of "{recipe}"'), target_fixture="res")
-def i_query_tags_of(recipe):
+def i_query_ingredients_of(recipe):
     (recipes, _) = search_recipes_by_filter(recipe, [], 0)
     return get_ingredients_of_recipe(recipes[0][0])
-
 
 @when(parsers.parse('I query tags of "{recipe}"'), target_fixture="res")
 def i_query_tags_of(recipe):
@@ -76,5 +75,4 @@ def i_should_have_ingredients(ingredients, res):
 
     for (_, name, quant, _) in res:
         assert [name, quant] in ingredients
-
 
