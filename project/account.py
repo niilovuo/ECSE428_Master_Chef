@@ -122,3 +122,41 @@ def db_save_account(name, email, password):
 
         # if we can't determine why, just re-raise the old error
         raise e
+
+def search_account_by_id(id):
+    """
+    Searches the account by id
+
+    Parameters
+    ----------
+    id:
+      the id
+
+    Returns
+    -------
+    The account or None if not found
+    """
+
+    return AccountRepo.select_by_id(id)
+
+def convert_account_obj(account):
+    """
+    Converts account to a dict that can be jsonified
+    (notably, the hashed password is dropped)
+
+    Parameters
+    ----------
+    account:
+      returned from the database
+
+    Returns
+    -------
+    a dict, password field is removed
+    """
+
+    return {
+        'id': account[0],
+        'name': account[1],
+        'email': account[2]
+    }
+
