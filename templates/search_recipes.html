@@ -115,7 +115,10 @@ function init_model() {
   <template x-for="recipe in recipes" :key="recipe.id">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title" x-text="recipe.title"></h5>
+        <h5 class="card-title">
+          <a :href="'/recipes/' + recipe.id" class="stretched-link"
+             x-text="recipe.title"></a>
+        </h5>
         <h6 class="card-subtitle mb-2 text-muted" x-text="'Prep time: ' + (recipe.prep_time || '(unknown)')"></h6>
         <h6 class="card-subtitle mb-2 text-muted" x-text="'Cook time: ' + (recipe.cook_time || '(unknown)')"></h6>
         <p class="card-text" x-text="recipe.directions"></p>

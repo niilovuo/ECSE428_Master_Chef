@@ -1,0 +1,68 @@
+{% extends "root.html" %}
+{% block content %}
+
+{% if recipe is none %}
+  The specified recipe does not exist!
+{% else %}
+<div>
+  <h1>{{ recipe["title"] }}</h1>
+  <div class="row">
+    <div class="col">
+      <h4>Estimated Time</h4>
+      <div class="row">
+        <div class="col">
+          {% if recipe["prep_time"] %}
+            <p>Prep time: {{ recipe["prep_time"] }}</p>
+          {% else %}
+            <p>Prep time: (unknown)</p>
+          {% endif %}
+        </div>
+        <div class="col">
+          {% if recipe["cook_time"] %}
+            <p>Cook time: {{ recipe["cook_time"] }}</p>
+          {% else %}
+            <p>Cook time: (unknown)</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <h4>Ingredients</h4>
+      <div class="container">
+        {% if not ingredients %}
+          <p>(none)</p>
+        {% endif %}
+        <ul class="list-group">
+          {% for ingredient in ingredients %}
+            <li class="list-group-item">
+              <div class="ms-2 me-auto">
+                <div class="fw-bold">{{ ingredient[1] }}</div>
+                <label>{{ ingredient[2] }}</label>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <h4>Directions</h4>
+      <div class="container">
+        <p>{{ recipe["directions"] }}</p>
+      </div>
+    </div>
+
+    <div class="col-2">
+      <h4>Author</h4>
+      <p>{{ author["name"] }}</p>
+
+      <h4>Tags</h4>
+      {% if not tags %}
+        <p>(none)</p>
+      {% endif %}
+      {% for tag in tags %}
+        <button class="btn btn-outline-secondary">{{ tag[1] }}</button>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

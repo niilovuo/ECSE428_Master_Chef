@@ -22,8 +22,8 @@ Forum website to share recipes and other cooking related things
 
 ### Prerequisites
 
-Python 3
-Postgres 14 (for running the app only)
+*  Python 3
+*  Postgres 14
 
 ### Steps
 
@@ -48,17 +48,7 @@ venv\Scripts\Activate.ps1   # for powershell
 pip3 install -r requirements.txt
 ```
 
-At this point, you are ready to [run the app](#running-the-app).
-
-5.	Running the app
-
-```sh
-python3 app.py
-```
-
-(If that gives `flask` cannot be found, try `flask run` instead)
-
-To run in debug mode (which, among other things, means the app will automatically load changes to the code without needing to be rerun), set the enviornment variable `DEBUG=true`
+At this point, you are ready to [run the app](#running-the-app) or [run the tests](#running-the-tests).
 
 As a side note,
 to exit / deactivate the venv, do
@@ -75,6 +65,8 @@ Once the environment is setup, you can start the app:
 python3 app.py
 ```
 
+(If that gives `flask` cannot be found, try `flask run` instead)
+
 ### Configuration
 
 Parts of the app's behavior must / can be configured via environment variables
@@ -88,7 +80,7 @@ Parts of the app's behavior must / can be configured via environment variables
 | `POSTGRES_HOST` | hostname or IP | `localhost` | The address of the postgres server |
 | `POSTGRES_PORT` | port number | `5432` | The port of the postgres server |
 
-## Run the tests
+## Running the tests
 
 Once the environment is setup, you can also run the tests:
 
