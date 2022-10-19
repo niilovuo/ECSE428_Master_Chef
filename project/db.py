@@ -185,3 +185,43 @@ class IngredientRepo:
             """, (recipe_id,))
         return cur.fetchall()
 
+class CommentRepo:
+
+    @staticmethod
+    def select_all():
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("SELECT * FROM comments")
+        return cur.fetchall()
+
+    @staticmethod
+    def select_by_id(id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM comments WHERE id = %s
+            """, (id,))
+        return cur.fetchone()
+
+    @staticmethod
+    def select_by_recipe_id(recipe_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM comments WHERE recipe = %s
+            """, (recipe_id,))
+        return cur.fetchall()
+
+    @staticmethod
+    def delete_by_id(id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                DELETE FROM comments WHERE id = %s
+                """, (id,))
+            _conn.commit()
+            return True
+        except Exception as e:
+            _conn.rollback()
+            return False

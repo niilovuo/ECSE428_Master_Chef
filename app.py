@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, flash
 import os
 import random
+
+from project.comment import search_comment_by_id, delete_comment_by_id
 from project.db import Db
 from project.account import (
     add_new_account,
@@ -115,6 +117,28 @@ def create_app():
 
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
+
+
+    @app.route("/api/comment/<int:id>", methods=["DELETE"])
+    def delete_comment(id):
+        comment = search_comment_by_id(id)
+        user_id = int(request.form['user_id'])
+        user_login = request.form['user_id']
+        if comment is None:
+            return "This comment does not exist", 404
+        author_id = comment[3]
+        recipe_id = comment[4]
+        auth_id_list = [author_id]
+        recipe = search_recipe_by_id(recipe_id)
+        if recipe:
+            auth_id_list.append(recipe[5])
+        if user_id not in auth_id_list:
+            return "no permission to delete comment", 400
+        flag, err = delete_comment_by_id(id, user_login)
+        if flag:
+            return 'delete comment success', 200
+        else:
+            return "This comment does not exist", 404
 
     return app
 
