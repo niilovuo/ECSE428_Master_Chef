@@ -58,7 +58,7 @@ def the_user_exist_in_the_system(postgresql, name):
     return commenter_id
 
 
-@given(parsers.parse('the recipe "{title}" has a comment authored by "{commenter}" with id "{recipe}"'), target_fixture='comment_id')
+@given(parsers.parse('the recipe "{title}" has a comment authored by "{commenter}" with id "{recipe}"'))
 def the_recipe_title_has_a_comment_authored_by_commenter_id_with_id(postgresql, title, commenter_id, recipe_id):
     _id = 123
     title = 'test'
@@ -74,7 +74,7 @@ def the_recipe_title_has_a_comment_authored_by_commenter_id_with_id(postgresql, 
     return comment_id
 
 
-@given(parsers.parse('the comment with id {comment} has been deleted'))
+@given(parsers.parse('the comment with id "{comment_id}" has been deleted'))
 def the_comment_with_id_has_been_deleted(comment_id, user_login):
     res = delete_comment_by_id(comment_id, user_login)
     assert res[0] is True
@@ -101,16 +101,11 @@ def the_comment_with_id_does_not_exist(comment_id):
     assert comment is None
 
 
-@then(parsers.parse('"{recipe}" has 0 comments'))
-def has_0_comments(recipe_id):
+@then(parsers.parse('"{recipe}" has {count:d} comments'))
+def has_0_comments(recipe_id, count):
     comments = search_comment_by_recipe_id(recipe_id)
-    assert len(comments) == 0
+    assert len(comments) == count
 
-
-@then(parsers.parse('"{recipe}" has 1 comments'))
-def has_1_comments(recipe_id):
-    comments = search_comment_by_recipe_id(recipe_id)
-    assert len(comments) == 1
 
 @then(parsers.parse('the "{error}" error message is issued'))
 def the_error_message_is_issued(res, error):
