@@ -8,6 +8,7 @@ Feature: Delete Comment
     Given the recipe "recipleTitle" exists in the system
     And the user "commenter" exists in the system
     And the user "author" exists in the system
+    And the recipe "recipeTitle" has author "author"
     And the recipe "recipeTitle" has a comment authored by "commenter" with id "123"
 
   Scenario: delete an existing comment (Normal Flow)
