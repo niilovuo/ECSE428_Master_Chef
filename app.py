@@ -123,7 +123,7 @@ def create_app():
     def delete_comment(id):
         comment = search_comment_by_id(id)
         user_id = int(request.form['user_id'])
-        user_login = request.form['user_id']
+        user_login = request.form['user_login']
         if comment is None:
             return "This comment does not exist", 404
         author_id = comment[3]
