@@ -26,10 +26,12 @@ def delete_comment_by_id(id, user_login):
     ----------
     id:
       the id
-
+    user_login
+        user is login True or False
     Returns
     -------
-    1 or 0
+    False, error message if failed
+    True, None if success
     """
     if not user_login:
         return False, "Must be logged in to preform this action"
@@ -45,8 +47,8 @@ def search_comment_by_recipe_id(recipe_id):
 
     Parameters
     ----------
-    id:
-      the id
+    recipe_id:
+      the recipe id
 
     Returns
     -------
