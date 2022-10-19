@@ -1,3 +1,4 @@
+from tkinter.messagebox import NO
 from flask import Flask, render_template, request, flash
 import os
 import random
@@ -17,6 +18,7 @@ from project.recipe_query import (
     search_recipe_by_id,
     convert_recipe_obj
 )
+from project.comment import add_comment
 
 def create_app():
     app = Flask(__name__)
@@ -115,6 +117,29 @@ def create_app():
 
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
+
+    @app.route("/api/comments/add", methods=["POST"])
+    def api_add_comment_to_recipe():
+
+        try:
+            comment_title = request.args.get("title", type=str)
+            comment_body = request.args.get("body", type=str)
+            author_id = request.args.get("author_id", type=int)
+            recipe_id = request.args.get("recipe_id", type=int)
+
+            assert comment_title is not None
+            assert comment_body is not None
+        except:
+            return "Invalid request parameters", 400
+
+        if search_account_by_id(author_id) is None:
+            return "Invalid author id", 404
+
+        if search_recipe_by_id(recipe_id) is None:
+            return "Invalid recipe id", 404
+
+        return add_comment(comment_title, comment_body, author_id, recipe_id)
+
 
     return app
 
