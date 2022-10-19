@@ -18,6 +18,10 @@ from project.comment import *
 def test_delete_an_existing_comment_normal_flow(app):
     pass
 
+@scenario('features/Delete_Comment.feature', 'delete an existing comment (Alternative Flow)')
+def test_delete_an_existing_comment_alternative_flow(app):
+    pass
+
 
 @scenario('features/Delete_Comment.feature', 'try to delete a comment which has already been deleted (Error Flow)')
 def test_try_to_delete_a_comment_which_has_already_been_deleted_error_flow(app):
