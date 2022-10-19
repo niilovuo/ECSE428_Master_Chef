@@ -52,7 +52,7 @@ def search_comment_by_recipe_id(recipe_id):
 
     Returns
     -------
-    The comment or None if not found
+    The comment list or an empty list if not found
     """
 
     return CommentRepo.select_by_recipe_id(recipe_id)
