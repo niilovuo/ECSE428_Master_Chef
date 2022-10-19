@@ -185,3 +185,19 @@ class IngredientRepo:
             """, (recipe_id,))
         return cur.fetchall()
 
+class CommentRepo:
+
+    @staticmethod
+    def add_comment(title, body, author, recipe):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                INSERT INTO comments
+                VALUES (DEFAULT, %s, %s, %d, %d) RETURNING id
+                """, (title, body, author, recipe))
+            _conn.commit()
+            return cur.fetchone()[0]
+        except Exception as e:
+            _conn.rollback()
+            raise e
