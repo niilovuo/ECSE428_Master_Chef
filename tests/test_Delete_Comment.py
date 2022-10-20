@@ -84,7 +84,6 @@ def the_comment_with_id_has_been_deleted(comment_id, user_login):
 def the_user_is_not_logged_into_the_system():
     return False
 
-
 @given('"commenter" is logged into the system', target_fixture='user_login')
 def user_is_logged_into_the_system():
     return True
