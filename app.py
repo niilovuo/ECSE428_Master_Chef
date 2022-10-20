@@ -127,12 +127,7 @@ def create_app():
         if comment is None:
             return "This comment does not exist", 404
         author_id = comment[3]
-        recipe_id = comment[4]
-        auth_id_list = [author_id]
-        recipe = search_recipe_by_id(recipe_id)
-        if recipe:
-            auth_id_list.append(recipe[5])
-        if user_id not in auth_id_list:
+        if user_id != author_id:
             return "no permission to delete comment", 400
         flag, err = delete_comment_by_id(id, user_login)
         if flag:
@@ -159,4 +154,3 @@ if __name__ == "__main__":
     app.debug = os.getenv("DEBUG") == "true"
     app.run()
     Db.deinit_session()
-
