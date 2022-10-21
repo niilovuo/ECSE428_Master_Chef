@@ -59,7 +59,7 @@ def create_app():
             if user:
                 if check_password_hash(user[3], request.form['password']):
                     session['username'] = user[1]
-                    redirect_url = request.args.get('redirect_url');
+                    redirect_url = request.args.get('redirect_url')
                     if redirect_url:
                         return redirect(redirect_url)
                     else:
