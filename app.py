@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, redirect
+from werkzeug.security import check_password_hash
+
 import os
 import random
 from project.db import Db
 from project.account import (
     add_new_account,
     search_account_by_id,
-    convert_account_obj
+    convert_account_obj, search_account_by_email
 )
 from project.tag_query import (
     get_all_tags,
@@ -21,6 +23,7 @@ from project.recipe_query import (
 def create_app():
     app = Flask(__name__)
     app.secret_key = b'_123kjhmnb23!!'
+    logged_in = set()
 
     @app.route("/")
     def home():
@@ -43,6 +46,37 @@ def create_app():
             return render_template("/register.html")
 
         return render_template("/register.html")
+
+    @app.route("/login", methods=["GET", "POST"])
+    def login():
+        if request.method == "POST":
+            email = request.form['email']
+            user = search_account_by_email(email)
+            if user:
+                if check_password_hash(user[3], request.form['password']):
+                    logged_in.add(user[1])
+
+                    if request.args.get('redirect_url'):
+                        redirect_url = request.args.get('redirect_url')
+                        return redirect(redirect_url)
+                    else:
+                        return redirect('/')
+                else:
+                    flash("Wrong password")
+                    return redirect('/tasks')
+            else:
+                flash("That account does not exist")
+                return render_template("/login.html")
+
+        return render_template("/login.html")
+
+    @app.route("/logout", methods=["GET"])
+    def logout():
+        if len(logged_in) == 0:
+            return "Please try again later", 400
+        else:
+            logged_in.clear()
+            return "Logged out successfully", 200
 
     @app.route("/search")
     def search():
