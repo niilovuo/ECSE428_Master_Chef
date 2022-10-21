@@ -49,13 +49,18 @@ def create_app():
     @app.route("/login", methods=["GET", "POST"])
     def login():
         if request.method == "POST":
+            if 'username' in session:
+                # Will need to be changed to redirect to a user's page
+                return redirect('/')
+
             email = request.form['email']
             user = search_account_by_email(email)
+
             if user:
                 if check_password_hash(user[3], request.form['password']):
                     session['username'] = user[1]
-                    if request.args.get('redirect_url'):
-                        redirect_url = request.args.get('redirect_url')
+                    redirect_url = request.args.get('redirect_url');
+                    if redirect_url:
                         return redirect(redirect_url)
                     else:
                         # Need to specify default URL after login
@@ -162,7 +167,7 @@ def create_app():
 if __name__ == "__main__":
     pg_user = os.getenv("POSTGRES_USER", "postgres")
     db_args = {
-        "password": os.getenv("POSTGRES_PASSWORD", "*Chomeda8"),
+        "password": os.getenv("POSTGRES_PASSWORD"),
         "user": pg_user,
         "dbname": os.getenv("POSTGRES_DB", pg_user),
         "host": os.getenv("POSTGRES_HOST", "localhost"),
