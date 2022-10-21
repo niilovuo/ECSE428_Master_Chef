@@ -1,6 +1,13 @@
 {% extends "root.html" %}
 {% block content %}
 
+<script>
+  function sign_up(){
+  # This is what I want to do
+  # I just don't know how
+  return render_template("/register.html")
+  }
+</script>
 <h1>User Login</h1>
 <hr/>
 <form action="./login" method="post">
@@ -15,8 +22,13 @@
     </tr>
     <tr>
       <td colspan="2">
-        <input style="width: 100%;" type="submit" value="submit"/>
+        <input style="..." type="submit" value="submit"/>
       </td>
+       <td>
+                <div>
+                    <button type="button" value="" onclick="sign_up()">Signup</button>
+                </div>
+            </td>
     </tr>
   </table>
 </form>

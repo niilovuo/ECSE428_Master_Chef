@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect
+from flask import Flask, render_template, request, flash, redirect,session
 from werkzeug.security import check_password_hash
 
 import os
@@ -23,7 +23,6 @@ from project.recipe_query import (
 def create_app():
     app = Flask(__name__)
     app.secret_key = b'_123kjhmnb23!!'
-    logged_in = set()
 
     @app.route("/")
     def home():
@@ -54,16 +53,16 @@ def create_app():
             user = search_account_by_email(email)
             if user:
                 if check_password_hash(user[3], request.form['password']):
-                    logged_in.add(user[1])
-
+                    session['username'] = user[1]
                     if request.args.get('redirect_url'):
                         redirect_url = request.args.get('redirect_url')
                         return redirect(redirect_url)
                     else:
+                        # Need to specify default URL after login
                         return redirect('/')
                 else:
                     flash("Wrong password")
-                    return redirect('/tasks')
+                    return render_template("/login.html")
             else:
                 flash("That account does not exist")
                 return render_template("/login.html")
@@ -72,11 +71,19 @@ def create_app():
 
     @app.route("/logout", methods=["GET"])
     def logout():
-        if len(logged_in) == 0:
-            return "Please try again later", 400
-        else:
-            logged_in.clear()
-            return "Logged out successfully", 200
+        if 'username' in session:
+            session.pop('username', None)
+            return redirect('/')
+        return "user not logged in", 401
+
+    # For testing purposes
+    @app.route("/user", methods=["GET"])
+    def get_current_user():
+        if 'username' in session:
+            # Add logic to read info from session token
+            return "Someone is in", 200
+        return "No user", 401
+
 
     @app.route("/search")
     def search():
@@ -155,7 +162,7 @@ def create_app():
 if __name__ == "__main__":
     pg_user = os.getenv("POSTGRES_USER", "postgres")
     db_args = {
-        "password": os.getenv("POSTGRES_PASSWORD"),
+        "password": os.getenv("POSTGRES_PASSWORD", "*Chomeda8"),
         "user": pg_user,
         "dbname": os.getenv("POSTGRES_DB", pg_user),
         "host": os.getenv("POSTGRES_HOST", "localhost"),
