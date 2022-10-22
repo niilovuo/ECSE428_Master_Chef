@@ -1,0 +1,23 @@
+{% extends "root.html" %}
+{% block content %}
+
+{% if user is none %}
+  The specified user does not exist!
+{% else %}
+<div>
+  <h1>{{ user.name }}</h1>
+  {% if recipes|length != 0 %}
+    <h4>1 recipe</h4>
+  {% else %}
+    <h4>{{ recipes|length }} recipes</h4>
+  {% endif %}
+
+  {% for recipe in recipes %}
+    <div x-data='{ recipe: {{ recipe | tojson }}}'>
+      {% include "partials/recipe_card.html" %}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

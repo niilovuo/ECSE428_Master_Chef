@@ -142,6 +142,16 @@ class RecipeRepo:
             """, (id,))
         return cur.fetchone()
 
+    @staticmethod
+    def select_by_author(author_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+
+        cur.execute("""
+            SELECT * FROM recipes WHERE author = %s
+            """, (author_id,))
+        return cur.fetchall()
+
 class TagRepo:
 
     @staticmethod
