@@ -6,7 +6,7 @@
 {% else %}
 <div>
   <h1>{{ user.name }}</h1>
-  {% if recipes|length != 0 %}
+  {% if recipes|length == 1 %}
     <h4>1 recipe</h4>
   {% else %}
     <h4>{{ recipes|length }} recipes</h4>

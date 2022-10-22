@@ -79,18 +79,24 @@ def create_app():
         return "user not logged in", 401
 
     @app.route("/profile")
-    def user_profile():
-        username = session.get("username")
-        if not username:
-            return redirect("/login")
+    @app.route("/profile/<username>")
+    def user_profile(username=None):
+        uses_login_info = username is None
+        if uses_login_info:
+            username = session.get("username")
+            if not username:
+                return redirect("/login")
 
         current_user = convert_account_obj(search_account_by_name(username))
+        recipes = []
         if not current_user:
-            # account got deleted using a different tab, just abort
-            return redirect("/logout")
+            if uses_login_info:
+                # but the account no longer exists, assume the worst and logout
+                return redirect("/logout")
+        else:
+            recipes = search_recipes_by_author(current_user['id'])
+            recipes = [convert_recipe_obj(e) for e in recipes]
 
-        recipes = search_recipes_by_author(current_user['id'])
-        recipes = [convert_recipe_obj(e) for e in recipes]
         return render_template("/profile.html", user=current_user, recipes=recipes)
 
     # For testing purposes
