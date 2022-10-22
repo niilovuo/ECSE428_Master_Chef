@@ -66,12 +66,12 @@
 
 <div class="container py-3">
   <h3>Comments on this Recipe</h3>
-  {% include "partials/comment.html" %}
+  <!-- This is temporary until we have view comment -->
   {% include "partials/comment.html" %}
   {% include "partials/comment.html" %}
 </div>
 
-<div class="container py-3">
+<div class="container py-3" x-data="{ recipe_id: {{ recipe['id'] }} }">
   {% include "partials/add-comment.html" %}
 </div>
 

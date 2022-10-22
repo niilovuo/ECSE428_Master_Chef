@@ -25,12 +25,11 @@ def add_comment(title, body, author, recipe):
   if not body:
     return "The comment body cannot be blank"
 
-  if isinstance(author, int) and isinstance(recipe, int):
-    try:
-      new_id = CommentRepo.add_comment(title, body, author, recipe)
-      return new_id
-    except Exception:
-      pass
-  # General message to abstract internal error from user
-  # author and recipe ids should always be integers
-  return "Could not add comment, please try again"
+  try:
+    author = int(author)
+    recipe = int(recipe)
+    new_id = CommentRepo.add_comment(title, body, author, recipe)
+    return new_id
+  except Exception:
+    # General message to abstract internal error from user
+    return "Could not add comment, please try again"

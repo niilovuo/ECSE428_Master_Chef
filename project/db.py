@@ -194,7 +194,7 @@ class CommentRepo:
             cur = _conn.cursor()
             cur.execute("""
                 INSERT INTO comments
-                VALUES (DEFAULT, %s, %s, %d, %d) RETURNING id
+                VALUES (DEFAULT, %s, %s, %s, %s) RETURNING id
                 """, (title, body, author, recipe))
             _conn.commit()
             return cur.fetchone()[0]

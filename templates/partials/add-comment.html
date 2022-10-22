@@ -1,12 +1,47 @@
-<div>
+{##
+  # Partial template for displaying a form to add a comment to a recipe
+  #
+  # x-data input
+  # ------------
+  # recipe_id
+  #
+  #}
+
+<script>
+
+function init_model() {
+  return {
+    comment_title: '',
+    comment_body: '',
+
+    submit_comment(recipe_id) {
+      fetch("../api/comments/add", {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          comment_title: this.comment_title,
+          comment_body: this.comment_body,
+          recipe_id: recipe_id
+        })
+      })
+      .then(res => {
+        if (res.ok) location.reload(); // reload page to display new comment
+        else document.getElementById('invalid-comment-feedback').style.display = 'block'; // Display error message
+      })
+    }
+  }
+}
+</script>
+
+<div x-data="init_model()">
   <h3>Add a Comment</h3>
   <div class="py-3">
     <div class="col-12 pb-3">
-      <input type="text" name="commentTitle" class="form-control" placeholder="Title">
+      <input type="text" x-model="comment_title" class="form-control" placeholder="Title">
     </div>
     <div class="col-12 pb-3">
-      <textarea name="commentDirections" class="form-control" style="min-height: 8rem"></textarea>
+      <textarea x-model="comment_body" class="form-control" style="min-height: 8rem"></textarea>
     </div>
-    <button type="button" class="btn btn-primary">Submit</button>
-  </div>
+    <div class="invalid-feedback pb-3" id="invalid-comment-feedback">Please verify that both the comment title and body are filled, then try again.</div>
+    <button type="button" class="btn btn-primary" @click="submit_comment(`${recipe_id}`)">Submit</button>
 </div>

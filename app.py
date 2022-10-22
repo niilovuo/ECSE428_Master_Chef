@@ -61,6 +61,7 @@ def create_app():
             if user:
                 if check_password_hash(user[3], request.form['password']):
                     session['username'] = user[1]
+                    session['id'] = user[0]
                     redirect_url = request.args.get('redirect_url')
                     if redirect_url:
                         return redirect(redirect_url)
@@ -80,6 +81,7 @@ def create_app():
     def logout():
         if 'username' in session:
             session.pop('username', None)
+            session.pop('id', None)
             return redirect('/')
         return "user not logged in", 401
 
@@ -167,11 +169,17 @@ def create_app():
     @app.route("/api/comments/add", methods=["POST"])
     def api_add_comment_to_recipe():
 
+        data = request.get_json()
+
         try:
-            comment_title = request.args.get("title", type=str)
-            comment_body = request.args.get("body", type=str)
-            author_id = request.args.get("author_id", type=int)
-            recipe_id = request.args.get("recipe_id", type=int)
+            comment_title = data.get('comment_title')
+            comment_body = data.get('comment_body')
+            recipe_id = int(data.get('recipe_id'))
+
+            if 'id' in session:
+                author_id = session['id']
+            else:
+                raise Exception("Invalid author id")
 
             assert comment_title is not None
             assert comment_body is not None
@@ -184,8 +192,8 @@ def create_app():
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
 
-        return add_comment(comment_title, comment_body, author_id, recipe_id)
-
+        new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
+        return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
 
     return app
 
