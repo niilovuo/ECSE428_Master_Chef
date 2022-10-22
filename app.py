@@ -164,7 +164,7 @@ def create_app():
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
 
-    @app.route("/api/comment/<int:id>", methods=["DELETE"])
+    @app.route("/api/comments/<int:id>", methods=["DELETE"])
     def delete_comment(id):
         comment = search_comment_by_id(id)
         user_name = session.get('username')
