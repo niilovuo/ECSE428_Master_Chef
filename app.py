@@ -1,4 +1,3 @@
-from tkinter.messagebox import NO
 from flask import Flask, render_template, request, flash, redirect,session
 from werkzeug.security import check_password_hash
 
@@ -51,7 +50,7 @@ def create_app():
     @app.route("/login", methods=["GET", "POST"])
     def login():
         if request.method == "POST":
-            if 'username' in session:
+            if 'id' in session:
                 # Will need to be changed to redirect to a user's page
                 return redirect('/')
 
@@ -60,7 +59,6 @@ def create_app():
 
             if user:
                 if check_password_hash(user[3], request.form['password']):
-                    session['username'] = user[1]
                     session['id'] = user[0]
                     redirect_url = request.args.get('redirect_url')
                     if redirect_url:
@@ -79,8 +77,7 @@ def create_app():
 
     @app.route("/logout", methods=["GET"])
     def logout():
-        if 'username' in session:
-            session.pop('username', None)
+        if 'id' in session:
             session.pop('id', None)
             return redirect('/')
         return "user not logged in", 401
@@ -88,7 +85,7 @@ def create_app():
     # For testing purposes
     @app.route("/user", methods=["GET"])
     def get_current_user():
-        if 'username' in session:
+        if 'id' in session:
             # Add logic to read info from session token
             return "Someone is in", 200
         return "No user", 401
