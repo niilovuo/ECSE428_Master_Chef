@@ -21,4 +21,3 @@ tomli==2.0.1
 Werkzeug==2.2.2
 zipp==3.8.1
 email-validator==1.3.0
-python-dotenv~=0.21.0
