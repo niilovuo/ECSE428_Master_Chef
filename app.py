@@ -9,7 +9,7 @@ from project.db import Db
 from project.account import (
     add_new_account,
     search_account_by_id,
-    convert_account_obj, search_account_by_email
+    convert_account_obj, search_account_by_email, search_account_by_name
 )
 from project.tag_query import (
     get_all_tags,
@@ -167,16 +167,17 @@ def create_app():
     @app.route("/api/comment/<int:id>", methods=["DELETE"])
     def delete_comment(id):
         comment = search_comment_by_id(id)
-        user_id = int(request.form['user_id'])
-        user_login = session.get('username')
-        if not user_login:
+        user_name = session.get('username')
+        if not user_name:
             return "No user", 401
+        user = search_account_by_name(user_name)
+        user_id = user[0]
         if comment is None:
             return "This comment does not exist", 404
         author_id = comment[3]
         if user_id != author_id:
             return "no permission to delete comment", 400
-        flag, err = delete_comment_by_id(id, user_login)
+        flag, err = delete_comment_by_id(id, user_name)
         if flag:
             return 'delete comment success', 200
         else:
@@ -202,3 +203,4 @@ if __name__ == "__main__":
     app.debug = os.getenv("DEBUG") == "true"
     app.run()
     Db.deinit_session()
+

@@ -41,6 +41,7 @@ def delete_comment_by_id(id, user_login):
     flag = CommentRepo.delete_by_id(id)
     return flag, None
 
+
 def search_comment_by_recipe_id(recipe_id):
     """
     Searches the comment by id
@@ -52,7 +53,7 @@ def search_comment_by_recipe_id(recipe_id):
 
     Returns
     -------
-    The comment list or an empty list if not found
+    the comments list or empty list if not found
     """
 
     return CommentRepo.select_by_recipe_id(recipe_id)
