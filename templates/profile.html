@@ -13,7 +13,7 @@
   {% endif %}
 
   {% for recipe in recipes %}
-    <div x-data='{ recipe: {{ recipe | tojson }}}'>
+    <div x-data='{ recipe: {{ recipe|tojson }}}'>
       {% include "partials/recipe_card.html" %}
     </div>
   {% endfor %}
