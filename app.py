@@ -166,12 +166,12 @@ def create_app():
 
     @app.route("/api/comments/<int:id>", methods=["DELETE"])
     def delete_comment(id):
-        comment = search_comment_by_id(id)
         user_name = session.get('username')
         if not user_name:
             return "No user", 401
         user = search_account_by_name(user_name)
         user_id = user[0]
+        comment = search_comment_by_id(id)
         if comment is None:
             return "This comment does not exist", 404
         author_id = comment[3]
