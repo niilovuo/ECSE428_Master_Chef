@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, redirect, session
+from werkzeug.security import check_password_hash
+
 import os
 import random
 
@@ -7,7 +9,7 @@ from project.db import Db
 from project.account import (
     add_new_account,
     search_account_by_id,
-    convert_account_obj
+    convert_account_obj, search_account_by_email
 )
 from project.tag_query import (
     get_all_tags,
@@ -45,6 +47,50 @@ def create_app():
             return render_template("/register.html")
 
         return render_template("/register.html")
+
+    @app.route("/login", methods=["GET", "POST"])
+    def login():
+        if request.method == "POST":
+            if 'username' in session:
+                # Will need to be changed to redirect to a user's page
+                return redirect('/')
+
+            email = request.form['email']
+            user = search_account_by_email(email)
+
+            if user:
+                if check_password_hash(user[3], request.form['password']):
+                    session['username'] = user[1]
+                    redirect_url = request.args.get('redirect_url')
+                    if redirect_url:
+                        return redirect(redirect_url)
+                    else:
+                        # Need to specify default URL after login
+                        return redirect('/')
+                else:
+                    flash("Wrong password")
+                    return render_template("/login.html")
+            else:
+                flash("That account does not exist")
+                return render_template("/login.html")
+
+        return render_template("/login.html")
+
+    @app.route("/logout", methods=["GET"])
+    def logout():
+        if 'username' in session:
+            session.pop('username', None)
+            return redirect('/')
+        return "user not logged in", 401
+
+    # For testing purposes
+    @app.route("/user", methods=["GET"])
+    def get_current_user():
+        if 'username' in session:
+            # Add logic to read info from session token
+            return "Someone is in", 200
+        return "No user", 401
+
 
     @app.route("/search")
     def search():
@@ -118,12 +164,13 @@ def create_app():
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
 
-
     @app.route("/api/comment/<int:id>", methods=["DELETE"])
     def delete_comment(id):
         comment = search_comment_by_id(id)
         user_id = int(request.form['user_id'])
-        user_login = request.form['user_login']
+        user_login = session.get('username')
+        if not user_login:
+            return "No user", 401
         if comment is None:
             return "This comment does not exist", 404
         author_id = comment[3]
@@ -134,6 +181,7 @@ def create_app():
             return 'delete comment success', 200
         else:
             return "This comment does not exist", 404
+
 
     return app
 
