@@ -155,7 +155,6 @@ def search_account_by_email(email):
 
     return AccountRepo.select_by_email(email)
 
-
 def search_account_by_name(name):
     """
     Searches the account by name
