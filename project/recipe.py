@@ -1,4 +1,4 @@
-from project.db import RecipeRepo
+from project.db import RecipeRepo, TagRepo, RecipeTagRepo
 import re
 
 def create_recipe(data, author):
@@ -7,6 +7,7 @@ def create_recipe(data, author):
     Data is expected as a form dictionary where ingredients are specified as ingredients[i][name|quantity],
     Where i represents the ingredient index and name|quanity whether that input is specifying name or quantity.
     Time for the recipe can be in the forms `HH:mm:ss`, `mm:ss`, or `mm`.
+    Returns id of recipe upon success, otherwise throws an error.
     """
     (data, ingredients) = parse_recipe_params(data)
     return RecipeRepo.insert_recipe(author_id = author, ingredients = ingredients, **data)
@@ -16,6 +17,7 @@ def edit_recipe(recipe_id, data, author):
     Updates recipe data.
     The recipe's ingredients will be dynamically updated / created / deleted as required so that different length ingredients lists can be used. Form data format expected to be the same as in create_recipe.
     The author of the recipe will not be modified, and if the author does not match with the actual author of the recipe the transaciton will fail.
+    Returns id of recipe upon success, otherwise throws an error.
     """
     (data, ingredients) = parse_recipe_params(data)
     return RecipeRepo.update_recipe(recipe_id = recipe_id, author_id = author, ingredients = ingredients, **data)
@@ -45,3 +47,38 @@ def parse_recipe_params(data):
                 ingredients[ing.group(1)] = {ing.group(2): v}
     return (recipe_data, ingredients.values())
             
+def add_tag_to_recipe(tag, recipe, user):
+    """
+    Adds a tag to a recipe as a certain user
+
+    Parameters
+    ----------
+    tag:
+      Name of the tag
+    recipe:
+      Id of the recipe
+    user:
+      Id of the user performing the change
+
+    Returns
+    -------
+    None on success
+    str  on failure where str is a error message
+    """
+
+    tag = TagRepo.select_by_name(str(tag).strip())
+    if not tag:
+        return "Tag does not exist"
+
+    recipe = RecipeRepo.select_by_id_and_author(recipe, user)
+    if not recipe:
+        return "Cannot modify this recipe"
+
+    try:
+        RecipeTagRepo.insert_row(recipe[0], tag[0])
+    except:
+        # check if it fails because the tag is already there
+        if RecipeTagRepo.check_exists(recipe[0], tag[0]):
+            return "Recipe already has tag"
+
+        return "Unknown error occurred"
