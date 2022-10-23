@@ -1,4 +1,179 @@
 {% extends "root.html" %}
 {% block content %}
-demo of passing value from flask app: {{ value }}
+    <!--Main Navigation-->
+    <header>
+        <style>
+          /* Carousel styling */
+          #introCarousel,
+          .carousel-inner,
+          .carousel-item,
+          .carousel-item.active {
+            height: 100vh;
+          }
+  
+          .carousel-item:nth-child(1) {
+            background-image: url('https://images.unsplash.com/photo-1542010589005-d1eacc3918f2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3292&q=80');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+          }
+        </style>
+
+  
+        <!-- Carousel wrapper -->
+        <div id="introCarousel" class="carousel slide carousel-fade shadow-2-strong" data-mdb-ride="carousel">
+  
+          <!-- Inner -->
+          <div class="carousel-inner">
+            <!-- Single item -->
+            <div class="carousel-item active" >
+              <div class="mask carousel-inner" style="background-color: rgba(0, 0, 0, 0.6);">
+                <div class="d-flex justify-content-center align-items-center h-100">
+                  <div class="text-white text-center align-items-center">
+                    <h5 class="mb-4">Best & Free Recipes</h5>
+                    <a
+                      class="btn btn-outline-light btn-lg m-2"
+                      href="#!"
+                      role="button"
+                      rel="nofollow"
+                      target="_blank"
+                      >Explore New Recieps with Master Chef</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+  
+
+          </div>
+          <!-- Inner -->
+  
+        </div>
+        <!-- Carousel wrapper -->
+      </header>
+  
+      <!--Main layout-->
+      <main class="mt-5">
+        <div class="container">
+  
+          <hr class="my-5" />
+  
+          <!--Section: Content-->
+          <section class="text-center">
+            <h4 class="mb-5"><strong>Explore new recipes with Master Chef</strong></h4>
+  
+            <div class="row">
+              <div class="col-lg-4 col-md-12 mb-4">
+                <div class="card">
+                  <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                    <img
+                      src="https://images.unsplash.com/photo-1595295333158-4742f28fbd85?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+                      class="img-fluid"
+
+                      />
+                    <a href="#!">
+                      <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+                    </a>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title">Italian Foods</h5>
+                    <p class="card-text">
+                      find out new italian food recipes other than pasta or pizza!
+                    </p>
+                    <a href="#!" class="btn btn-primary">Italian Recipes</a>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card">
+                  <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                    <img
+                      src="https://images.unsplash.com/photo-1618414466256-4b62f39b5b30?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1478&q=80"
+                      class="img-fluid"
+                      />
+                    <a href="#!">
+                      <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+                    </a>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title">Mexican Foods</h5>
+                    <p class="card-text">
+                        find out new mexican food recipes other than tacos or burritos!
+                    </p>
+                    <a href="#!" class="btn btn-primary">Mexican Recipes</a>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card">
+                  <div class="bg-image hover-overlay ripple" data-mdb-ripple-color="light">
+                    <img
+                      src="https://images.unsplash.com/photo-1604908814792-f3d42c558764?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
+                       class="img-fluid"
+                    />
+                    <a href="#!">
+                      <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+                    </a>
+                  </div>
+                  <div class="card-body">
+                    <h5 class="card-title">Vegan Foods</h5>
+                    <p class="card-text">
+                      for delicious vegan options!
+                    </p>
+                    <a href="#!" class="btn btn-primary">Vegan Recipes</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!--Section: Content-->
+  
+          <hr class="my-5" />
+  
+          <!--Section: Content-->
+          <section class="mb-5">
+            <h4 class="mb-5 text-center"><strong>Subscribe to our newsletter</strong></h4>
+  
+            <div class="row d-flex justify-content-center">
+              <div class="col-md-6">
+                <form>
+                  <!-- 2 column grid layout with text inputs for the first and last names -->
+                  <div class="row mb-4">
+                    <div class="col">
+                      <div class="form-outline">
+                        <input type="text" id="form3Example1" class="form-control" />
+                        <label class="form-label" for="form3Example1">First name</label>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-outline">
+                        <input type="text" id="form3Example2" class="form-control" />
+                        <label class="form-label" for="form3Example2">Last name</label>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <!-- Email input -->
+                  <div class="form-outline mb-4">
+                    <input type="email" id="form3Example3" class="form-control" />
+                    <label class="form-label" for="form3Example3">Email address</label>
+                  </div>
+  
+                  <!-- Submit button -->
+                  <button type="submit" class="btn btn-primary btn-block mb-4">
+                    Subscribe
+                  </button>
+
+                </form>
+              </div>
+            </div>
+          </section>
+          <!--Section: Content-->
+        </div>
+      </main>
+      <!--Main layout-->
+  
 {% endblock %}
