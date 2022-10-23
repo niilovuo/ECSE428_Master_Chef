@@ -10,7 +10,7 @@ def app(postgresql, monkeypatch):
     monkeypatch.setattr("project.db.Db.deinit_session", lambda: None)
     monkeypatch.setattr("project.db.Db.get_session", lambda: postgresql)
 
-    Db.setup_tables()
+    Db.run_sql_script("./project/schema.sql")
     return app
 
 @pytest.fixture
