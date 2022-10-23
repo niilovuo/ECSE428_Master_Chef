@@ -1,6 +1,17 @@
 {% extends "root.html" %}
 {% block content %}
 <script>
+    function mybtn(){
+        //Will need a global variable user_profile_url so var bgImg = user_profile_url
+        var bgImg;
+        let myButton = document.getElementById("drop");
+        //If a global variable user_profile_pic is null set default picture else set user_profile_pic
+        if(bgImg == null){
+            myButton.style.backgroundImage = 'url(https://images.unsplash.com/photo-1554050857-c84a8abdb5e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8&w=1000&q=80)';
+        } else {
+            myButton.style.backgroundImage = bgImg;
+        }
+    }
     function logout_model() {
         return {
             open: false,
@@ -12,10 +23,10 @@
             }
         }
     }
+
 </script>
 <!--need a way to change bg-image-->
 <style>
-
     .drop-btn {
         color: white;
         width: 50px;
@@ -23,7 +34,6 @@
         border-radius: 50%;
         font-size: 16px;
         border: 1px solid black;
-        background-image: url(https://images.unsplash.com/photo-1554050857-c84a8abdb5e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8&w=1000&q=80);
     }
     .dropdown-content {
         position: absolute;
@@ -49,8 +59,8 @@
 </style>
 
 <div class="dropdown" x-data="logout_model()">
-    <button id="drop" class="drop-btn" @click="open = !open"></button>
-    <div id="myDropdown" class="dropdown-content" x-show = "open">
+    <button id="drop" class="drop-btn" @click="open = !open" x-init="mybtn()"></button>
+    <div class="dropdown-content" x-show = "open">
       <hr class="solid">
       <a @click = "are_you_sure()">Logout</a>
       <hr class="solid">
