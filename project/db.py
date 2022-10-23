@@ -152,6 +152,15 @@ class RecipeRepo:
             """, (author_id,))
         return cur.fetchall()
 
+    @staticmethod
+    def select_by_id_and_author(id, author_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM recipes WHERE id = %s AND author = %s
+            """, (id, author_id))
+        return cur.fetchone()
+
 class TagRepo:
 
     @staticmethod
@@ -160,6 +169,15 @@ class TagRepo:
         cur = _conn.cursor()
         cur.execute("SELECT * FROM tags")
         return cur.fetchall()
+
+    @staticmethod
+    def select_by_name(name):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM tags WHERE name = %s
+            """, (name,))
+        return cur.fetchone()
 
     @staticmethod
     def select_by_names(names):
@@ -181,6 +199,32 @@ class TagRepo:
               WHERE recipe = %s)
             """, (recipe_id,))
         return cur.fetchall()
+
+class RecipeTagRepo:
+
+    @staticmethod
+    def insert_row(recipe, tag):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                INSERT INTO recipe_tags
+                VALUES (%s, %s)
+                """, (recipe, tag))
+            _conn.commit()
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def check_exists(recipe, tag):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM recipe_tags WHERE
+            recipe = %s AND tag = %s
+            """, (recipe, tag))
+        return cur.fetchone() is not None
 
 class IngredientRepo:
 
@@ -211,3 +255,43 @@ class CommentRepo:
         except Exception as e:
             _conn.rollback()
             raise e
+
+    @staticmethod
+    def select_all():
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("SELECT * FROM comments")
+        return cur.fetchall()
+
+    @staticmethod
+    def select_by_id(id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+                SELECT * FROM comments WHERE id = %s
+                """, (id,))
+        return cur.fetchone()
+
+    @staticmethod
+    def select_by_recipe_id(recipe_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+                SELECT * FROM comments WHERE recipe = %s
+                """, (recipe_id,))
+        return cur.fetchall()
+
+    @staticmethod
+    def delete_by_id(id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                    DELETE FROM comments WHERE id = %s
+                    """, (id,))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
