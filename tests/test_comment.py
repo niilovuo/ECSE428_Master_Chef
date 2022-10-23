@@ -61,7 +61,7 @@ def test_delete_comment_by_id_invalid_id(monkeypatch, app):
     assert err == "This comment does not exist"
 
 
-def test_delete_comment_by_id_Exception(monkeypatch, app):
+def test_delete_comment_by_id_Exception(monkeypatch):
     monkeypatch.setattr("project.db.CommentRepo.delete_by_id", throwConnectionError)
     monkeypatch.setattr("project.db.CommentRepo.select_by_id", lambda id: 1)
     err = delete_comment_by_id(1, 1, 1)
