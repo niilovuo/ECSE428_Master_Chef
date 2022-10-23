@@ -38,30 +38,30 @@ def throwConnectionError():
     raise Exception("Connection error")
 
 
-def test_delete_comment_by_id_valid_info(monkeypatch):
+def test_delete_comment_by_id_valid_info(monkeypatch,app):
     monkeypatch.setattr("project.db.CommentRepo.delete_by_id", lambda id: None)
     monkeypatch.setattr("project.db.CommentRepo.select_by_id", lambda id: 1)
     err = delete_comment_by_id(1, 1, 1)
     assert err is None
 
 
-def test_delete_comment_by_id_user_not_login(monkeypatch):
+def test_delete_comment_by_id_user_not_login(monkeypatch,app):
     err = delete_comment_by_id(1, 0, 1)
     assert err == "Must be logged in to preform this action"
 
 
-def test_delete_comment_by_id_invalid_permission():
+def test_delete_comment_by_id_invalid_permission(app):
     err = delete_comment_by_id(1, 2, 1)
     assert err == "No permission to delete comment"
 
 
-def test_delete_comment_by_id_invalid_id(monkeypatch):
+def test_delete_comment_by_id_invalid_id(monkeypatch,app):
     monkeypatch.setattr("project.db.CommentRepo.select_by_id", lambda id: None)
     err = delete_comment_by_id(1, 1, 1)
     assert err == "This comment does not exist"
 
 
-def test_delete_comment_by_id_Exception(monkeypatch):
+def test_delete_comment_by_id_Exception(monkeypatch,app):
     monkeypatch.setattr("project.db.CommentRepo.delete_by_id", throwConnectionError)
     monkeypatch.setattr("project.db.CommentRepo.select_by_id", lambda id: 1)
     err = delete_comment_by_id(1, 1, 1)
