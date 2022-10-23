@@ -239,5 +239,5 @@ class CommentRepo:
             return None
         except Exception as e:
             _conn.rollback()
-            return str(e)
+            raise e
 
