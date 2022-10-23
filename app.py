@@ -172,11 +172,7 @@ def create_app():
             comment_title = data.get('comment_title')
             comment_body = data.get('comment_body')
             recipe_id = int(data.get('recipe_id'))
-
-            if 'id' in session:
-                author_id = session['id']
-            else:
-                raise Exception("Invalid author id")
+            author_id = session['id']
 
             assert comment_title is not None
             assert comment_body is not None
