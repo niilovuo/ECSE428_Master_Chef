@@ -81,8 +81,12 @@ def create_app():
     def logout():
         if 'id' in session:
             session.pop('id', None)
-            return redirect('/')
+            return redirect('/login')
         return "user not logged in", 401
+
+    @app.route("/logout_temp_component")
+    def logout_temp_component():
+        return render_template("/logout.html")
 
     # For testing purposes
     @app.route("/user", methods=["GET"])
