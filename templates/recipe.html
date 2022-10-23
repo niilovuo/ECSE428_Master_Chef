@@ -54,6 +54,14 @@
       <p>{{ author["name"] }}</p>
 
       <h4>Tags</h4>
+      {% if allow_edits %}
+        <form action="/recipes/{{ recipe["id"] }}/tags" method="post">
+          <input type="text" name="tag"></input>
+          <input class="btn btn-primary" type="submit" value="Add tag"></input>
+        </form>
+        <br/>
+      {% endif %}
+
       {% if not tags %}
         <p>(none)</p>
       {% endif %}

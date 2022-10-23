@@ -49,6 +49,7 @@ def create_app():
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
+        redirect_url = request.args.get('redirect_url')
         if request.method == "POST":
             if 'id' in session:
                 # Will need to be changed to redirect to a user's page
@@ -60,7 +61,6 @@ def create_app():
             if user:
                 if check_password_hash(user[3], request.form['password']):
                     session['id'] = user[0]
-                    redirect_url = request.args.get('redirect_url')
                     if redirect_url:
                         return redirect(redirect_url)
                     else:
@@ -68,12 +68,12 @@ def create_app():
                         return redirect('/')
                 else:
                     flash("Wrong password")
-                    return render_template("/login.html")
+                    return render_template("/login.html", redirect_url=redirect_url)
             else:
                 flash("That account does not exist")
-                return render_template("/login.html")
+                return render_template("/login.html", redirect_url=redirect_url)
 
-        return render_template("/login.html")
+        return render_template("/login.html", redirect_url=redirect_url)
 
     @app.route("/logout", methods=["GET"])
     def logout():
@@ -100,14 +100,23 @@ def create_app():
         recipe = search_recipe_by_id(id)
         if recipe is None:
             return render_template("/recipe.html",
-                                   recipe=None, author=None, tags=[], ingredients=[])
+                                   recipe=None, author=None, tags=[], ingredients=[],
+                                   allow_edits=False)
 
         recipe = convert_recipe_obj(recipe)
         author = convert_account_obj(search_account_by_id(recipe["author"]))
         tags = get_tags_of_recipe(id)
         ingredients = get_ingredients_of_recipe(id)
+        allow_edits = session.get('id') == recipe["author"]
         return render_template("/recipe.html",
-                               recipe=recipe, author=author, tags=tags, ingredients=ingredients)
+                               recipe=recipe, author=author, tags=tags, ingredients=ingredients,
+                               allow_edits=allow_edits)
+
+    @app.route("/recipes/<int:id>/tags", methods=["POST"])
+    def add_tag(id):
+        if 'id' not in session:
+            return redirect(f"/login?redirect_url=%2Frecipes%2F{id}")
+        return redirect('/')
 
     @app.route("/api/search")
     def api_search():
