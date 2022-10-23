@@ -46,7 +46,7 @@ def test_delete_comment_by_id_valid_info(monkeypatch,app):
 
 
 def test_delete_comment_by_id_user_not_login(monkeypatch,app):
-    err = delete_comment_by_id(1, 0, 1)
+    err = delete_comment_by_id(1, None, 1)
     assert err == "Must be logged in to preform this action"
 
 
