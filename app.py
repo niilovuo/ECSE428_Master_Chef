@@ -109,6 +109,7 @@ def create_app(setup_db=True):
     def logout():
         if 'id' in session:
             session.pop('id', None)
+
             return redirect('/')
         return "user not logged in", 401
 
