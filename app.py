@@ -9,6 +9,7 @@ from project.account import (
     search_account_by_id,
     convert_account_obj, search_account_by_email
 )
+from project.recipe import add_tag_to_recipe
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -115,8 +116,17 @@ def create_app():
     @app.route("/recipes/<int:id>/tags", methods=["POST"])
     def add_tag(id):
         if 'id' not in session:
-            return redirect(f"/login?redirect_url=%2Frecipes%2F{id}")
-        return redirect('/')
+            return redirect(f"/login?redirect_url=/recipes/{id}")
+
+        user_id = session['id']
+        tag = request.form['tag']
+        err = add_tag_to_recipe(tag, id, user_id)
+
+        if err:
+            flash(err)
+
+        # whatever happens, just redirect to the recipe page
+        return redirect(f"/recipes/{id}")
 
     @app.route("/api/search")
     def api_search():
