@@ -22,7 +22,8 @@ from project.recipe_query import (
 
 from project.comment import (
     add_comment,
-    get_comments_of_recipe
+    search_comment_by_id, 
+    delete_comment_by_id
 )
 
 def create_app():
@@ -170,7 +171,7 @@ def create_app():
     def api_get_comments_of_recipe(recipe_id):
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
-        return get_comments_of_recipe(recipe_id)
+        return search_comment_by_id(recipe_id)
         
     @app.route("/api/comments/add", methods=["POST"])
     def api_add_comment_to_recipe():
@@ -196,6 +197,21 @@ def create_app():
 
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
+
+    @app.route("/api/comments/<int:id>", methods=["DELETE"])
+    def delete_comment(id):
+        comment = search_comment_by_id(id)
+        user_id = session.get('id')
+        if not user_id:
+            return "No user", 404
+        if comment is None:
+            return "This comment does not exist", 404
+        author_id = comment[3]
+        err = delete_comment_by_id(id, user_id, author_id)
+        if not err:
+            return 'delete comment success', 200
+        else:
+            return err, 404
 
     return app
 

@@ -1,21 +1,4 @@
-from project.db import CommentRepo, RecipeRepo
-
-def get_comments_of_recipe(recipe_id):
-    """
-    Returns all the comments of the specified recipe
-
-    Parameters
-    ----------
-    recipe_id:
-      the recipe id
-
-    Returns
-    -------
-    Comments list or empty list if no comment
-
-    """
-
-    return CommentRepo.select_by_recipe_id(recipe_id)
+from project.db import CommentRepo
 
 def add_comment(title, body, author, recipe):
   """
@@ -50,3 +33,65 @@ def add_comment(title, body, author, recipe):
   except Exception:
     # General message to abstract internal error from user
     return "Could not add comment, please try again"
+
+def search_comment_by_id(id):
+  """
+  Searches the comment by id
+
+  Parameters
+  ----------
+  id:
+    the id
+
+  Returns
+  -------
+  The comment or None if not found
+  """
+
+  return CommentRepo.select_by_id(id)
+
+
+def delete_comment_by_id(id, user_id, author_id):
+  """
+  Delete the comment by id
+
+  Parameters
+  ----------
+  id:
+    the id
+  user_id
+      the user_id
+  author_id
+      the author_id or comment
+  Returns
+  -------
+  error message if failed
+  None if success
+  """
+  if not user_id:
+    return "Must be logged in to preform this action"
+  if user_id != author_id:
+    return "No permission to delete comment"
+  comment = CommentRepo.select_by_id(id)
+  if comment is None:
+    return "This comment does not exist"
+  err = CommentRepo.delete_by_id(id)
+  return err
+
+
+def search_comment_by_recipe_id(recipe_id):
+  """
+  Searches the comment by id
+
+  Parameters
+  ----------
+  recipe_id:
+    the recipe id
+
+  Returns
+  -------
+  the comments list or empty list if not found
+  """
+
+  return CommentRepo.select_by_recipe_id(recipe_id)
+
