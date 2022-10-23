@@ -188,6 +188,21 @@ class IngredientRepo:
 class CommentRepo:
 
     @staticmethod
+    def add_comment(title, body, author, recipe):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                INSERT INTO comments
+                VALUES (DEFAULT, %s, %s, %s, %s) RETURNING id
+                """, (title, body, author, recipe))
+            _conn.commit()
+            return cur.fetchone()[0]
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
     def select_all():
         _conn = Db.get_session()
         cur = _conn.cursor()
@@ -199,8 +214,8 @@ class CommentRepo:
         _conn = Db.get_session()
         cur = _conn.cursor()
         cur.execute("""
-            SELECT * FROM comments WHERE id = %s
-            """, (id,))
+                SELECT * FROM comments WHERE id = %s
+                """, (id,))
         return cur.fetchone()
 
     @staticmethod
@@ -208,8 +223,8 @@ class CommentRepo:
         _conn = Db.get_session()
         cur = _conn.cursor()
         cur.execute("""
-            SELECT * FROM comments WHERE recipe = %s
-            """, (recipe_id,))
+                SELECT * FROM comments WHERE recipe = %s
+                """, (recipe_id,))
         return cur.fetchall()
 
     @staticmethod
@@ -218,10 +233,10 @@ class CommentRepo:
             _conn = Db.get_session()
             cur = _conn.cursor()
             cur.execute("""
-                DELETE FROM comments WHERE id = %s
-                """, (id,))
+                    DELETE FROM comments WHERE id = %s
+                    """, (id,))
             _conn.commit()
-            return True
+            return None
         except Exception as e:
             _conn.rollback()
-            return False
+            return str(e)

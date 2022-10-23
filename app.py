@@ -1,15 +1,13 @@
-from flask import Flask, render_template, request, flash, redirect, session
+from flask import Flask, render_template, request, flash, redirect,session
 from werkzeug.security import check_password_hash
 
 import os
 import random
-
-from project.comment import search_comment_by_id, delete_comment_by_id
 from project.db import Db
 from project.account import (
     add_new_account,
     search_account_by_id,
-    convert_account_obj, search_account_by_email, search_account_by_name
+    convert_account_obj, search_account_by_email
 )
 from project.tag_query import (
     get_all_tags,
@@ -21,6 +19,8 @@ from project.recipe_query import (
     search_recipe_by_id,
     convert_recipe_obj
 )
+from project.comment import add_comment, search_comment_by_id, delete_comment_by_id
+
 
 def create_app():
     app = Flask(__name__)
@@ -51,7 +51,7 @@ def create_app():
     @app.route("/login", methods=["GET", "POST"])
     def login():
         if request.method == "POST":
-            if 'username' in session:
+            if 'id' in session:
                 # Will need to be changed to redirect to a user's page
                 return redirect('/')
 
@@ -60,7 +60,7 @@ def create_app():
 
             if user:
                 if check_password_hash(user[3], request.form['password']):
-                    session['username'] = user[1]
+                    session['id'] = user[0]
                     redirect_url = request.args.get('redirect_url')
                     if redirect_url:
                         return redirect(redirect_url)
@@ -78,15 +78,15 @@ def create_app():
 
     @app.route("/logout", methods=["GET"])
     def logout():
-        if 'username' in session:
-            session.pop('username', None)
+        if 'id' in session:
+            session.pop('id', None)
             return redirect('/')
         return "user not logged in", 401
 
     # For testing purposes
     @app.route("/user", methods=["GET"])
     def get_current_user():
-        if 'username' in session:
+        if 'id' in session:
             # Add logic to read info from session token
             return "Someone is in", 200
         return "No user", 401
@@ -164,25 +164,45 @@ def create_app():
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
 
-    @app.route("/api/comments/<int:id>", methods=["DELETE"])
+    @app.route("/api/comments/add", methods=["POST"])
+    def api_add_comment_to_recipe():
+
+        data = request.get_json()
+
+        try:
+            comment_title = data.get('comment_title')
+            comment_body = data.get('comment_body')
+            recipe_id = int(data.get('recipe_id'))
+            author_id = session['id']
+
+            assert comment_title is not None
+            assert comment_body is not None
+        except:
+            return "Invalid request parameters", 400
+
+        if search_account_by_id(author_id) is None:
+            return "Invalid author id", 404
+
+        if search_recipe_by_id(recipe_id) is None:
+            return "Invalid recipe id", 404
+
+        new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
+        return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
+
+    @app.route("/api/comment/<int:id>", methods=["DELETE"])
     def delete_comment(id):
-        user_name = session.get('username')
-        if not user_name:
-            return "No user", 401
-        user = search_account_by_name(user_name)
-        user_id = user[0]
         comment = search_comment_by_id(id)
+        user_id = session.get('id')
+        if not user_id:
+            return "No user", 404
         if comment is None:
             return "This comment does not exist", 404
         author_id = comment[3]
-        if user_id != author_id:
-            return "no permission to delete comment", 400
-        flag, err = delete_comment_by_id(id, user_name)
-        if flag:
+        err = delete_comment_by_id(id, user_id, author_id)
+        if not err:
             return 'delete comment success', 200
         else:
-            return "This comment does not exist", 404
-
+            return err, 404
 
     return app
 

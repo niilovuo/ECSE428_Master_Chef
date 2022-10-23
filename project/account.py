@@ -155,22 +155,6 @@ def search_account_by_email(email):
 
     return AccountRepo.select_by_email(email)
 
-def search_account_by_name(name):
-    """
-    Searches the account by name
-
-    Parameters
-    ----------
-    name:
-      the rname
-
-    Returns
-    -------
-    The account or None if not found
-    """
-
-    return AccountRepo.select_by_name(name)
-
 def convert_account_obj(account):
     """
     Converts account to a dict that can be jsonified

@@ -75,23 +75,23 @@ def the_recipe_title_has_a_comment_authored_by_commenter_id_with_id(postgresql, 
 
 
 @given(parsers.parse('the comment with id "{comment_id}" has been deleted'))
-def the_comment_with_id_has_been_deleted(comment_id, user_login):
-    res = delete_comment_by_id(comment_id, user_login)
-    assert res[0] is True
+def the_comment_with_id_has_been_deleted(comment_id, user_login, commenter_id):
+    res = delete_comment_by_id(comment_id, user_login, commenter_id)
+    assert res is None
 
 
 @given('the user is not logged into the system', target_fixture='user_login')
 def the_user_is_not_logged_into_the_system():
-    return False
+    return None
 
 
 @given('"commenter" is logged into the system', target_fixture='user_login')
-def user_is_logged_into_the_system():
-    return True
+def user_is_logged_into_the_system(commenter_id):
+    return commenter_id
 
 @when(parsers.parse('attempting to delete comment "{comment_id}"'), target_fixture='res')
-def attempting_to_delete_comment(comment_id, user_login):
-    res = delete_comment_by_id(comment_id, user_login)
+def attempting_to_delete_comment(comment_id, user_login, commenter_id):
+    res = delete_comment_by_id(comment_id, user_login, commenter_id)
     return res
 
 
@@ -109,5 +109,4 @@ def has_0_comments(recipe_id, count):
 
 @then(parsers.parse('the "{error}" error message is issued'))
 def the_error_message_is_issued(res, error):
-    assert res[0] is False
-    assert res[1] == error
+    assert res == error
