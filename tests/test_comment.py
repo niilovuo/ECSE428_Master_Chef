@@ -62,7 +62,7 @@ def test_delete_comment_by_id_invalid_id(monkeypatch,app):
 
 
 def test_delete_comment_by_id_Exception(monkeypatch,app):
-    monkeypatch.setattr("project.db.CommentRepo.delete_by_id", throwConnectionError)
+    monkeypatch.setattr("project.db.CommentRepo.delete_by_id", Exception("Connection error"))
     monkeypatch.setattr("project.db.CommentRepo.select_by_id", lambda id: 1)
     err = delete_comment_by_id(1, 1, 1)
     assert err == "Could not delete comment, please try again"
