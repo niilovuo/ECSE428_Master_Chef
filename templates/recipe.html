@@ -54,6 +54,21 @@
       <p>{{ author["name"] }}</p>
 
       <h4>Tags</h4>
+      {% if allow_edits %}
+        <div x-data="{ server_tags: [] }"
+             x-init="server_tags = await (await fetch('/api/tags')).json()">
+          <form action="/recipes/{{ recipe["id"] }}/tags" method="post">
+            <select class="form-select" name="tag">
+              <template x-for="server_tag in server_tags" :key="server_tag[0]">
+                <option :value="server_tag[1]" x-text="server_tag[1]"></option>
+              </template>
+            </select>
+            <input class="btn btn-primary" type="submit" value="Add tag"></input>
+          </form>
+        </div>
+        <br/>
+      {% endif %}
+
       {% if not tags %}
         <p>(none)</p>
       {% endif %}

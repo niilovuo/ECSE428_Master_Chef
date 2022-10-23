@@ -3,7 +3,11 @@
 
 <h1>User Login</h1>
 <hr/>
+{% if redirect_url is none %}
 <form action="./login" method="post">
+{% else %}
+<form action="./login?redirect_url={{ redirect_url }}" method="post">
+{% endif %}
   <table>
     <tr>
       <td>Email</td>
