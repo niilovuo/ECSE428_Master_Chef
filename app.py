@@ -19,6 +19,7 @@ from project.recipe_query import (
     search_recipe_by_id,
     convert_recipe_obj
 )
+
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id
 
 
@@ -188,6 +189,7 @@ def create_app():
 
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
+
 
     @app.route("/api/comment/<int:id>", methods=["DELETE"])
     def delete_comment(id):
