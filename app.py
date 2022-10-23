@@ -30,7 +30,7 @@ def create_app():
 
     @app.route("/")
     def home():
-        return render_template("/home.html")
+        return render_template("/home.html", value = random.randrange(1024))
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
