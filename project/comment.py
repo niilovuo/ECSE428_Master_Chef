@@ -68,7 +68,7 @@ def delete_comment_by_id(id, user_id, author_id):
   error message if failed
   None if success
   """
-  if user_id == None:
+  if user_id is None:
     return "Must be logged in to preform this action"
   if user_id != author_id:
     return "No permission to delete comment"
