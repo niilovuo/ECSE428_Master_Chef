@@ -2,9 +2,9 @@
 {% block content %}
 
 {% if recipe is none %}
-  The specified recipe does not exist!
+<p>The specified recipe does not exist!</p>
 {% else %}
-<div>
+<div class="container">
   <h1>{{ recipe["title"] }}</h1>
   <div class="row">
     <div class="col">
@@ -51,7 +51,7 @@
 
     <div class="col-2">
       <h4>Author</h4>
-      <a href="/profile/{{ author["name"] }}">{{ author["name"] }}</a>
+      <a href="/profile/{{ author["id"] }}">{{ author["name"] }}</a>
 
       <h4>Tags</h4>
       {% if not tags %}
@@ -63,6 +63,18 @@
     </div>
   </div>
 </div>
+
+<div class="container py-3">
+  <h3>Comments on this Recipe</h3>
+  <!-- This is temporary until we have view comment -->
+  {% include "partials/comment.html" %}
+  {% include "partials/comment.html" %}
+</div>
+
+<div class="container py-3" x-data="{ recipe_id: {{ recipe['id'] }} }">
+  {% include "partials/add_comment.html" %}
+</div>
+
 {% endif %}
 
 {% endblock %}

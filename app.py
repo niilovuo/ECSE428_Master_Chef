@@ -22,6 +22,7 @@ from project.recipe_query import (
     search_recipes_by_author,
     convert_recipe_obj
 )
+from project.comment import add_comment
 
 def create_app():
     app = Flask(__name__)
@@ -51,7 +52,7 @@ def create_app():
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
-        if 'username' in session:
+        if 'id' in session:
             return redirect('/profile')
 
         if request.method == "POST":
@@ -60,7 +61,7 @@ def create_app():
 
             if user:
                 if check_password_hash(user[3], request.form['password']):
-                    session['username'] = user[1]
+                    session['id'] = user[0]
                     return redirect(request.args.get('redirect_url', default='/profile'))
                 else:
                     flash("Wrong password")
@@ -73,28 +74,28 @@ def create_app():
 
     @app.route("/logout", methods=["GET"])
     def logout():
-        if 'username' in session:
-            session.pop('username', None)
+        if 'id' in session:
+            session.pop('id', None)
             return redirect('/')
         return "user not logged in", 401
 
     @app.route("/profile")
-    @app.route("/profile/<username>")
-    def user_profile(username=None):
-        uses_login_info = username is None
+    @app.route("/profile/<int:id>")
+    def user_profile(id=None):
+        uses_login_info = id is None
         if uses_login_info:
-            username = session.get("username")
-            if not username:
+            id = session.get("id")
+            if not id:
                 return redirect("/login")
 
-        current_user = convert_account_obj(search_account_by_name(username))
+        current_user = convert_account_obj(search_account_by_id(id))
         recipes = []
         if not current_user:
             if uses_login_info:
                 # but the account no longer exists, assume the worst and logout
                 return redirect("/logout")
         else:
-            recipes = search_recipes_by_author(current_user['id'])
+            recipes = search_recipes_by_author(id)
             recipes = [convert_recipe_obj(e) for e in recipes]
 
         return render_template("/profile.html", user=current_user, recipes=recipes)
@@ -102,7 +103,7 @@ def create_app():
     # For testing purposes
     @app.route("/user", methods=["GET"])
     def get_current_user():
-        if 'username' in session:
+        if 'id' in session:
             # Add logic to read info from session token
             return "Someone is in", 200
         return "No user", 401
@@ -179,6 +180,31 @@ def create_app():
 
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
+
+    @app.route("/api/comments/add", methods=["POST"])
+    def api_add_comment_to_recipe():
+
+        data = request.get_json()
+
+        try:
+            comment_title = data.get('comment_title')
+            comment_body = data.get('comment_body')
+            recipe_id = int(data.get('recipe_id'))
+            author_id = session['id']
+
+            assert comment_title is not None
+            assert comment_body is not None
+        except:
+            return "Invalid request parameters", 400
+
+        if search_account_by_id(author_id) is None:
+            return "Invalid author id", 404
+
+        if search_recipe_by_id(recipe_id) is None:
+            return "Invalid recipe id", 404
+
+        new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
+        return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
 
     return app
 
