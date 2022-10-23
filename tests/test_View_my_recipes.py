@@ -27,10 +27,10 @@ def background(postgresql):
     cur = postgresql.cursor()
     cur.execute("""
         INSERT INTO accounts VALUES
-        (DEFAULT, 'User1', 'user1@gmail.com', 'password1'),
-        (DEFAULT, 'User2', 'user2@gmail.com', 'password2'),
-        (DEFAULT, 'User3', 'user3@gmail.com', 'password3'),
-        (DEFAULT, 'User4', 'user4@gmail.com', 'password4');
+        (1, 'User1', 'user1@gmail.com', 'password1'),
+        (2, 'User2', 'user2@gmail.com', 'password2'),
+        (3, 'User3', 'user3@gmail.com', 'password3'),
+        (4, 'User4', 'user4@gmail.com', 'password4');
 
         INSERT INTO recipes VALUES
         (1, 'recipe title 1.1', NULL, NULL, '', 1),
@@ -55,7 +55,7 @@ def test_scenario_logged_in_has_recipe(app, client, postgresql):
 
     background(postgresql)
     with client.session_transaction() as session:
-        session['username'] = "User1"
+        session['id'] = 1
 
     response = client.get("/profile")
     assert response.status_code == 200
@@ -75,7 +75,7 @@ def test_scenario_logged_in_no_recipes(app, client, postgresql):
 
     background(postgresql)
     with client.session_transaction() as session:
-        session['username'] = "User4"
+        session['id'] = 4
 
     response = client.get("/profile")
     assert response.status_code == 200
