@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect,session
+from flask import Flask, render_template, request, flash, redirect, session
 from werkzeug.security import check_password_hash
 
 import os
@@ -19,6 +19,10 @@ from project.recipe_query import (
     search_recipe_by_id,
     convert_recipe_obj
 )
+from project.comment import (
+    get_comments_of_recipe
+)
+
 
 def create_app():
     app = Flask(__name__)
@@ -26,7 +30,7 @@ def create_app():
 
     @app.route("/")
     def home():
-        return render_template("/home.html", value = random.randrange(1024))
+        return render_template("/home.html", value=random.randrange(1024))
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
@@ -88,7 +92,6 @@ def create_app():
             # Add logic to read info from session token
             return "Someone is in", 200
         return "No user", 401
-
 
     @app.route("/search")
     def search():
@@ -162,7 +165,14 @@ def create_app():
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
 
+    @app.route("/api/comments/<int:recipe_id>", methods=["GET"])
+    def api_get_comments_of_recipe(recipe_id):
+        if search_recipe_by_id(recipe_id) is None:
+            return "Invalid recipe id", 404
+        return get_comments_of_recipe(recipe_id)
+
     return app
+
 
 if __name__ == "__main__":
     pg_user = os.getenv("POSTGRES_USER", "postgres")
@@ -181,4 +191,3 @@ if __name__ == "__main__":
     app.debug = os.getenv("DEBUG") == "true"
     app.run()
     Db.deinit_session()
-
