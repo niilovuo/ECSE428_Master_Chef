@@ -185,20 +185,23 @@ def create_app():
     @app.route("/api/recipes/add", methods=["POST"])
     def api_create_recipe():
         data = request.form.to_dict()
-        result = create_recipe(data, session["id"])
-        if result == None:
+        try:
+            result = create_recipe(data, session["id"])
+            return redirect("/recipes/{}".format(result))
+        except Exception as e:
             flash("Could not create recipe")
             return redirect("/")
-        return redirect("/recipes/{}".format(result))
-
+        
     @app.route("/api/recipes/edit/<int:id>", methods=["POST"])
     def api_edit_recipe(id):
         data = request.form.to_dict()
-        result = edit_recipe(id, data, session["id"])
-        if result == None:
-            flash("Could not create recipe")
+        try:
+            result = edit_recipe(id, data, session["id"])
+            return redirect("/recipes/{}".format(result))
+        except Exception as e:
+            flash("Could not update recipe")
             return redirect("/")
-        return redirect("/recipes/{}".format(result))
+        
         
     
     @app.route("/api/recipes/<int:id>/ingredients")
