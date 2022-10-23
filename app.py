@@ -19,7 +19,9 @@ from project.recipe_query import (
     search_recipe_by_id,
     convert_recipe_obj
 )
-from project.comment import add_comment
+
+from project.comment import add_comment, search_comment_by_id, delete_comment_by_id
+
 
 def create_app():
     app = Flask(__name__)
@@ -188,6 +190,22 @@ def create_app():
 
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
+
+
+    @app.route("/api/comments/<int:id>", methods=["DELETE"])
+    def delete_comment(id):
+        comment = search_comment_by_id(id)
+        user_id = session.get('id')
+        if not user_id:
+            return "No user", 404
+        if comment is None:
+            return "This comment does not exist", 404
+        author_id = comment[3]
+        err = delete_comment_by_id(id, user_id, author_id)
+        if not err:
+            return 'delete comment success', 200
+        else:
+            return err, 404
 
     return app
 
