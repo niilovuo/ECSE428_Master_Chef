@@ -191,7 +191,7 @@ def create_app():
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
 
 
-    @app.route("/api/comment/<int:id>", methods=["DELETE"])
+    @app.route("/api/comments/<int:id>", methods=["DELETE"])
     def delete_comment(id):
         comment = search_comment_by_id(id)
         user_id = session.get('id')
