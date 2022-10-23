@@ -19,10 +19,11 @@ from project.recipe_query import (
     search_recipe_by_id,
     convert_recipe_obj
 )
+
 from project.comment import (
+    add_comment,
     get_comments_of_recipe
 )
-
 
 def create_app():
     app = Flask(__name__)
@@ -53,7 +54,7 @@ def create_app():
     @app.route("/login", methods=["GET", "POST"])
     def login():
         if request.method == "POST":
-            if 'username' in session:
+            if 'id' in session:
                 # Will need to be changed to redirect to a user's page
                 return redirect('/')
 
@@ -62,7 +63,7 @@ def create_app():
 
             if user:
                 if check_password_hash(user[3], request.form['password']):
-                    session['username'] = user[1]
+                    session['id'] = user[0]
                     redirect_url = request.args.get('redirect_url')
                     if redirect_url:
                         return redirect(redirect_url)
@@ -80,15 +81,15 @@ def create_app():
 
     @app.route("/logout", methods=["GET"])
     def logout():
-        if 'username' in session:
-            session.pop('username', None)
+        if 'id' in session:
+            session.pop('id', None)
             return redirect('/')
         return "user not logged in", 401
 
     # For testing purposes
     @app.route("/user", methods=["GET"])
     def get_current_user():
-        if 'username' in session:
+        if 'id' in session:
             # Add logic to read info from session token
             return "Someone is in", 200
         return "No user", 401
@@ -170,6 +171,31 @@ def create_app():
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
         return get_comments_of_recipe(recipe_id)
+        
+    @app.route("/api/comments/add", methods=["POST"])
+    def api_add_comment_to_recipe():
+
+        data = request.get_json()
+
+        try:
+            comment_title = data.get('comment_title')
+            comment_body = data.get('comment_body')
+            recipe_id = int(data.get('recipe_id'))
+            author_id = session['id']
+
+            assert comment_title is not None
+            assert comment_body is not None
+        except:
+            return "Invalid request parameters", 400
+
+        if search_account_by_id(author_id) is None:
+            return "Invalid author id", 404
+
+        if search_recipe_by_id(recipe_id) is None:
+            return "Invalid recipe id", 404
+
+        new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
+        return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
 
     return app
 
