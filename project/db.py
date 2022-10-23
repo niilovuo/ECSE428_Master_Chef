@@ -185,3 +185,13 @@ class IngredientRepo:
             """, (recipe_id,))
         return cur.fetchall()
 
+class CommentRepo:
+
+    @staticmethod
+    def select_by_recipe_id(recipe_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+            SELECT * FROM comments WHERE recipe = %s
+            """, (recipe_id,))
+        return cur.fetchall()
