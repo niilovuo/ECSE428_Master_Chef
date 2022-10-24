@@ -4,6 +4,7 @@ As a user I would like to query recipe info so I can learn more about it
 
   Background:
     Given a user
+    And no tags at all
     And a recipe named "Recipe Foo"
     And with a tag named "test-only"
     And with a tag named "foobars"

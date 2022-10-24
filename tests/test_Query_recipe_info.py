@@ -24,6 +24,12 @@ def a_user(postgresql):
     cur.execute("INSERT INTO accounts VALUES (DEFAULT, 'Dummy', 'Dummy', 'Dummy')")
     postgresql.commit()
 
+@given('no tags at all')
+def clear_out_all_tags(postgresql):
+    cur = postgresql.cursor()
+    cur.execute("DELETE FROM tags;")
+    postgresql.commit()
+
 @given(parsers.parse('a recipe named "{name}"'), target_fixture="recipe_id")
 def a_recipe_named(name, postgresql):
     cur = postgresql.cursor()

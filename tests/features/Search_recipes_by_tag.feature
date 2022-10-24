@@ -13,6 +13,7 @@ Feature: Filter recipes by tags
         [ 3, "Person Guy",         "Wow food",       "Insane recipe never seen before" ]
       ]
 
+    And no tags at all
     And the following tags exist in the system
       [
         [ "tag_id", "tag_title" ],
