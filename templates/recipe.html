@@ -75,7 +75,14 @@
         <p>(none)</p>
       {% endif %}
       {% for tag in tags %}
-        <a class="btn btn-outline-secondary" href="/search?tag={{ tag[1] }}">{{ tag[1] }}</a>
+        <div class="row">
+          <div class="col">
+            <a class="btn btn-outline-secondary" href="/search?tag={{ tag[1] }}">{{ tag[1] }}</a>
+          </div>
+          <div class="col">
+            <p class="btn">&cross;</p>
+          </div>
+      </div>
       {% endfor %}
     </div>
   </div>
