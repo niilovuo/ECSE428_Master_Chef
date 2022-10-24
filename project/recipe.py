@@ -26,10 +26,10 @@ def parse_recipe_params(data):
     recipe_data = {}
     ingredients = {}
     for (k,v) in data.items():
-        ing = re.match("ingredients\[(.+)\]\[(name|quantity)\]", k)
+        ing = re.match("ingredients\\[(.+)\\]\\[(name|quantity)\\]", k)
         if ing == None:
             if k in ["prep_time", "cook_time"]:
-                time = re.match("([0-9]+)(\:[0-9]+)?(\:[0-9]+)?", v)
+                time = re.match("([0-9]+)(\\:[0-9]+)?(\\:[0-9]+)?", v)
                 if time != None:
                     ts = [t for t in time.groups() if t != None]
                     if len(ts) == 1:

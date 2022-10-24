@@ -94,7 +94,7 @@ def edit_recipe_title(user_session):
     except Exception as e:
         return e
     
-@then('then new recipe title of recipe with id "1" shall be "Pancakes with honey"')
+@then('new recipe title of recipe with id "1" shall be "Pancakes with honey"')
 def check_new_title_value(postgresql):
     cur = postgresql.cursor()
     cur.execute("SELECT title FROM recipes WHERE id = %s;", (1,))
