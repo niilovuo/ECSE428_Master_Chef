@@ -174,7 +174,7 @@ class RecipeRepo:
             cur = _conn.cursor()
             cur.execute("SELECT author FROM recipes WHERE id = %s;", (recipe_id,))
             author_recipe_id = cur.fetchone()[0]
-            if (author_recipe_id != author_id):
+            if author_recipe_id != author_id:
                 raise Exception("Not your recipe")
             cur.execute("UPDATE recipes SET title = %s, prep_time = %s, cook_time = %s, directions = %s WHERE id = %s;", (title, prep_time, cook_time, directions, recipe_id))
             cur.execute("SELECT id FROM ingredients WHERE recipe = %s;", (recipe_id,))
@@ -183,9 +183,9 @@ class RecipeRepo:
                 if new == None:
                     cur.execute("DELETE FROM ingredients WHERE id = %s;", ext)
                 elif ext == None:
-                    cur.execute("INSERT INTO ingredients (name, quantity, recipe) VALUES (%s, %s, %s);", (new["name"], new["quantity"], recipe_id))
+                    cur.execute("INSERT INTO ingredients (name, quantity, recipe) VALUES (%s, %s, %s);", (new["name"], new.get("quantity", ""), recipe_id))
                 else:
-                    cur.execute("UPDATE ingredients SET name = %s, quantity = %s WHERE id = %s", (new["name"], new["quantity"], ext[0]))
+                    cur.execute("UPDATE ingredients SET name = %s, quantity = %s WHERE id = %s", (new["name"], new.get("quantity", ""), ext[0]))
             _conn.commit()
             return recipe_id
         except Exception as e:

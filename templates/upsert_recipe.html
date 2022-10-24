@@ -34,14 +34,14 @@
 	  <tr>
 		<td>Prep Time</td>
 		<td>
-		  <input type="text" name="prep_time" value="{{"" if recipe==None else recipe["prep_time"]}}"/>
+		  <input type="text" name="prep_time" value="{{"" if recipe==None or recipe["prep_time"]==None else recipe["prep_time"]}}"/>
 		</td>
 	  </tr>
 
 	  <tr>
 		<td>Cook Time</td>
 		<td>
-		  <input type="text" name="cook_time" value="{{"" if recipe==None else recipe["cook_time"]}}"/>
+		  <input type="text" name="cook_time" value="{{"" if recipe==None or recipe["cook_time"]==None else recipe["cook_time"]}}"/>
 		</td>
 	  </tr>
 	</table>
@@ -71,7 +71,7 @@
 	  </tr>
 	</table>
 	<br/>
-	<input type="text" name="directions" placeholder="Directions..." value="{{"" if recipe==None else recipe["directions"]}}"/>
+	<textarea name="directions" placeholder="Directions...">{{ "" if recipe==None else recipe["directions"] }}</textarea>
 	<br/>
 	<br/>
 	<br/>

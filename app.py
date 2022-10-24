@@ -147,7 +147,7 @@ def create_app(setup_db=True):
             return redirect("/")
         recipe = convert_recipe_obj(recipe)
         author = convert_account_obj(search_account_by_id(recipe["author"]))
-        if author == None or author["id"] != session["id"]:
+        if author is None or author["id"] != session["id"]:
             flash("Cannot edit this recipe")
             return redirect("/")
         ingredients = [{"name": e[1], "quantity": e[2]} for e in get_ingredients_of_recipe(id)]
@@ -167,7 +167,7 @@ def create_app(setup_db=True):
 
         # whatever happens, just redirect to the recipe page
         return redirect(f"/recipes/{id}")
-    
+
     @app.route("/api/search")
     def api_search():
         try:

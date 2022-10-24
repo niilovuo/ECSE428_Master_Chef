@@ -38,7 +38,7 @@ def user_exists_in_the_system(postgresql):
     cur = postgres.cursor()
     cur.execute("INSERT INTO accounts VALUES (999, %s, %s, '');", ("User1", "User1")) 
 
-@given(parsers.parse('"User1" has created a recipe with the following information:\n{table_data}'))
+@given(parsers.parse('"User1" has created a recipe with the following information\n{table_data}'))
 def user_has_created_a_recipe_with_the_following_information(postgres, table_data):
     table_data = json.loads(table_data)[1:]
     cur = postgres.cursor()
@@ -46,7 +46,7 @@ def user_has_created_a_recipe_with_the_following_information(postgres, table_dat
         cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s);", (id, title, prep_time, cook_time, directions, 999))
     postgresql.commit()
 
-@given(parsers.parse('the recipe with id "1" has the following ingredients:\n{table_data}'))
+@given(parsers.parse('the recipe with id "1" has the following ingredients\n{table_data}'))
 def recipe_has_following_ingredients(postgres, table_data):
     table_data = json.loads(table_data)[1:]
     cur = postgres.cursor()
