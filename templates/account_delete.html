@@ -1,0 +1,61 @@
+{% extends "root.html" %}
+{% block content %}
+<header>
+  <style>
+  body{
+    color: #8e9194;
+    background-color: #f4f6f9;
+    }
+    .avatar-xl img {
+        width: 110px;
+    }
+    .rounded-circle {
+        border-radius: 50% !important;
+    }
+    img {
+        vertical-align: middle;
+        border-style: none;
+    }
+    .text-muted {
+        color: #aeb0b4 !important;
+    }
+    .text-muted {
+        font-weight: 300;
+    }
+    .form-control {
+        display: block;
+        width: 100%;
+        height: calc(1.5em + 0.75rem + 2px);
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #4d5154;
+        background-color: #ffffff;
+        background-clip: padding-box;
+        border: 1px solid #eef0f3;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+</style>
+
+
+</header>
+<div class="container">
+    <script>    
+    window.setTimeout(function(){
+      window.location.href = "/";
+      }, 2000);
+
+    </script>
+    
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8 mx-auto">
+          <h2 class="h3 mb-4 page-title">Account Deleted Succesfully</h2>
+          <h3 class="h3 mb-4 page-title">Redirecting to the main page ... </h2>
+        </div> 
+    </div>
+  
+  </div>
+
+{% endblock %}

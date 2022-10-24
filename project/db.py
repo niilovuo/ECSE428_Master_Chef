@@ -82,6 +82,20 @@ class AccountRepo:
             # rollback so continue (postgres's safety feature)
             _conn.rollback()
             raise e
+    
+    @staticmethod
+    def delete_row_by_id(id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                    DELETE FROM accounts WHERE id = %s
+                    """, (id,))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
 
     @staticmethod
     def select_by_name(name):

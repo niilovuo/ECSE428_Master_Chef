@@ -123,6 +123,22 @@ def db_save_account(name, email, password):
         # if we can't determine why, just re-raise the old error
         raise e
 
+def delete_account_by_id(id):
+    """
+    Delte account by id
+
+    Parameters
+    ----------
+    id:
+      the id
+
+    Returns
+    -------
+    None on success
+    """
+    AccountRepo.delete_row_by_id(id);
+    return None;
+
 def search_account_by_id(id):
     """
     Searches the account by id

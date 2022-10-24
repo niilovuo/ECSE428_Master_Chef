@@ -7,7 +7,8 @@ from project.db import Db
 from project.account import (
     add_new_account,
     search_account_by_id,
-    convert_account_obj, search_account_by_email
+    convert_account_obj, search_account_by_email,
+    delete_account_by_id
 )
 from project.recipe import add_tag_to_recipe
 from project.tag_query import (
@@ -63,6 +64,19 @@ def create_app(setup_db=True):
             return render_template("/register.html")
 
         return render_template("/register.html")
+
+    @app.route("/setting")
+    def account_setting():
+        return render_template("/setting.html")
+
+    @app.route("/delete_account")
+    def delete_account():
+        if 'id' in session:
+            delete_account_by_id(session.get('id'))
+            return render_template('/account_delete.html')
+        else:
+            flash('Your account cannot be deleted at the moment')
+            return redirect('/setting')
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
