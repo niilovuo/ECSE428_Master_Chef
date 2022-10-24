@@ -1,14 +1,15 @@
 import psycopg2
+from flask import g
 
-# XXX: If you don't belong in Db, you very likely should not be accessing this
-_conn = None
+# XXX: You should never access these (unless you are Db)
+_db_conf = None
 
 class Db:
 
     @staticmethod
     def init_session(**kwargs):
         """
-        Initializes a database connection
+        Initializes data required to establish a database connection
 
         Parameters
         ----------
@@ -16,20 +17,37 @@ class Db:
           forwarded to psycopg2 connect
         """
 
-        global _conn
-        _conn = psycopg2.connect(**kwargs)
+        global _db_conf
+        _db_conf = kwargs
 
     @staticmethod
     def deinit_session():
         """
-        Deinitializes a database connection
+        Closes a session to a database
 
-        Further calls to get_db_session is undefined
+        If no sessions are opened, then nothing happens
         """
 
-        global _conn
-        _conn.close()
-        _conn = None
+        _conn = g.pop("_conn", None)
+        if _conn:
+            _conn.close()
+
+    @staticmethod
+    def get_session():
+        """
+        Returns a connection to a database
+
+        If session was closed, then it is reopened using info from init_session
+
+        Returns
+        -------
+        connection to a database
+        """
+
+        if "_conn" not in g:
+            g._conn = psycopg2.connect(**_db_conf)
+
+        return g._conn
 
     @staticmethod
     def setup_tables():
@@ -46,19 +64,6 @@ class Db:
         except Exception as e:
             _conn.rollback()
             raise e
-
-    @staticmethod
-    def get_session():
-        """
-        Returns a connection to a database
-
-        Returns
-        -------
-        connection to a database
-        """
-
-        global _conn
-        return _conn
 
 class AccountRepo:
 

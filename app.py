@@ -20,13 +20,27 @@ from project.recipe_query import (
     search_recipe_by_id,
     convert_recipe_obj
 )
-
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id
 
 
-def create_app():
+def create_app(setup_db=True):
     app = Flask(__name__)
     app.secret_key = b'_123kjhmnb23!!'
+
+    pg_user = os.getenv("POSTGRES_USER", "postgres")
+    db_args = {
+        "password": os.getenv("POSTGRES_PASSWORD"),
+        "user": pg_user,
+        "dbname": os.getenv("POSTGRES_DB", pg_user),
+        "host": os.getenv("POSTGRES_HOST", "localhost"),
+        "port": os.getenv("POSTGRES_PORT", 5432)
+    }
+
+    if setup_db:
+        with app.app_context():
+            Db.init_session(**db_args)
+            Db.setup_tables()
+            app.teardown_appcontext(lambda e: Db.deinit_session())
 
     @app.route("/")
     def home():
@@ -228,20 +242,7 @@ def create_app():
     return app
 
 if __name__ == "__main__":
-    pg_user = os.getenv("POSTGRES_USER", "postgres")
-    db_args = {
-        "password": os.getenv("POSTGRES_PASSWORD"),
-        "user": pg_user,
-        "dbname": os.getenv("POSTGRES_DB", pg_user),
-        "host": os.getenv("POSTGRES_HOST", "localhost"),
-        "port": os.getenv("POSTGRES_PORT", 5432)
-    }
-
-    Db.init_session(**db_args)
-    Db.setup_tables()
-
     app = create_app()
     app.debug = os.getenv("DEBUG") == "true"
     app.run()
-    Db.deinit_session()
 
