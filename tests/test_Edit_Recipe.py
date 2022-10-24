@@ -38,7 +38,7 @@ def user_exists_in_the_system(postgresql):
     cur = postgresql.cursor()
     cur.execute("INSERT INTO accounts VALUES (999, %s, %s, '');", ("User1", "User1")) 
 
-@given(parsers.parse('"User1" has created a recipe with the following information\n{table_data}'))
+@given(parsers.parse('"User1" has created a recipe with the following information {table_data}'))
 def user_has_created_a_recipe_with_the_following_information(postgresql, table_data):
     table_data = json.loads(table_data)[1:]
     cur = postgresql.cursor()
@@ -46,7 +46,7 @@ def user_has_created_a_recipe_with_the_following_information(postgresql, table_d
         cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s);", (id, title, prep_time, cook_time, directions, 999))
     postgresql.commit()
 
-@given(parsers.parse('the recipe with id "1" has the following ingredients\n{table_data}'))
+@given(parsers.parse('the recipe with id "1" has the following ingredients {table_data}'))
 def recipe_has_following_ingredients(postgresql, table_data):
     table_data = json.loads(table_data)[1:]
     cur = postgresql.cursor()
@@ -82,7 +82,7 @@ def edit_recipe_ingredeients(user_session):
         
 @then(parsers.parse('recipe "1" shall have "{ingredient_count}" ingredients'))
 def check_recipe_ingredient_count(postgresql, ingredient_count):
-    assert len(get_ingredients_of_recipe(1)) == ingredient_count
+    assert len(get_ingredients_of_recipe(1)) == int(ingredient_count)
 
 
 @when('attempting to change recipe title of recipe "1" to "Pancakes with honey"', target_fixture="error_msg")

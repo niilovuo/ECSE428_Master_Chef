@@ -5,19 +5,9 @@ So I can keep them up to date.
 
   Background: 
     Given "User1" exists in the system
-    And "User1" has created a recipe with the following information
-	  [
-		[ "Recipe ID", "Recipe Title", "Prep Time", "Cook Time", "Directions" ],
-      	[ "1", "Pancakes with butter", "3", "5", "mix with water" ]
-	  ]
+    And "User1" has created a recipe with the following information [[ "Recipe ID", "Recipe Title", "Prep Time", "Cook Time", "Directions" ],[ "1", "Pancakes with butter", "3", "5", "mix with water" ]]
 
-    And the recipe with id "1" has the following ingredients
-	  [
-	  	  [ "Ingredient Name", "Quantity" ],
-		  [ "eggs", "2" ],
-          [ "butter", "1/4 tbsp" ],
-          [ "wheat flow", "1/2 cup" ]
-	  ]
+    And the recipe with id "1" has the following ingredients [[ "Ingredient Name", "Quantity" ],[ "eggs", "2" ],[ "butter", "1/4 tbsp" ],[ "wheat flow", "1/2 cup" ]]
   
   Scenario: Logged in user attempts to change recipe title
     Given "User1" is logged into the system
