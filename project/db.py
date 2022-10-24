@@ -1,3 +1,5 @@
+from itertools import zip_longest
+
 import psycopg2
 from flask import g
 
@@ -147,6 +149,48 @@ class RecipeRepo:
             SELECT * FROM recipes WHERE id = %s
             """, (id,))
         return cur.fetchone()
+
+    @staticmethod
+    def insert_recipe(title, author_id, prep_time=None, cook_time=None, directions="", ingredients=[]):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                INSERT INTO recipes (title, prep_time, cook_time, directions, author)
+                VALUES (%s, %s, %s, %s, %s) RETURNING id;
+                """, (title, prep_time, cook_time, directions, author_id))
+            recipe_id = cur.fetchone()[0]
+            cur.executemany("INSERT INTO ingredients (name, quantity, recipe) VALUES (%s, %s, %s);", [(e["name"], e["quantity"], recipe_id) for e in ingredients])
+            _conn.commit()
+            return recipe_id
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def update_recipe(recipe_id, title, author_id, prep_time=None, cook_time=None, directions="", ingredients=[]):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("SELECT author FROM recipes WHERE id = %s;", (recipe_id,))
+            author_recipe_id = cur.fetchone()[0]
+            if author_recipe_id != author_id:
+                raise Exception("Not your recipe")
+            cur.execute("UPDATE recipes SET title = %s, prep_time = %s, cook_time = %s, directions = %s WHERE id = %s;", (title, prep_time, cook_time, directions, recipe_id))
+            cur.execute("SELECT id FROM ingredients WHERE recipe = %s;", (recipe_id,))
+            extant_ingredients = cur.fetchall()
+            for (new, ext) in zip_longest(ingredients, extant_ingredients):
+                if new == None:
+                    cur.execute("DELETE FROM ingredients WHERE id = %s;", ext)
+                elif ext == None:
+                    cur.execute("INSERT INTO ingredients (name, quantity, recipe) VALUES (%s, %s, %s);", (new["name"], new.get("quantity", ""), recipe_id))
+                else:
+                    cur.execute("UPDATE ingredients SET name = %s, quantity = %s WHERE id = %s", (new["name"], new.get("quantity", ""), ext[0]))
+            _conn.commit()
+            return recipe_id
+        except Exception as e:
+            _conn.rollback()
+            raise e
 
     @staticmethod
     def select_by_id_and_author(id, author_id):
