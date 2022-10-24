@@ -58,7 +58,7 @@ def recipe_has_following_ingredients(postgresql, table_data):
 @given('"User1" is logged into the system', target_fixture="user_session")
 def log_in_user(postgresql):
     cur = postgresql.cursor()
-    cur.execute("SELECT id FROM accounts WHERE username = 'User1';")
+    cur.execute("SELECT id FROM accounts WHERE name = 'User1';")
     return cur.fetchone()[0]
     
 @when('attempting to add Ingredient "honey" with quantity "1/4 tsp." to recipe "1"', target_fixture="error_msg")
