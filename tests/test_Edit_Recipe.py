@@ -56,7 +56,7 @@ def recipe_has_following_ingredients(postgresql, table_data):
 
     
 @given('"User1" is logged into the system', target_fixture="user_session")
-def log_in_user(postgers):
+def log_in_user(postgresql):
     cur = postgresql.cursor()
     cur.execute("SELECT id FROM accounts WHERE username = 'User1")
     return cur.fetchone()[0]
