@@ -34,7 +34,7 @@ def error_message():
     return None
 
 @given('"User1" exists in the system')
-def user_exists_in_the_system(postgresqlql):
+def user_exists_in_the_system(postgresql):
     cur = postgresql.cursor()
     cur.execute("INSERT INTO accounts VALUES (999, %s, %s, '');", ("User1", "User1")) 
 
@@ -44,7 +44,7 @@ def user_has_created_a_recipe_with_the_following_information(postgresql, table_d
     cur = postgresql.cursor()
     for (id, title, prep_time, cook_time, directions) in table_data:
         cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s);", (id, title, prep_time, cook_time, directions, 999))
-    postgresqlql.commit()
+    postgresql.commit()
 
 @given(parsers.parse('the recipe with id "1" has the following ingredients\n{table_data}'))
 def recipe_has_following_ingredients(postgresql, table_data):
@@ -52,7 +52,7 @@ def recipe_has_following_ingredients(postgresql, table_data):
     cur = postgresql.cursor()
     for (name, quantity) in table_data:
         cur.execute("INSERT INTO ingredients VALUES (DEFAULT, %s, %s, %s);", (name, quantity, 1))
-    postgresqlql.commit()
+    postgresql.commit()
 
     
 @given('"User1" is logged into the system', target_fixture="user_session")
