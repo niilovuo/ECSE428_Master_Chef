@@ -5,11 +5,11 @@
 function init_model() {
   return {
     search_pattern: '',
-    search_tags: [],
+    search_tags: {{ default_tag|tojson }},
     search_page: 0,
 
     pending_pattern: '',
-    pending_tags: [],
+    pending_tags: {{ default_tag|tojson }},
 
     recipes: [],
     recipe_tags: [],
@@ -84,7 +84,12 @@ function init_model() {
   <div class="accordion" id="accordionTags">
     <div class="accordion-item">
       <h2 class="accordion-header" id="tag-section">
-        <button class="accordion-button collapsed"
+        <button
+          {% if default_tag|length == 0 %}
+                class="accordion-button collapsed"
+          {% else %}
+                class="accordion-button"
+          {% endif %}
                 data-bs-toggle="collapse"
                 data-bs-target="#collapse-tags"
                 aria-expanded="false"
@@ -92,7 +97,12 @@ function init_model() {
           Filter tags
         </button>
       </h2>
-      <div id="collapse-tags" class="accordion-collapse collapse"
+      <div id="collapse-tags"
+        {% if default_tag|length == 0 %}
+           class="accordion-collapse collapse"
+        {% else %}
+           class="accordion-collapse"
+        {% endif %}
            aria-labelledby="tag-section"
            data-bs-parent="#accordionTags">
         <div class="accordion-body">

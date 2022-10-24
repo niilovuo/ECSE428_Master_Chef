@@ -75,7 +75,7 @@
         <p>(none)</p>
       {% endif %}
       {% for tag in tags %}
-        <button class="btn btn-outline-secondary">{{ tag[1] }}</button>
+        <a class="btn btn-outline-secondary" href="/search?tag={{ tag[1] }}">{{ tag[1] }}</a>
       {% endfor %}
     </div>
   </div>
