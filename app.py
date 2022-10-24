@@ -10,7 +10,7 @@ from project.account import (
     convert_account_obj, search_account_by_email,
     delete_account_by_id
 )
-from project.recipe import add_tag_to_recipe
+from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe)
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -142,6 +142,30 @@ def create_app(setup_db=True):
         return render_template("/recipe.html",
                                recipe=recipe, author=author, tags=tags, ingredients=ingredients,
                                allow_edits=allow_edits)
+                               
+    @app.route("/recipes/create")
+    def render_create_recipe():
+        if 'id' not in session:
+            flash("Not logged in")
+            return redirect("/")
+        return render_template("/upsert_recipe.html", recipe=None, ingredients=[])
+
+    @app.route("/recipes/edit/<int:id>")
+    def render_edit_recipe(id):
+        if "id" not in session:
+            flash("Not logged in")
+            return redirect("/")
+        recipe = search_recipe_by_id(id)
+        if recipe is None:
+            flash("Recipe does not exist")
+            return redirect("/")
+        recipe = convert_recipe_obj(recipe)
+        author = convert_account_obj(search_account_by_id(recipe["author"]))
+        if author is None or author["id"] != session["id"]:
+            flash("Cannot edit this recipe")
+            return redirect("/")
+        ingredients = [{"name": e[1], "quantity": e[2]} for e in get_ingredients_of_recipe(id)]
+        return render_template("/upsert_recipe.html", recipe=recipe, ingredients=ingredients)
 
     @app.route("/recipes/<int:id>/tags", methods=["POST"])
     def add_tag(id):
@@ -204,6 +228,28 @@ def create_app(setup_db=True):
         tags = get_tags_of_recipe(id)
         return tags
 
+    @app.route("/api/recipes/add", methods=["POST"])
+    def api_create_recipe():
+        data = request.form.to_dict()
+        try:
+            result = create_recipe(data, session["id"])
+            return redirect("/recipes/{}".format(result))
+        except Exception as e:
+            flash("Could not create recipe")
+            return redirect("/")
+        
+    @app.route("/api/recipes/edit/<int:id>", methods=["POST"])
+    def api_edit_recipe(id):
+        data = request.form.to_dict()
+        try:
+            result = edit_recipe(id, data, session["id"])
+            return redirect("/recipes/{}".format(result))
+        except Exception as e:
+            flash("Could not update recipe")
+            return redirect("/")
+        
+        
+    
     @app.route("/api/recipes/<int:id>/ingredients")
     def api_lookup_recipe_ingredients(id):
         if search_recipe_by_id(id) is None:

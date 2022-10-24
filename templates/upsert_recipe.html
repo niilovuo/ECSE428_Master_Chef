@@ -1,0 +1,81 @@
+{% extends "root.html" %}
+{% block content %}
+
+<script>
+  function add_ingredient() {
+	return {
+	  ingredients: {{ ingredients | tojson }},
+	  
+	  add_ingredient() {
+		this.ingredients.push({"name": "", "quantity":""})
+	  },
+
+	  remove_ingredient(i) {
+		this.ingredients.splice(i, 1);
+	  },
+	  
+	  print_ingredients() {
+		console.log(this.ingredients);
+	  }
+	}
+  }
+</script>
+
+<div class="container">
+  <form action="{{ "/api/recipes/add" if recipe==None else "/api/recipes/edit/{}".format(recipe["id"]) }}" method="post">
+	<table>
+	  <tr>
+		<td>Title</td>
+		<td>
+		  <input type="text" name="title" value="{{"" if recipe==None else recipe["title"]}}"/>
+		</td>
+	  </tr>
+
+	  <tr>
+		<td>Prep Time</td>
+		<td>
+		  <input type="text" name="prep_time" value="{{"" if recipe==None or recipe["prep_time"]==None else recipe["prep_time"]}}"/>
+		</td>
+	  </tr>
+
+	  <tr>
+		<td>Cook Time</td>
+		<td>
+		  <input type="text" name="cook_time" value="{{"" if recipe==None or recipe["cook_time"]==None else recipe["cook_time"]}}"/>
+		</td>
+	  </tr>
+	</table>
+
+	<table x-data="add_ingredient()">
+	  <tr>
+		<td></td>
+		<td>Name</td>
+		<td>Quantity</td>
+	  </tr>
+	  <template x-for="(e, i) in ingredients">
+		<tr>
+		  <td x-text="'Ingredient '+(i+1)+':'"></td>
+		  <td>
+			<input type="text" :name="'ingredients['+i+'][name]'" x-model="e['name']" />
+		  </td>
+		  <td>
+			<input type="text" :name="'ingredients['+i+'][quantity]'" x-model="e['quantity']" />
+		  </td>
+		  <td class="btn" @click="remove_ingredient(i)">
+			&cross;
+		  </td>
+		</tr>
+	  </template>
+	  <tr>
+		<td class="btn btn-primary" @click="add_ingredient">Add Ingredient</td>
+	  </tr>
+	</table>
+	<br/>
+	<textarea name="directions" placeholder="Directions...">{{ "" if recipe==None else recipe["directions"] }}</textarea>
+	<br/>
+	<br/>
+	<br/>
+	
+    <input class="btn btn-primary" type="submit" value="{{"Create Recipe" if recipe==None else "Update Recipe"}}"/>
+  </form>
+{% endblock %}
