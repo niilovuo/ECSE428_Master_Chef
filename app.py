@@ -238,8 +238,7 @@ if __name__ == "__main__":
     }
 
     Db.init_session(**db_args)
-    Db.run_sql_script("./project/schema.sql")
-    Db.run_sql_script("./project/db_data.sql")
+    Db.setup_tables()
 
     app = create_app()
     app.debug = os.getenv("DEBUG") == "true"

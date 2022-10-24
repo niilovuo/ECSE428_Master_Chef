@@ -32,20 +32,16 @@ class Db:
         _conn = None
 
     @staticmethod
-    def run_sql_script(path):
+    def setup_tables():
         """
-        Loads the sql script and runs it
-
-        Parameters
-        ----------
-        path:
-          the path to the sql script
+        Creates the tables defined in schema.sql if they are absent
         """
 
         _conn = Db.get_session()
         try:
             cur = _conn.cursor()
-            cur.execute(open(path, 'r').read())
+            cur.execute(open('./project/schema.sql', 'r').read())
+            cur.execute(open('./project/db_data.sql', 'r').read())
             _conn.commit()
         except Exception as e:
             _conn.rollback()
