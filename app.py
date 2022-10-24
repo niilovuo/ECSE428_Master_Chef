@@ -110,7 +110,8 @@ def create_app(setup_db=True):
 
     @app.route("/search")
     def search():
-        return render_template("/search_recipes.html")
+        title = request.args.get("q", "")
+        return render_template("/search_recipes.html", default_query=title)
 
     @app.route("/recipes/<int:id>")
     def lookup_recipe(id):
