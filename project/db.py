@@ -41,6 +41,7 @@ class Db:
         try:
             cur = _conn.cursor()
             cur.execute(open('./project/schema.sql', 'r').read())
+            cur.execute(open('./project/db_data.sql', 'r').read())
             _conn.commit()
         except Exception as e:
             _conn.rollback()
