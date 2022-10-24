@@ -12,7 +12,8 @@ def background(postgresql):
     """
     Background:
 
-    Given a user 1, "user1", "user1@gmail.com", "password1"
+    Given no tags in the database
+    And a user 1, "user1", "user1@gmail.com", "password1"
     And a user 2, "user2", "user2@gmail.com", "password2"
     And a recipe 1, "RecipeTitle" by user 1
     And a tag 1, "TagName"
@@ -23,6 +24,8 @@ def background(postgresql):
 
     cur = postgresql.cursor()
     cur.execute("""
+        DELETE FROM tags;
+
         INSERT INTO accounts VALUES
         (1, 'User1', 'user1@gmail.com', 'password1'),
         (2, 'User2', 'user2@gmail.com', 'password2');

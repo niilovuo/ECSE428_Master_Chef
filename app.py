@@ -9,7 +9,7 @@ from project.account import (
     search_account_by_id,
     convert_account_obj, search_account_by_email
 )
-from project.recipe import add_tag_to_recipe
+from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe)
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -20,14 +20,27 @@ from project.recipe_query import (
     search_recipe_by_id,
     convert_recipe_obj
 )
-from project.recipe import (create_recipe, edit_recipe)
-
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id
 
 
-def create_app():
+def create_app(setup_db=True):
     app = Flask(__name__)
     app.secret_key = b'_123kjhmnb23!!'
+
+    pg_user = os.getenv("POSTGRES_USER", "postgres")
+    db_args = {
+        "password": os.getenv("POSTGRES_PASSWORD"),
+        "user": pg_user,
+        "dbname": os.getenv("POSTGRES_DB", pg_user),
+        "host": os.getenv("POSTGRES_HOST", "localhost"),
+        "port": os.getenv("POSTGRES_PORT", 5432)
+    }
+
+    if setup_db:
+        with app.app_context():
+            Db.init_session(**db_args)
+            Db.setup_tables()
+            app.teardown_appcontext(lambda e: Db.deinit_session())
 
     @app.route("/")
     def home():
@@ -275,20 +288,7 @@ def create_app():
     return app
 
 if __name__ == "__main__":
-    pg_user = os.getenv("POSTGRES_USER", "postgres")
-    db_args = {
-        "password": os.getenv("POSTGRES_PASSWORD"),
-        "user": pg_user,
-        "dbname": os.getenv("POSTGRES_DB", pg_user),
-        "host": os.getenv("POSTGRES_HOST", "localhost"),
-        "port": os.getenv("POSTGRES_PORT", 5432)
-    }
-
-    Db.init_session(**db_args)
-    Db.setup_tables()
-
     app = create_app()
     app.debug = os.getenv("DEBUG") == "true"
     app.run()
-    Db.deinit_session()
 
