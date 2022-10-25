@@ -136,8 +136,8 @@ def delete_account_by_id(id):
     -------
     None on success
     """
-    AccountRepo.delete_row_by_id(id);
-    return None;
+    AccountRepo.delete_row_by_id(id)
+    return None
 
 def search_account_by_id(id):
     """

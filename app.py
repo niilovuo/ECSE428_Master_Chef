@@ -73,6 +73,7 @@ def create_app(setup_db=True):
     def delete_account():
         if 'id' in session:
             delete_account_by_id(session.get('id'))
+            session.pop('id', None)
             return render_template('/account_delete.html')
         else:
             flash('Your account cannot be deleted at the moment')
