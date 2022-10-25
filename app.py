@@ -7,7 +7,7 @@ from project.db import Db
 from project.account import (
     add_new_account,
     search_account_by_id,
-    delete_account_by_id
+    delete_account_by_id,
     search_account_by_name,
     search_account_by_email,
     convert_account_obj

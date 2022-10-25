@@ -136,7 +136,13 @@ def delete_account_by_id(id):
     -------
     None on success
     """
-    AccountRepo.delete_row_by_id(id)
+
+    try:
+      AccountRepo.delete_row_by_id(id)
+
+    except Exception as e:
+        return "Unknown error occurred. Please try again later"
+
     return None
 
 def search_account_by_id(id):
