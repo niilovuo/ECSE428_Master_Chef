@@ -7,6 +7,7 @@ from project.db import Db
 from project.account import (
     add_new_account,
     search_account_by_id,
+    delete_account_by_id,
     search_account_by_name,
     search_account_by_email,
     convert_account_obj
@@ -66,6 +67,20 @@ def create_app(setup_db=True):
             return render_template("/register.html")
 
         return render_template("/register.html")
+
+    @app.route("/setting")
+    def account_setting():
+        return render_template("/setting.html")
+
+    @app.route("/delete_account")
+    def delete_account():
+        if 'id' in session:
+            delete_account_by_id(session.get('id'))
+            session.pop('id', None)
+            return render_template('/account_delete.html')
+        else:
+            flash('Your account cannot be deleted at the moment')
+            return redirect('/setting')
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
