@@ -7,8 +7,10 @@ from project.db import Db
 from project.account import (
     add_new_account,
     search_account_by_id,
-    convert_account_obj, search_account_by_email,
     delete_account_by_id
+    search_account_by_name,
+    search_account_by_email,
+    convert_account_obj
 )
 from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe)
 from project.tag_query import (
@@ -19,6 +21,7 @@ from project.ingredient_query import get_ingredients_of_recipe
 from project.recipe_query import (
     search_recipes_by_filter,
     search_recipe_by_id,
+    search_recipes_by_author,
     convert_recipe_obj
 )
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id
@@ -81,23 +84,18 @@ def create_app(setup_db=True):
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
-        redirect_url = request.args.get('redirect_url')
-        if request.method == "POST":
-            if 'id' in session:
-                # Will need to be changed to redirect to a user's page
-                return redirect('/')
+        redirect_url = request.args.get('redirect_url', default='/profile')
+        if 'id' in session:
+            return redirect(redirect_url)
 
+        if request.method == "POST":
             email = request.form['email']
             user = search_account_by_email(email)
 
             if user:
                 if check_password_hash(user[3], request.form['password']):
                     session['id'] = user[0]
-                    if redirect_url:
-                        return redirect(redirect_url)
-                    else:
-                        # Need to specify default URL after login
-                        return redirect('/')
+                    return redirect(redirect_url)
                 else:
                     flash("Wrong password")
                     return render_template("/login.html", redirect_url=redirect_url)
@@ -114,6 +112,27 @@ def create_app(setup_db=True):
             return redirect('/')
         return "user not logged in", 401
 
+    @app.route("/profile")
+    @app.route("/profile/<int:id>")
+    def user_profile(id=None):
+        uses_login_info = id is None
+        if uses_login_info:
+            id = session.get("id")
+            if not id:
+                return redirect("/login")
+
+        current_user = convert_account_obj(search_account_by_id(id))
+        recipes = []
+        if not current_user:
+            if uses_login_info:
+                # but the account no longer exists, assume the worst and logout
+                return redirect("/logout")
+        else:
+            recipes = search_recipes_by_author(id)
+            recipes = [convert_recipe_obj(e) for e in recipes]
+
+        return render_template("/profile.html", user=current_user, recipes=recipes)
+
     # For testing purposes
     @app.route("/user", methods=["GET"])
     def get_current_user():
@@ -125,7 +144,8 @@ def create_app(setup_db=True):
 
     @app.route("/search")
     def search():
-        return render_template("/search_recipes.html")
+        title = request.args.get("q", "")
+        return render_template("/search_recipes.html", default_query=title)
 
     @app.route("/recipes/<int:id>")
     def lookup_recipe(id):

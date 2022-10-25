@@ -165,6 +165,16 @@ class RecipeRepo:
         return cur.fetchone()
 
     @staticmethod
+    def select_by_author(author_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+
+        cur.execute("""
+            SELECT * FROM recipes WHERE author = %s
+            """, (author_id,))
+        return cur.fetchall()
+
+    @staticmethod
     def insert_recipe(title, author_id, prep_time=None, cook_time=None, directions="", ingredients=[]):
         _conn = Db.get_session()
         try:

@@ -18,7 +18,7 @@ def search_recipes_by_filter(title, tags, start):
       recipes' names will contain this (case ignored)
     tags:
       recipes' tags will contain ALL of these
-    offset:
+    start:
       starts from this offset (for pagination purposes)
 
     Returns
@@ -42,6 +42,23 @@ def search_recipes_by_filter(title, tags, start):
     results = RecipeRepo.select_many_filtered(
             title, tag_ids, start * PAGE_ENTRIES, PAGE_ENTRIES)
     return (results, None)
+
+def search_recipes_by_author(author_id):
+    """
+    Searches recipes by the author id
+
+    Parameters
+    ----------
+    author_id:
+      the id of the author
+
+    Returns
+    -------
+    list of all recipes belonging to some author
+    will happily return an empty list if author does not exist
+    """
+
+    return RecipeRepo.select_by_author(author_id)
 
 def search_recipe_by_id(id):
     """
