@@ -4,15 +4,15 @@
 <script>
 function init_model() {
   return {
-    search_pattern: '',
+    search_pattern: '{{ default_query }}',
     search_tags: {{ default_tag|tojson }},
     search_page: 0,
 
-    pending_pattern: '',
+    pending_pattern: '{{ default_query }}',
     pending_tags: {{ default_tag|tojson }},
 
     recipes: [],
-    recipe_tags: [],
+    server_tags: [],
     fetch_success: true,
 
     fetch_recipes() {
@@ -32,7 +32,7 @@ function init_model() {
     fetch_tags() {
       fetch("./api/tags")
         .then(response => { if (response.ok) return response.json() })
-        .then(data => this.recipe_tags = data)
+        .then(data => this.server_tags = data)
     },
 
     hit_search_btn() {
@@ -106,7 +106,7 @@ function init_model() {
            aria-labelledby="tag-section"
            data-bs-parent="#accordionTags">
         <div class="accordion-body">
-          <template x-for="rtag in recipe_tags" :key="rtag[0]">
+          <template x-for="rtag in server_tags" :key="rtag[0]">
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="checkbox" :id="'cb-' + rtag[0]"
                      :value="encodeURIComponent(rtag[1])" x-model="pending_tags">
@@ -123,17 +123,7 @@ function init_model() {
   <p x-show="fetch_success && !recipes.length">(none on this page)</p>
 
   <template x-for="recipe in recipes" :key="recipe.id">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">
-          <a :href="'/recipes/' + recipe.id" class="stretched-link"
-             x-text="recipe.title"></a>
-        </h5>
-        <h6 class="card-subtitle mb-2 text-muted" x-text="'Prep time: ' + (recipe.prep_time || '(unknown)')"></h6>
-        <h6 class="card-subtitle mb-2 text-muted" x-text="'Cook time: ' + (recipe.cook_time || '(unknown)')"></h6>
-        <p class="card-text" x-text="recipe.directions"></p>
-      </div>
-    </div>
+    {% include "partials/recipe_card.html" %}
   </template>
 
   <div class="btn-group" role="group-pagination" aria-label="Pagination">

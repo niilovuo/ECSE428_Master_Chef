@@ -139,6 +139,22 @@ def search_account_by_id(id):
 
     return AccountRepo.select_by_id(id)
 
+def search_account_by_name(name):
+    """
+    Searchs the account by exact username
+
+    Parameters
+    ----------
+    name:
+      the exact username
+
+    Returns
+    -------
+    The account or None if not found
+    """
+
+    return AccountRepo.select_by_name(name)
+
 def search_account_by_email(email):
     """
     Searches the account by email
@@ -167,8 +183,12 @@ def convert_account_obj(account):
 
     Returns
     -------
+    None if account was None
     a dict, password field is removed
     """
+
+    if account is None:
+        return None
 
     return {
         'id': account[0],
