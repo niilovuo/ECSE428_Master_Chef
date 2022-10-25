@@ -4,11 +4,11 @@
 <script>
 function init_model() {
   return {
-    search_pattern: '',
+    search_pattern: '{{ default_query }}',
     search_tags: [],
     search_page: 0,
 
-    pending_pattern: '',
+    pending_pattern: '{{ default_query }}',
     pending_tags: [],
 
     recipes: [],
