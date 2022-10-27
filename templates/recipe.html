@@ -1,6 +1,15 @@
 {% extends "root.html" %}
 {% block content %}
 
+<script>
+  function remove_tag(tag) {
+    fetch('/api/recipes/{{ recipe["id"] }}/tags/' + tag, {
+      method: 'DELETE'
+    })
+      .then(response => window.location.reload(true))
+  }
+</script>
+
 {% if recipe is none %}
 <p>The specified recipe does not exist!</p>
 {% else %}
@@ -74,16 +83,20 @@
       {% if not tags %}
         <p>(none)</p>
       {% endif %}
+      <div x-data="{ remove_tag }">
       {% for tag in tags %}
         <div class="row">
           <div class="col">
             <a class="btn btn-outline-secondary" href="/search?tag={{ tag[1] }}">{{ tag[1] }}</a>
           </div>
-          <div class="col">
-            <p class="btn">&cross;</p>
-          </div>
-      </div>
+          {% if allow_edits %}
+            <div class="col">
+              <p class="btn" @click='remove_tag("{{ tag[1] }}")'>&cross;</p>
+            </div>
+          {% endif %}
+        </div>
       {% endfor %}
+      </div>
     </div>
   </div>
 </div>
