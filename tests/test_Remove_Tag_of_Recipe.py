@@ -9,7 +9,7 @@ from pytest_bdd import (
     parsers
 )
 
-from project.recipe import delete_tag_of_recipe
+from project.recipe import remove_tag_of_recipe
 from project.db import RecipeTagRepo
 from project.tag_query import get_tags_of_recipe, search_tag_by_name
 
@@ -177,14 +177,14 @@ def tag1_and_tag2_are_associated_with_title(postgresql, recipe_id):
 
 @when(parsers.parse('requesting to remove "{tag_name}" from recipe "{title}"'), target_fixture='res')
 def requesting_to_remove_tag_name_from_recipe_title(tag_name, recipe_id, user_id):
-    res = delete_tag_of_recipe(tag_name, recipe_id, user_id)
+    res = remove_tag_of_recipe(tag_name, recipe_id, user_id)
     return res
 
 
 @when(parsers.parse('requesting to remove "{tag_name1}" and "{tag_name2}" from recipe "RecipeTitle"'))
 def requesting_to_remove_tag1_and_tag2_from_recipe_title(tag_name1, tag_name2, recipe_id, user_id):
-    delete_tag_of_recipe(tag_name1, recipe_id, user_id)
-    delete_tag_of_recipe(tag_name2, recipe_id, user_id)
+    remove_tag_of_recipe(tag_name1, recipe_id, user_id)
+    remove_tag_of_recipe(tag_name2, recipe_id, user_id)
 
 
 @then(parsers.parse('the "RecipeTitle" will not have "{tag_name}" among its list of tags'))

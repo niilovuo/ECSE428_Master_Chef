@@ -84,9 +84,9 @@ def add_tag_to_recipe(tag, recipe, user):
         return "Unknown error occurred"
 
 
-def delete_tag_of_recipe(tag_name, recipe_id, user_id):
+def remove_tag_of_recipe(tag_name, recipe_id, user_id):
     """
-    delete a tag of a recipe as a certain user
+    remove a tag of a recipe as a certain user
 
     Parameters
     ----------
@@ -117,5 +117,5 @@ def delete_tag_of_recipe(tag_name, recipe_id, user_id):
     try:
         error = RecipeTagRepo.delete_by_id(recipe_id, tag[0])
         return error
-    except Exception as e:
-        return "Could not delete tag of recipe, please try again"
+    except Exception:
+        return "Could not remove tag of recipe, please try again"
