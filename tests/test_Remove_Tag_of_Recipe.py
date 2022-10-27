@@ -125,11 +125,6 @@ def tag_name_is_associated_with_title(postgresql, tag_id, recipe_id):
 
 @given(parsers.parse('{tag_name}" is not associated with "{title}"'), target_fixture="is_associated")
 def tag_name_is_not_associated_with_title(postgresql, recipe_id):
-    cur = postgresql.cursor()
-    cur.execute("""
-        INSERT INTO tags VALUES (DEFAULT, 'not_tag_name')
-        """)
-    postgresql.commit()
     return False
 
 
