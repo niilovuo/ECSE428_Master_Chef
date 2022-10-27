@@ -145,7 +145,15 @@ def create_app(setup_db=True):
     @app.route("/search")
     def search():
         title = request.args.get("q", "")
-        return render_template("/search_recipes.html", default_query=title)
+        default_tag = request.args.get("tag", "")
+
+        if default_tag:
+            default_tag = [default_tag]
+        else:
+            default_tag = []
+
+        return render_template("/search_recipes.html",
+                               default_query=title, default_tag=default_tag)
 
     @app.route("/recipes/<int:id>")
     def lookup_recipe(id):
