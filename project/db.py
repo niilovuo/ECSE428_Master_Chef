@@ -291,7 +291,7 @@ class RecipeTagRepo:
         return cur.fetchone() is not None
 
     @staticmethod
-    def remove_by_id(recipe_id, tag_id):
+    def delete_by_id(recipe_id, tag_id):
         _conn = Db.get_session()
         try:
             cur = _conn.cursor()
