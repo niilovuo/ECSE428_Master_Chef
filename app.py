@@ -320,7 +320,7 @@ def create_app(setup_db=True):
         else:
             return err, 404
 
-    @app.route("/api/recipes/<int:recipe_id>/tags/<string:tag_name>", methods=["DELETE"])
+    @app.route("/api/recipes/<int:recipe_id>/tags/<tag_name>", methods=["DELETE"])
     def remove_tag(recipe_id, tag_name):
         user_id = session.get('id')
         err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
