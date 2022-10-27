@@ -102,7 +102,7 @@ def remove_tag_of_recipe(tag_name, recipe_id, user_id):
     None on success
     str  on failure where str is a error message
     """
-    if not user_id:
+    if user_id is None:
         return "Need to log in to modify this recipe"
     tag = TagRepo.select_by_name(str(tag_name).strip())
     if not tag:
