@@ -325,7 +325,7 @@ def create_app(setup_db=True):
         user_id = session.get('id')
         err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
         if not err:
-            return 'remove comment tag of recipe success', 200
+            return 'remove tag of recipe success', 200
         else:
             return err, 404
 
