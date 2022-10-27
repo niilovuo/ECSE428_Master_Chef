@@ -129,10 +129,6 @@ def tag_name_is_not_associated_with_title(postgresql, recipe_id):
     cur.execute("""
         INSERT INTO tags VALUES (DEFAULT, 'not_tag_name')
         """)
-    # tag_id = cur.fetchone()[0]
-    # cur.execute("""
-    #               INSERT INTO recipe_tags VALUES (%s, tag_id), (%s, 5), (%s, 6)
-    #               """, (recipe_id, recipe_id, recipe_id))
     postgresql.commit()
     return False
 
