@@ -125,10 +125,6 @@ def tag_name_is_a_tag_which_does_not_exists_in_the_system(postgresql, tag_name, 
 @given(parsers.parse('{tag_name}" is associated with "{title}"'))
 def tag_name_is_associated_with_title(postgresql, tag_id, recipe_id):
     cur = postgresql.cursor()
-    # cur.execute("""
-    #     INSERT INTO recipe_tags VALUES (%s, %s)
-    #     """, (recipe_id, tag_id))
-    # tag_id = cur.fetchone()[0]
     cur.execute("""
                INSERT INTO recipe_tags VALUES (%s, %s), (%s, 5), (%s, 6)
                """, (recipe_id, tag_id, recipe_id, recipe_id))
@@ -138,10 +134,6 @@ def tag_name_is_associated_with_title(postgresql, tag_id, recipe_id):
 @given(parsers.parse('{tag_name}" is not associated with "{title}"'))
 def tag_name_is_not_associated_with_title(postgresql, recipe_id):
     cur = postgresql.cursor()
-    # cur.execute("""
-    #     INSERT INTO recipe_tags VALUES (%s, %s)
-    #     """, (recipe_id, tag_id))
-    # tag_id = cur.fetchone()[0]
     cur.execute("""
                   INSERT INTO recipe_tags VALUES (%s, 3), (%s, 5), (%s, 6)
                   """, (recipe_id, recipe_id, recipe_id))
