@@ -306,13 +306,6 @@ class RecipeTagRepo:
             _conn.rollback()
             raise e
 
-    @staticmethod
-    def select_all():
-        _conn = Db.get_session()
-        cur = _conn.cursor()
-        cur.execute("SELECT * FROM recipe_tags")
-        return cur.fetchall()
-
 class IngredientRepo:
 
     @staticmethod
