@@ -4,6 +4,9 @@ As a recipe author
 I would like to remove tags from my recipe
 So that users will not mistakenly find my recipe under an incorrect set of tags
 
+Background:
+Given no tags at all
+
 
 Scenario: Remove a tag from recipe (Normal Flow)
 
@@ -35,8 +38,9 @@ Scenario: Attempt to remove a tag not associated with recipe (Error Flow)
 Given Recipe Author is logged into the system
 And "RecipeTitle" is a recipe which was authored by Recipe Author
 And "TagName" is a tag which exists in the system
-And there are 3 tags associated with "RecipeTitle"
 And "TagName" is not associated with "RecipeTitle"
+And there are 3 tags associated with "RecipeTitle"
+#And "TagName" is not associated with "RecipeTitle"
 When requesting to remove "TagName" from recipe "RecipeTitle"
 Then the "RecipeTitle" will not have "TagName" among its list of tags
 And "RecipeTitle" is associated with 3 tags
@@ -47,6 +51,7 @@ Scenario: Attempt to remove a tag which does not exist (Error Flow)
 Given Recipe Author is logged into the system
 And "RecipeTitle" is a recipe which was authored by Recipe Author
 And "TagName" is a tag which does not exist in the system
+And "TagName" is not associated with "RecipeTitle"
 And there are 3 tags associated with "RecipeTitle"
 When requesting to remove "TagName" from recipe "RecipeTitle"
 Then the "RecipeTitle" will not have "TagName" among its list of tags

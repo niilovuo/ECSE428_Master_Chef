@@ -43,11 +43,13 @@ def test_unauthorized_user_attempts_to_remove_a_tag_error_flow(app):
 def test_logged_out_user_attempts_to_remove_a_tag_error_flow(app):
     pass
 
-# Given Recipe Author is logged into the system
-# And "RecipeTitle" is a recipe which was authored by Recipe Author
-# And "TagName" is a tag which exists in the system
-# And "TagName" is associated with "RecipeTitle"
-# And there are 3 tags associated with "RecipeTitle"
+
+@given('no tags at all')
+def clear_out_all_tags(postgresql):
+    cur = postgresql.cursor()
+    cur.execute("DELETE FROM tags;")
+    postgresql.commit()
+
 
 @pytest.fixture
 def a_user(postgresql):
@@ -99,73 +101,100 @@ def recipe_title_is_a_recipe_which_was_not_authored_by_author(title, postgresql)
 def tag_name_is_a_tag_which_exists_in_the_system(postgresql, tag_name):
     cur = postgresql.cursor()
     cur.execute("""
-        INSERT INTO tags VALUES (4, %s)
+        INSERT INTO tags VALUES (DEFAULT, %s)
         RETURNING id""", (tag_name,))
     tag_id = cur.fetchone()[0]
-    cur.execute("""
-        INSERT INTO tags VALUES (5, 't1'), (6, 't2')
-        """)
+    # cur.execute("""
+    #     INSERT INTO tags VALUES (DEFAULT, 't1'), (DEFAULT, 't2')
+    #     """)
     postgresql.commit()
     return tag_id
 
 
 @given(parsers.parse('"{tag_name}" is a tag which does not exist in the system'), target_fixture="tag_id")
 def tag_name_is_a_tag_which_does_not_exists_in_the_system(postgresql, tag_name, recipe_id):
-    cur = postgresql.cursor()
-    cur.execute("""
-            INSERT INTO tags VALUES (4, 't0'), (5, 't1'), (6, 't2')
-            """)
-    cur.execute("""
-               INSERT INTO recipe_tags VALUES (%s, 4), (%s, 5), (%s, 6)
-               """, (recipe_id, recipe_id, recipe_id))
-    postgresql.commit()
+
     return None
 
 
-@given(parsers.parse('{tag_name}" is associated with "{title}"'))
+@given(parsers.parse('{tag_name}" is associated with "{title}"'), target_fixture="is_associated")
 def tag_name_is_associated_with_title(postgresql, tag_id, recipe_id):
     cur = postgresql.cursor()
     cur.execute("""
-               INSERT INTO recipe_tags VALUES (%s, %s), (%s, 5), (%s, 6)
-               """, (recipe_id, tag_id, recipe_id, recipe_id))
-    postgresql.commit()
-    # return
-
-@given(parsers.parse('{tag_name}" is not associated with "{title}"'))
-def tag_name_is_not_associated_with_title(postgresql, recipe_id):
-    cur = postgresql.cursor()
-    cur.execute("""
-                  INSERT INTO recipe_tags VALUES (%s, 3), (%s, 5), (%s, 6)
-                  """, (recipe_id, recipe_id, recipe_id))
-    postgresql.commit()
-
-
-@given('there are 3 tags associated with "RecipeTitle"')
-def there_are_3_tags_associated_with_title(recipe_id, postgresql):
-    pass
-
-
-@given(parsers.parse('"{tag_name1}" and "{tag_name2}" are tags which exist in the system'), target_fixture="tag_two")
-def tag1_and_tag2_are_tags_which_exist_in_the_system(tag_name1, tag_name2, postgresql):
-    cur = postgresql.cursor()
-    cur.execute("""
-        INSERT INTO tags VALUES (4, %s), (5, %s)
-        """, (tag_name1, tag_name2))
-    cur.execute("""
-        INSERT INTO tags VALUES (6, 't3')
-        """)
+               INSERT INTO recipe_tags VALUES (%s, %s)
+               """, (recipe_id, tag_id))
     postgresql.commit()
     return True
 
 
-@given('"TagName1" and "TagName2" are associated with "RecipeTitle"')
-def tag1_and_tag2_are_associated_with_title(postgresql, recipe_id):
+@given(parsers.parse('{tag_name}" is not associated with "{title}"'), target_fixture="is_associated")
+def tag_name_is_not_associated_with_title(postgresql, recipe_id):
     cur = postgresql.cursor()
     cur.execute("""
-        INSERT INTO recipe_tags VALUES (%s, 4), (%s, 5), (%s, 6)
-        """, (recipe_id, recipe_id, recipe_id))
+        INSERT INTO tags VALUES (DEFAULT, 'not_tag_name')
+        """)
+    # tag_id = cur.fetchone()[0]
+    # cur.execute("""
+    #               INSERT INTO recipe_tags VALUES (%s, tag_id), (%s, 5), (%s, 6)
+    #               """, (recipe_id, recipe_id, recipe_id))
+    postgresql.commit()
+    return False
+
+
+@given('there are 3 tags associated with "RecipeTitle"')
+def there_are_3_tags_associated_with_title(recipe_id, postgresql, tag_id, is_associated):
+    cur = postgresql.cursor()
+
+    if isinstance(tag_id, int) and is_associated is True:
+        cur.execute("""
+            INSERT INTO tags VALUES (DEFAULT, 't2'), (DEFAULT, 't3')
+            RETURNING id""")
+        tag_id1, tag_id2 = cur.fetchall()
+        cur.execute("""
+                   INSERT INTO recipe_tags VALUES (%s, %s), (%s, %s)
+                   """, (recipe_id, tag_id1[0], recipe_id, tag_id2[0]))
+    elif isinstance(tag_id, list) and is_associated is True:
+        cur.execute("""
+            INSERT INTO tags VALUES (DEFAULT, 't3')
+            RETURNING id""")
+        tag_id = cur.fetchone()[0]
+        cur.execute("""
+            INSERT INTO recipe_tags VALUES (%s, %s)
+            """, (recipe_id, tag_id))
+    else:
+        cur.execute("""
+            INSERT INTO tags VALUES (DEFAULT, 't1'), (DEFAULT, 't2'), (DEFAULT, 't3')
+            RETURNING id""")
+        tag_id1, tag_id2, tag_id3 = cur.fetchall()
+        cur.execute("""
+            INSERT INTO recipe_tags VALUES (%s, %s), (%s, %s), (%s, %s)
+            """, (recipe_id, tag_id1[0], recipe_id, tag_id2[0], recipe_id, tag_id3[0]))
     postgresql.commit()
 
+
+@given(parsers.parse('"{tag_name1}" and "{tag_name2}" are tags which exist in the system'), target_fixture="tag_id")
+def tag1_and_tag2_are_tags_which_exist_in_the_system(tag_name1, tag_name2, postgresql):
+    cur = postgresql.cursor()
+    cur.execute("""
+        INSERT INTO tags VALUES (DEFAULT, %s)
+        RETURNING id""", (tag_name1,))
+    tag_id1 = cur.fetchone()[0]
+    cur.execute("""
+        INSERT INTO tags VALUES (DEFAULT, %s)
+        RETURNING id""", (tag_name2,))
+    tag_id2 = cur.fetchone()[0]
+    postgresql.commit()
+    return [tag_id1, tag_id2]
+
+
+@given('"TagName1" and "TagName2" are associated with "RecipeTitle"', target_fixture="is_associated")
+def tag1_and_tag2_are_associated_with_title(postgresql, recipe_id, tag_id):
+    cur = postgresql.cursor()
+    cur.execute("""
+        INSERT INTO recipe_tags VALUES (%s, %s), (%s, %s)
+        """, (recipe_id, tag_id[0], recipe_id, tag_id[1]))
+    postgresql.commit()
+    return True
 
 @when(parsers.parse('requesting to remove "{tag_name}" from recipe "{title}"'), target_fixture='res')
 def requesting_to_remove_tag_name_from_recipe_title(tag_name, recipe_id, user_id):
