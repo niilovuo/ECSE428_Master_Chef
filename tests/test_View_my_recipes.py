@@ -1,98 +1,74 @@
-"""
-Feature: View my recipes
+""" View my recipes """
 
-As a recipe author
-I would like to view all the recipes I wrote
-So that I can easily choose one of my recipes to view, edit or delete it.
-"""
-
+import json
 from flask import session
+from pytest_bdd import (
+    given,
+    scenario,
+    then,
+    when,
+    parsers
+)
 
-def background(postgresql):
-    """
-    Given the following accounts exist in the system:
-     | account name | password  | email           |
-     | User1        | password1 | user1@gmail.com |
-     | User2        | password2 | user2@gmail.com |
-     | User3        | password3 | user3@gmail.com |
-     | User4        | password4 | user4@gmail.com |
-    And the following recipes exist in the system:
-     | recipe id | recipe author | recipe title     | last modified |
-     | 1         | User1         | recipe title 1.1 | 25/04/2020    |
-     | 2         | User2         | recipe title 2   | 12/08/2021    |
-     | 3         | User1         | recipe title 1.2 | 25/09/2022    |
-     | 4         | User3         | recipe title 3   | 2/10/2022     |
-    """
+from project.db import AccountRepo
 
+@scenario('features/View_my_recipes.feature',
+          'Author views their recipes while logged in (Normal Flow)')
+def test_author_views_their_recipes_while_logged_in(app):
+    pass
+
+@scenario('features/View_my_recipes.feature',
+          'Logged out user attempts to view their recipes (Error Flow)')
+def test_logged_out_user_attempts_to_view_their_recipes(app):
+    pass
+
+@given(parsers.parse('the following accounts exist in the system:{table}'))
+def setup_accounts(table, postgresql):
+    table = json.loads(table)[1:]
     cur = postgresql.cursor()
-    cur.execute("""
-        INSERT INTO accounts VALUES
-        (1, 'User1', 'user1@gmail.com', 'password1'),
-        (2, 'User2', 'user2@gmail.com', 'password2'),
-        (3, 'User3', 'user3@gmail.com', 'password3'),
-        (4, 'User4', 'user4@gmail.com', 'password4');
-
-        INSERT INTO recipes VALUES
-        (1, 'recipe title 1.1', NULL, NULL, '', 1),
-        (2, 'recipe title 2', NULL, NULL, '', 2),
-        (3, 'recipe title 1.2', NULL, NULL, '', 1),
-        (4, 'recipe title 3', NULL, NULL, '', 3);
-        """)
+    for (id, name, password, email) in table:
+        cur.execute("""
+            INSERT INTO accounts VALUES (%s, %s, %s, %s)
+            """, (id, name, email, password))
     postgresql.commit()
 
+@given(parsers.parse('the following recipes exist in the system:{table}'))
+def setup_recipes(table, postgresql):
+    table = json.loads(table)[1:]
+    cur = postgresql.cursor()
+    for (id, author, title, _) in table:
+        cur.execute("""
+            INSERT INTO recipes VALUES (%s, %s, NULL, NULL, '', %s)
+            """, (id, title, AccountRepo.select_by_name(author)[0]))
+    postgresql.commit()
 
-def test_scenario_logged_in_has_recipe(app, client, postgresql):
-    """
-    Scenario: Author views their recipes while logged in (Normal Flow)
-
-    Given "User1" is logged into the system
-    When attempting to view my recipes
-    Then the following list of recipes is returned:
-     | recipe id | recipe author | recipe title     | last modified |
-     | 1         | User1         | recipe title 1.1 | 25/04/2020    |
-     | 3         | User1         | recipe title 1.2 | 25/09/2022    |
-    """
-
-    background(postgresql)
+@given(parsers.parse('"{name}" is logged into the system'))
+def log_me_in(name, client):
     with client.session_transaction() as session:
-        session['id'] = 1
+        session['id'] = AccountRepo.select_by_name(name)[0]
 
-    response = client.get("/profile")
-    assert response.status_code == 200
-    assert b'"id": 1' in response.data
-    assert b'"id": 3' in response.data
+@given('the user is not logged into the system')
+def skip_login():
+    # no one is logged in by default
+    pass
 
-def test_scenario_logged_in_no_recipes(app, client, postgresql):
-    """
-    Scenario: User with no recipes written views their recipes while logged in (Alternate Flow)
-
-    Given "User 4" is logged into the system
-    When attempting to view my recipes
-    Then the following list of recipes is returned:
-     | recipe id | recipe author | recipe title     | last modified |
-    And a "You don't have any recipes" info message is issued
-    """
-
-    background(postgresql)
-    with client.session_transaction() as session:
-        session['id'] = 4
-
-    response = client.get("/profile")
-    assert response.status_code == 200
-    assert b'"id": ' not in response.data
-
-def test_scenario_not_logged_in(app, client, postgresql):
-    """
-    Scenario: Logged out user attempts to view their recipes (Error Flow)
-
-    Given the user is not logged into the system
-    When attempting to view my recipes
-    Then the system issues an error message "Please log in to view your recipes"
-    """
-
-    background(postgresql)
-
-    # we redirect them back to login
+@when('attempting to view my recipes', target_fixture='response')
+def load_my_recipes(client):
     response = client.get("/profile", follow_redirects=True)
     assert response.status_code == 200
+    return response
+
+@then(parsers.parse('the following list of recipes is returned:{table}'))
+def check_recipes(table, response):
+    table = json.loads(table)[1:]
+    if table:
+        for (id, _, _, _) in table:
+            m = bytes(f'"id": {id}', 'utf-8')
+            assert m in response.data
+    else:
+        assert b'"id": ' not in response.data
+
+@then('the system asks to login')
+def check_redirect_to_login(response):
     assert response.request.path == "/login"
+

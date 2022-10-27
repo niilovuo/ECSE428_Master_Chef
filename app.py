@@ -7,11 +7,12 @@ from project.db import Db
 from project.account import (
     add_new_account,
     search_account_by_id,
+    delete_account_by_id,
     search_account_by_name,
     search_account_by_email,
     convert_account_obj
 )
-from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe)
+from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -66,6 +67,20 @@ def create_app(setup_db=True):
             return render_template("/register.html")
 
         return render_template("/register.html")
+
+    @app.route("/setting")
+    def account_setting():
+        return render_template("/setting.html")
+
+    @app.route("/delete_account")
+    def delete_account():
+        if 'id' in session:
+            delete_account_by_id(session.get('id'))
+            session.pop('id', None)
+            return render_template('/account_delete.html')
+        else:
+            flash('Your account cannot be deleted at the moment')
+            return redirect('/setting')
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
@@ -310,6 +325,15 @@ def create_app(setup_db=True):
         err = delete_comment_by_id(id, user_id, author_id)
         if not err:
             return 'delete comment success', 200
+        else:
+            return err, 404
+
+    @app.route("/api/recipes/<int:recipe_id>/tags/<tag_name>", methods=["DELETE"])
+    def remove_tag(recipe_id, tag_name):
+        user_id = session.get('id')
+        err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
+        if not err:
+            return 'remove tag of recipe success', 200
         else:
             return err, 404
 
