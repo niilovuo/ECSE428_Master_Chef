@@ -115,7 +115,7 @@ def remove_tag_of_recipe(tag_name, recipe_id, user_id):
     if not exists:
         return "Recipe does not have this tag"
     try:
-        error = RecipeTagRepo.delete_by_id(recipe_id, tag[0])
+        error = RecipeTagRepo.remove_by_id(recipe_id, tag[0])
         return error
     except Exception:
         return "Could not remove tag of recipe, please try again"
