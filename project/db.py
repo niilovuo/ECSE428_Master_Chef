@@ -292,7 +292,6 @@ class RecipeTagRepo:
 
     @staticmethod
     def delete_by_id(recipe_id, tag_id):
-        recipe_id = recipe_id
         _conn = Db.get_session()
         try:
             cur = _conn.cursor()
@@ -306,12 +305,6 @@ class RecipeTagRepo:
             _conn.rollback()
             raise e
 
-    @staticmethod
-    def select_all():
-        _conn = Db.get_session()
-        cur = _conn.cursor()
-        cur.execute("SELECT * FROM recipe_tags")
-        return cur.fetchall()
 
 class IngredientRepo:
 
