@@ -292,7 +292,6 @@ class RecipeTagRepo:
 
     @staticmethod
     def delete_by_id(recipe_id, tag_id):
-        recipe_id = recipe_id
         _conn = Db.get_session()
         try:
             cur = _conn.cursor()
