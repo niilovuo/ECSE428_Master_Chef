@@ -104,16 +104,12 @@ def tag_name_is_a_tag_which_exists_in_the_system(postgresql, tag_name):
         INSERT INTO tags VALUES (DEFAULT, %s)
         RETURNING id""", (tag_name,))
     tag_id = cur.fetchone()[0]
-    # cur.execute("""
-    #     INSERT INTO tags VALUES (DEFAULT, 't1'), (DEFAULT, 't2')
-    #     """)
     postgresql.commit()
     return tag_id
 
 
 @given(parsers.parse('"{tag_name}" is a tag which does not exist in the system'), target_fixture="tag_id")
 def tag_name_is_a_tag_which_does_not_exists_in_the_system(postgresql, tag_name, recipe_id):
-
     return None
 
 
