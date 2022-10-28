@@ -75,7 +75,7 @@ def attempt_to_view_comments(table, response):
     table = json.loads(table)[1:]
     if table:
         for (comment_id, _, _, _, _) in table:
-            m = bytes(f'"comment_id": {comment_id}', 'utf-8')
+            m = bytes(f'[{comment_id},', 'utf-8')
             assert m in response.data
         assert response.status_code == 200
     else:
