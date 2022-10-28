@@ -53,7 +53,7 @@ def the_recipe_with_id_1_does_not_exist_in_the_system():
     pass  # No recipe by default
 
 
-@when('a user requests the list of comments for recipe 1', target_fixture='response')
+@when('a user requests the list of comments for recipe "1"', target_fixture='response')
 def a_user_requests_the_list_of_comments_for_recipe_1(client):
     response = client.get("/api/recipes/1/comments")
     return response
