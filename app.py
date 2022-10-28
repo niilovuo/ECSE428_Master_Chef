@@ -286,7 +286,7 @@ def create_app(setup_db=True):
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
 
-    @app.route("/api/comments/<int:recipe_id>", methods=["GET"])
+    @app.route("/api/recipes/<int:recipe_id>/comments", methods=["GET"])
     def api_get_comments_of_recipe(recipe_id):
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
