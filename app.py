@@ -48,7 +48,7 @@ def create_app(setup_db=True):
 
     @app.route("/")
     def home():
-        return render_template("/home.html", value = random.randrange(1024))
+        return render_template("/home.html")
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
