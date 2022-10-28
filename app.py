@@ -24,7 +24,8 @@ from project.recipe_query import (
     search_recipes_by_author,
     convert_recipe_obj
 )
-from project.comment import add_comment, search_comment_by_id, delete_comment_by_id
+from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
+
 
 def create_app(setup_db=True):
     app = Flask(__name__)
@@ -281,7 +282,7 @@ def create_app(setup_db=True):
     def api_get_comments_of_recipe(recipe_id):
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
-        return search_comment_by_id(recipe_id)
+        return search_comment_by_recipe_id(recipe_id)
         
     @app.route("/api/comments/add", methods=["POST"])
     def api_add_comment_to_recipe():
