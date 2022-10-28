@@ -225,6 +225,22 @@ class RecipeRepo:
             """, (id, author_id))
         return cur.fetchone()
 
+
+    @staticmethod
+    def delete_by_id(id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                    DELETE FROM recipes WHERE id = %s
+                    """, (id,))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+
 class TagRepo:
 
     @staticmethod
