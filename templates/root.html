@@ -9,8 +9,51 @@
 	</head>
 	<body>
 	  <div>
-		<div>
-		  navbar
+		<div style=" padding-bottom: 8em;">
+			<nav class="navbar navbar-expand-lg fixed-top navbar-scroll shadow-0" style="background-color: #ffede7; ">
+				<div class="container">
+				  <a class="navbar-brand" href="/">Master Chef</a>
+				  <button class="navbar-toggler ps-0" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarExample01"
+					aria-controls="navbarExample01" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="d-flex justify-content-start align-items-center">
+					  <i class="fas fa-bars"></i>
+					</span>
+				  </button>
+				  <div class="collapse navbar-collapse" id="navbarExample01">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+					  <li class="nav-item active">
+						<a class="nav-link px-3" href="/search">Recipes</a>
+					  </li>
+					  <li class="nav-item">
+						<a class="nav-link px-3" href="/register"> Create Account</a>
+					  </li>
+					  <li class="nav-item">
+						<a class="nav-link px-3" href="/login"> Sign Up </a>
+					  </li>
+					  <li class="nav-item">
+						<a class="nav-link px-3" href="#!"> Log out </a>
+					  </li>
+					  <li class="nav-item">
+						<a class="nav-link px-3" href="/setting"> Account Settings</a>
+					  </li>
+					</ul>
+					<ul>
+						<div class="container">
+							<div class="row height d-flex justify-content-center align-items-center">
+							  <div class="col-md-8">
+								<div class="search">
+                                  <form action="/search">
+								    <i class="fa fa-search"></i>
+								    <input type="text" class="form-control" placeholder="Search Recipe" name="q">
+                                  </form>
+								</div>
+							  </div>
+							</div>
+						</div>
+					</ul>
+				  </div>
+				</div>
+			  </nav>
 		</div>
 		<div>
 		  {% block content %}

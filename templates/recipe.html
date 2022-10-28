@@ -1,6 +1,15 @@
 {% extends "root.html" %}
 {% block content %}
 
+<script>
+  function remove_tag(tag) {
+    fetch('/api/recipes/{{ recipe["id"] }}/tags/' + tag, {
+      method: 'DELETE'
+    })
+      .then(response => window.location.reload(true))
+  }
+</script>
+
 {% if recipe is none %}
 <p>The specified recipe does not exist!</p>
 {% else %}
@@ -51,15 +60,43 @@
 
     <div class="col-2">
       <h4>Author</h4>
-      <p>{{ author["name"] }}</p>
+      <a href="/profile/{{ author["id"] }}">{{ author["name"] }}</a>
 
       <h4>Tags</h4>
+      {% if allow_edits %}
+        <div x-data="{ server_tags: [] }"
+             x-init="server_tags = await (await fetch('/api/tags')).json()">
+          <form action="/recipes/{{ recipe["id"] }}/tags" method="post">
+            <select class="form-select" name="tag">
+              <template x-for="server_tag in server_tags" :key="server_tag[0]">
+                <option :value="server_tag[1]" x-text="server_tag[1]"></option>
+              </template>
+            </select>
+            <input class="btn btn-primary" type="submit" value="Add tag"></input>
+          </form>
+        </div>
+        <br/>
+		<a href="/recipes/edit/{{recipe["id"]}}" class="btn btn-primary">Edit recipe</a>
+		<br/>
+      {% endif %}
+
       {% if not tags %}
         <p>(none)</p>
       {% endif %}
+      <div x-data="{ remove_tag }">
       {% for tag in tags %}
-        <button class="btn btn-outline-secondary">{{ tag[1] }}</button>
+        <div class="row">
+          <div class="col">
+            <a class="btn btn-outline-secondary" href="/search?tag={{ tag[1] }}">{{ tag[1] }}</a>
+          </div>
+          {% if allow_edits %}
+            <div class="col">
+              <p class="btn" @click='remove_tag("{{ tag[1] }}")'>&cross;</p>
+            </div>
+          {% endif %}
+        </div>
       {% endfor %}
+      </div>
     </div>
   </div>
 </div>

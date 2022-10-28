@@ -16,7 +16,6 @@ Forum website to share recipes and other cooking related things
 | Paul Teng | 260862906 |
 | Niilo Vuokila | 260926706 |
 | Jasmine Cheung | 260985168 |
-| Filip Piekarek | 260805461 |
 
 ## Setting up the environment
 
