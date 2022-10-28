@@ -29,3 +29,8 @@ Scenario: User Requests List of Comments for a Recipe with No Comments (Alternat
   When a user requests the list of comments for recipe "1"
   Then the following list of comments is returned:
       [[ "comment_id", "title", "body", "author_id", "recipe_id" ]]
+
+Scenario: User Requests List of Comments for a Recipe which does not exist (Error Flow)
+  Given the recipe with id "1" does not exist in the system
+  When a user requests the list of comments for recipe "1"
+  Then the "Invalid recipe id" error message is issued
