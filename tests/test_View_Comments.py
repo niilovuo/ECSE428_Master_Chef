@@ -79,7 +79,7 @@ def attempt_to_view_comments(table, response):
             assert m in response.data
         assert response.status_code == 200
     else:
-        assert b'"comment_id": ' not in response.data
+        assert len(response.json) == 0
 
 
 @then('the "Invalid recipe id" error message is issued')
