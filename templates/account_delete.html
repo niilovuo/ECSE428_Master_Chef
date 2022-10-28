@@ -1,0 +1,47 @@
+{% extends "root.html" %}
+{% block content %}
+<header>
+  <style>
+  body{
+    color: #8e9194;
+    background-color: #f4f6f9;
+    }
+    .avatar-xl img {
+        width: 110px;
+    }
+    .rounded-circle {
+        border-radius: 50% !important;
+    }
+    img {
+        vertical-align: middle;
+        border-style: none;
+    }
+    .text-muted {
+        color: #aeb0b4 !important;
+        font-weight: 300;
+    }
+</style>
+
+
+</header>
+<div class="container">
+  <!-- This page is displayed when the account deletion is successfully done. 
+       Once account deletion is done, the page is redirected to the main page automatically -->
+  
+    <script>    
+    window.setTimeout(function(){
+      window.location.href = "/";
+      }, 2000);
+
+    </script>
+    
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8 mx-auto">
+          <h2 class="h3 mb-4 page-title">Account Deleted Succesfully</h2>
+          <h3 class="h3 mb-4 page-title">Redirecting to the main page ... </h2>
+        </div> 
+    </div>
+  
+  </div>
+
+{% endblock %}

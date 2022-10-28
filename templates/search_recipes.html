@@ -4,11 +4,11 @@
 <script>
 function init_model() {
   return {
-    search_pattern: '',
+    search_pattern: '{{ default_query }}',
     search_tags: [],
     search_page: 0,
 
-    pending_pattern: '',
+    pending_pattern: '{{ default_query }}',
     pending_tags: [],
 
     recipes: [],
@@ -113,17 +113,7 @@ function init_model() {
   <p x-show="fetch_success && !recipes.length">(none on this page)</p>
 
   <template x-for="recipe in recipes" :key="recipe.id">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">
-          <a :href="'/recipes/' + recipe.id" class="stretched-link"
-             x-text="recipe.title"></a>
-        </h5>
-        <h6 class="card-subtitle mb-2 text-muted" x-text="'Prep time: ' + (recipe.prep_time || '(unknown)')"></h6>
-        <h6 class="card-subtitle mb-2 text-muted" x-text="'Cook time: ' + (recipe.cook_time || '(unknown)')"></h6>
-        <p class="card-text" x-text="recipe.directions"></p>
-      </div>
-    </div>
+    {% include "partials/recipe_card.html" %}
   </template>
 
   <div class="btn-group" role="group-pagination" aria-label="Pagination">

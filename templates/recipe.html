@@ -51,7 +51,7 @@
 
     <div class="col-2">
       <h4>Author</h4>
-      <p>{{ author["name"] }}</p>
+      <a href="/profile/{{ author["id"] }}">{{ author["name"] }}</a>
 
       <h4>Tags</h4>
       {% if allow_edits %}
@@ -67,6 +67,8 @@
           </form>
         </div>
         <br/>
+		<a href="/recipes/edit/{{recipe["id"]}}" class="btn btn-primary">Edit recipe</a>
+		<br/>
       {% endif %}
 
       {% if not tags %}

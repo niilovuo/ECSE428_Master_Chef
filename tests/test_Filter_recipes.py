@@ -57,6 +57,12 @@ def test_filter_a_recipe_with_invalid_tag(app):
 def test_filter_a_recipe_with_multiple_tags__one_of_which_is_invalid(app):
     pass
 
+@given('no tags at all')
+def clear_out_all_tags(postgresql):
+    cur = postgresql.cursor()
+    cur.execute("DELETE FROM tags;")
+    postgresql.commit()
+
 @given(parsers.parse('the following recipes exist in the system\n{table_data}'))
 def the_following_recipes_exist_in_the_system(table_data, postgresql):
     table_data = json.loads(table_data)[1:]

@@ -1,183 +1,134 @@
-"""
-Feature: Add Tag to Recipe
+""" Add Tag to Recipe """
 
-As a recipe author
-I would like to add tags to my recipe
-So that users can find my recipe based the list of tags
-"""
-
+import json
 from flask import session
+from pytest_bdd import (
+    given,
+    scenario,
+    then,
+    when,
+    parsers
+)
 
-def background(postgresql):
-    """
-    Background:
+from project.db import TagRepo
 
-    Given a user 1, "user1", "user1@gmail.com", "password1"
-    And a user 2, "user2", "user2@gmail.com", "password2"
-    And a recipe 1, "RecipeTitle" by user 1
-    And a tag 1, "TagName"
-    And a tag 2, "TagName1"
-    And a tag 3, "TagName2"
-    And a tag 4, "TagName3"
-    """
+@scenario('features/Add_Tag_to_Recipe.feature',
+          'Add a tag to recipe without tags (Normal Flow)')
+def test_add_a_tag(app):
+    pass
 
+@scenario('features/Add_Tag_to_Recipe.feature',
+          'Add multiple tags to recipe without tags (Alternate Flow)')
+def test_add_many_tags(app):
+    pass
+
+@scenario('features/Add_Tag_to_Recipe.feature',
+          'Attempt to add an already associated tag (Error Flow)')
+def test_add_duplicate_tag(app):
+    pass
+
+@scenario('features/Add_Tag_to_Recipe.feature',
+          'Attempt to add a tag which does not exist (Error Flow)')
+def test_add_inexistent_tag(app):
+    pass
+
+@scenario('features/Add_Tag_to_Recipe.feature',
+          'Unauthorized user attempts to add a tag (Error Flow)')
+def test_unauthorized_add_tag(app):
+    pass
+
+@scenario('features/Add_Tag_to_Recipe.feature',
+          'Logged out user attempts to add a tag (Error Flow)')
+def test_logged_out_user_attempts_to_add_a_tag(app):
+    pass
+
+@given('no tags in the database')
+def clear_tags(postgresql):
     cur = postgresql.cursor()
-    cur.execute("""
-        INSERT INTO accounts VALUES
-        (1, 'User1', 'user1@gmail.com', 'password1'),
-        (2, 'User2', 'user2@gmail.com', 'password2');
-
-        INSERT INTO recipes VALUES
-        (1, 'RecipeTitle', NULL, NULL, '', 1);
-
-        INSERT INTO tags VALUES
-        (1, 'TagName'),
-        (2, 'TagName1'),
-        (3, 'TagName2'),
-        (4, 'TagName3');
-        """)
+    cur.execute("DELETE FROM tags")
     postgresql.commit()
 
-def test_add_tag_to_recipe_without_tags(app, client, postgresql):
-    """
-    Scenario: Add a tag to recipe without tags (Normal Flow)
+@given(parsers.parse('a user {id:d}, "{name}", "{email}", "{password}"'))
+def add_user(id, name, email, password, postgresql):
+    cur = postgresql.cursor()
+    cur.execute("""
+        INSERT INTO accounts VALUES (%s, %s, %s, %s)
+        """, (id, name, email, password))
+    postgresql.commit()
 
-    Given user 1 is logged into the system
-    And there are 0 tags associated with recipe 1
-    When requesting to add "TagName" tag to recipe 1
-    Then the operation succeeds
-    And the tag "TagName" is added
-    """
+@given(parsers.parse('a recipe {id:d}, "{title}" by user {author_id:d}'))
+def add_recipe(id, title, author_id, postgresql):
+    cur = postgresql.cursor()
+    cur.execute("""
+        INSERT INTO recipes VALUES (%s, %s, NULL, NULL, '', %s)
+        """, (id, title, author_id))
+    postgresql.commit()
 
-    background(postgresql)
+@given(parsers.parse('a tag {id:d}, "{name}"'))
+def add_tag(id, name, postgresql):
+    cur = postgresql.cursor()
+    cur.execute("""
+        INSERT INTO tags VALUES (%s, %s)
+        """, (id, name))
+    postgresql.commit()
+
+@given(parsers.parse('user {id:d} is logged into the system'))
+def log_me_in(id, client):
     with client.session_transaction() as session:
-        session['id'] = 1
+        session['id'] = id
 
-    client.post("/recipes/1/tags", data={ "tag": "TagName" })
-    response = client.get("/api/recipes/1/tags")
-    assert response.status_code == 200
-    assert response.json == [[1, "TagName"]]
+@given('the user is not logged into the system')
+def skip_login():
+    # no one is logged in by default
+    pass
 
-def test_add_multiple_tags(app, client, postgresql):
-    """
-    Scenario: Add multiple tags to recipe without tags (Alternate Flow)
+@given('there are no tags associated with recipe 1')
+def check_no_tags_on_recipe():
+    # this is the default
+    pass
 
-    Given user 1 is logged into the system
-    And there are 0 tags associated with recipe 1
-    When requesting to add "TagName1" tag to recipe 1
-    And requesting to add "TagName2" tag to recipe 1
-    Then the operation succeeds
-    And the tag "TagName1" is added
-    And the tag "TagName2" is added
-    """
+@given(parsers.parse('tag "{name}" is already associated with recipe {recipe_id:d}'))
+def setup_recipe_tag(name, recipe_id, postgresql):
+    cur = postgresql.cursor()
+    cur.execute("""
+        INSERT INTO recipe_tags VALUES (%s, %s)
+        """, (recipe_id, TagRepo.select_by_name(name)[0]))
+    postgresql.commit()
 
-    background(postgresql)
-    with client.session_transaction() as session:
-        session['id'] = 1
+@given(parsers.parse('tag "{name}" does not exist'))
+def check_tag_inexistent(name):
+    assert TagRepo.select_by_name(name) is None
 
-    client.post("/recipes/1/tags", data={ "tag": "TagName1" })
-    client.post("/recipes/1/tags", data={ "tag": "TagName2" })
-    response = client.get("/api/recipes/1/tags")
-    assert response.status_code == 200
-    assert response.json == [[2, "TagName1"], [3, "TagName2"]]
-
-def test_add_duplicate_tag(app, client, postgresql):
-    """
-    Scenario: Attempt to add an already associated tag (Error Flow)
-
-    Given user 1 is logged into the system
-    And tag "TagName" is already associated with recipe 1
-    When requesting to add "TagName" tag to recipe 1
-    Then the operation fails with "Recipe already has tag"
-    And the tag "TagName" stays
-    """
-
-    background(postgresql)
-    with client.session_transaction() as session:
-        session['id'] = 1
-
-    # the 2nd (duplicate) add should fail, we check if the flashed error
-    # message is there
-    client.post("/recipes/1/tags", data={ "tag": "TagName" })
-    response = client.post("/recipes/1/tags", data={ "tag": "TagName" },
+@when(parsers.parse('requesting to add "{tag}" tag to recipe {recipe_id:d}'),
+      target_fixture='response')
+def add_tag_to_recipe(tag, recipe_id, client):
+    response = client.post(f"/recipes/{recipe_id}/tags",
+                           data={ "tag": tag },
                            follow_redirects=True)
-    assert response.request.path == "/recipes/1"
-    assert b'Recipe already has tag' in response.data
+    return response
 
-    # check to make sure the old tag is still there
-    response = client.get("/api/recipes/1/tags")
+@then('the operation succeeds')
+def check_op_succeeds():
+    pass
+
+@then(parsers.parse('the operation fails with "{errmsg}"'))
+def check_error_message(errmsg, response):
+    assert bytes(errmsg, 'utf-8') in response.data
+
+@then(parsers.parse('the recipe {recipe_id:d} has tag "{name}"'))
+def check_recipe_has_tag(recipe_id, name, client):
+    response = client.get(f"/api/recipes/{recipe_id}/tags")
     assert response.status_code == 200
-    assert response.json == [[1, "TagName"]]
 
-def test_add_inexistent_tag(app, client, postgresql):
-    """
-    Scenario: Attempt to add a tag which does not exist (Error Flow)
+    found = False
+    for (_, ld_name) in response.json:
+        if name == ld_name:
+            found = True
+            break
 
-    Given user 1 is logged into the system
-    And tag "TagName" is already associated with recipe 1
-    And tag "TagXXX" does not exist
-    When requesting to add "TagXXX" tag to recipe 1
-    Then the operation fails with "Tag does not exist"
-    And the tag "TagName" stays
-    """
+    assert found
 
-    background(postgresql)
-    with client.session_transaction() as session:
-        session['id'] = 1
-
-    # the 2nd add should fail, we check if the flashed error message is there
-    client.post("/recipes/1/tags", data={ "tag": "TagName" })
-    response = client.post("/recipes/1/tags", data={ "tag": "TagXXX" },
-                           follow_redirects=True)
-    assert response.request.path == "/recipes/1"
-    assert b'Tag does not exist' in response.data
-
-    # check to make sure the old tag is still there
-    response = client.get("/api/recipes/1/tags")
-    assert response.status_code == 200
-    assert response.json == [[1, "TagName"]]
-
-def test_unauthorized_add_tag(app, client, postgresql):
-    """
-    Scenario: Unauthorized user attempts to add a tag (Error Flow)
-
-    Given user 2 is logged into the system
-    And tag "TagName" is already associated with recipe 1
-    When requesting to add "TagName1" tag to recipe 1
-    Then the operation fails with "Cannot modify this recipe"
-    And the tag "TagName" stays
-    """
-
-    background(postgresql)
-    with client.session_transaction() as session:
-        session['id'] = 1
-
-    client.post("/recipes/1/tags", data={ "tag": "TagName" })
-
-    with client.session_transaction() as session:
-        session['id'] = 2
-
-    response = client.post("/recipes/1/tags", data={ "tag": "TagName1" },
-                           follow_redirects=True)
-    assert response.request.path == "/recipes/1"
-    assert b'Cannot modify this recipe' in response.data
-
-    # check to make sure the old tag is still there
-    response = client.get("/api/recipes/1/tags")
-    assert response.status_code == 200
-    assert response.json == [[1, "TagName"]]
-
-def test_not_logged_in(app, client, postgresql):
-    """
-    Scenario: Logged out user attempts to add a tag (Error Flow)
-
-    Given the user is not logged into the system
-    When requesting to add "TagName" tag to recipe 1
-    Then the user is redirected to the login page
-    """
-
-    background(postgresql)
-    response = client.post("/recipes/1/tags", data={ "tag": "TagName" },
-                           follow_redirects=True)
+@then('the user is redirected to the login page')
+def check_login_redirect(response):
     assert response.request.path == "/login"
 
