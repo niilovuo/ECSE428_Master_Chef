@@ -133,11 +133,9 @@ def create_app(setup_db=True):
 
         return render_template("/profile.html", user=current_user, recipes=recipes)
 
-    # For testing purposes
     @app.route("/user", methods=["GET"])
     def get_current_user():
         if 'id' in session:
-            # Add logic to read info from session token
             return "Someone is in", 200
         return "No user", 401
 
