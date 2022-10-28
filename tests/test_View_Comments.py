@@ -74,4 +74,4 @@ def attempt_to_view_comments(table, response):
 @then('the "Invalid recipe id" error message is issued')
 def the_invalid_recipe_id_error_message_is_issued(response):
     assert response.status_code == 404
-    assert response == "Invalid recipe id"
+    assert response.data == b"Invalid recipe id"
