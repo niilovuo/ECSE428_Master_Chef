@@ -27,7 +27,7 @@ def test_user_requests_list_of_comments_for_a_recipe_which_does_not_exist_error_
     pass
 
 
-@given('the following comments exist in the system:{table}')
+@given(parsers.parse('the following comments exist in the system:{table}'))
 def setup_comments(table, postgresql):
     table = json.loads(table)[1:]
     cur = postgresql.cursor()
