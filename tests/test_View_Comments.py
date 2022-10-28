@@ -8,25 +8,36 @@ from pytest_bdd import (
 )
 
 from project.comment import search_comment_by_recipe_id
+
+
 @scenario('features/View_Comments.feature', 'User Requests List of Comments for a Recipe (Normal Flow)')
-def test_user_requests_list_of_comments_for_a_recipe_normal_flow():
+def test_user_requests_list_of_comments_for_a_recipe_normal_flow(app):
     pass
 
 
-@scenario('features/View_Comments.feature', 'User Requests List of Comments for a Recipe with No Comments (Alternative Flow)')
-def test_user_requests_list_of_comments_for_a_recipe_with_no_comments_alternative_flow():
+@scenario('features/View_Comments.feature',
+          'User Requests List of Comments for a Recipe with No Comments (Alternative Flow)')
+def test_user_requests_list_of_comments_for_a_recipe_with_no_comments_alternative_flow(app):
     pass
+
+
+@scenario('features/View_Comments.feature',
+          'User Requests List of Comments for a Recipe which does not exist (Error Flow)')
+def test_user_requests_list_of_comments_for_a_recipe_which_does_not_exist_error_flow(app):
+    pass
+
 
 @given('the following comments exist in the system:{table}')
 def setup_comments(table, postgresql):
     table = json.loads(table)[1:]
     cur = postgresql.cursor()
-    for (comment_id, title, body, author_id, recipe_id ) in table:
+    for (comment_id, title, body, author_id, recipe_id) in table:
         cur.execute("""
                         INSERT INTO comments
                         VALUES (%s, %s, %s, %s, %s) RETURNING id
                         """, (comment_id, title, body, author_id, recipe_id))
     postgresql.commit()
+
 
 @given('the recipe with id "1" exists in the system')
 def the_recipe_with_id_1_exists_in_the_system(postgresql):
@@ -36,11 +47,17 @@ def the_recipe_with_id_1_exists_in_the_system(postgresql):
         """, (1, "recipe", 1))
     postgresql.commit()
 
-@when('a user requests the list of comments for recipe "{1}"', target_fixture='response')
-def a_user_requests_the_list_of_comments_for_recipe_1():
-    """a user requests the list of comments for recipe "1"."""
-    response = search_comment_by_recipe_id(1)
+
+@given('the recipe with id "1" does not exist in the system')
+def the_recipe_with_id_1_does_not_exist_in_the_system():
+    pass  # No recipe by default
+
+
+@when('a user requests the list of comments for recipe 1', target_fixture='response')
+def a_user_requests_the_list_of_comments_for_recipe_1(client):
+    response = client.get("/api/recipes/1/comments")
     return response
+
 
 @then('the following list of comments is returned:{table}')
 def attempt_to_view_comments(table, response):
@@ -49,5 +66,12 @@ def attempt_to_view_comments(table, response):
         for (comment_id, _, _, _, _) in table:
             m = bytes(f'"comment_id": {comment_id}', 'utf-8')
             assert m in response.data
+        assert response.status_code == 200
     else:
         assert b'"comment_id": ' not in response.data
+
+
+@then('the "Invalid recipe id" error message is issued')
+def the_invalid_recipe_id_error_message_is_issued(response):
+    assert response.status_code == 404
+    assert response == "Invalid recipe id"
