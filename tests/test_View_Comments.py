@@ -7,9 +7,6 @@ from pytest_bdd import (
     when,
 )
 
-from project.comment import search_comment_by_recipe_id
-
-
 @scenario('features/View_Comments.feature', 'User Requests List of Comments for a Recipe (Normal Flow)')
 def test_user_requests_list_of_comments_for_a_recipe_normal_flow(app):
     pass
