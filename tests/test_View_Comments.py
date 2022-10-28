@@ -8,12 +8,12 @@ from pytest_bdd import (
 )
 
 from project.comment import search_comment_by_recipe_id
-@scenario('features\View_Comments.feature', 'User Requests List of Comments for a Recipe (Normal Flow)')
+@scenario('features/View_Comments.feature', 'User Requests List of Comments for a Recipe (Normal Flow)')
 def test_user_requests_list_of_comments_for_a_recipe_normal_flow():
     pass
 
 
-@scenario('features\View_Comments.feature', 'User Requests List of Comments for a Recipe with No Comments (Alternative Flow)')
+@scenario('features/View_Comments.feature', 'User Requests List of Comments for a Recipe with No Comments (Alternative Flow)')
 def test_user_requests_list_of_comments_for_a_recipe_with_no_comments_alternative_flow():
     pass
 
