@@ -8,6 +8,19 @@ from pytest_bdd import (
     parsers
 )
 
+
+@given(parsers.parse('the following users exist in the system:{table}'))
+def users_exist_in_the_system(table, postgresql):
+    table = json.loads(table)[1:]
+    cur = postgresql.cursor()
+    for (id, name, email, password) in table:
+        cur.execute("""
+                        INSERT INTO accounts
+                        VALUES (%s, %s, %s, %s)
+                        """, (id, name, email, password))
+    postgresql.commit()
+
+
 @scenario('features/View_Comments.feature', 'User Requests List of Comments for a Recipe (Normal Flow)')
 def test_user_requests_list_of_comments_for_a_recipe_normal_flow(app):
     pass
@@ -41,7 +54,6 @@ def setup_comments(table, postgresql):
 def the_recipe_with_id_1_exists_in_the_system(postgresql):
     cur = postgresql.cursor()
     cur.execute("""
-        INSERT INTO accounts (id, name, email, password) VALUES (1, 'Chef', 'chef@mail.com', 'pass12$');
         INSERT INTO recipes VALUES (%s, %s, NULL, NULL, 'go', %s)
         """, (1, "recipe", 1))
     postgresql.commit()

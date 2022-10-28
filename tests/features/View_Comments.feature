@@ -4,6 +4,15 @@ As a user
 I would like to view the comments for a recipe
 So that I can engage with other people
 
+Background:
+  Given the following users exist in the system:
+    [
+      [ "id", "name", "email", "password" ],
+      [ "1", "Dog Chef", "dogChef@mail.com", "pass12$" ],
+      [ "2", "Cat Chef", "catChef@mail.com", "milk364%" ],
+      [ "3", "Human Chef", "humanChef@mail.com", "password123$" ]
+    ]
+
 Scenario: User Requests List of Comments for a Recipe (Normal Flow)
   Given the recipe with id "1" exists in the system
   And the following comments exist in the system:
