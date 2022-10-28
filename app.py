@@ -25,7 +25,7 @@ from project.recipe_query import (
     convert_recipe_obj
 )
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
-
+from project.recipe import delete_recipe_by_id
 
 def create_app(setup_db=True):
     app = Flask(__name__)
@@ -338,6 +338,18 @@ def create_app(setup_db=True):
         err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
         if not err:
             return 'remove tag of recipe success', 200
+    @app.route("/api/recipes/<int:id>", method=["DELETE"])
+    def delete_recipe(id):
+        recipe = search_recipe_by_id(id)
+        user_id = session.get('id')
+        if not user_id:
+            return "No user", 404
+        if recipe is None:
+            return "This recipe does not exist", 404
+        author_id = recipe[5]
+        err = delete_recipe_by_id(id, user_id, author_id)
+        if not err:
+            return 'delete recipe success', 200
         else:
             return err, 404
 

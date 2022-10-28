@@ -22,7 +22,7 @@ def edit_recipe(recipe_id, data, author):
     (data, ingredients) = parse_recipe_params(data)
     return RecipeRepo.update_recipe(recipe_id = recipe_id, author_id = author, ingredients = ingredients, **data)
 
-def delete_recipe(recipe_id, user_id, author_id):
+def delete_recipe_by_id(recipe_id, user_id, author_id):
     """
     Delete the recipe by id
 
