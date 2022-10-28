@@ -5,6 +5,7 @@ from pytest_bdd import (
     scenario,
     then,
     when,
+    parsers
 )
 
 @scenario('features/View_Comments.feature', 'User Requests List of Comments for a Recipe (Normal Flow)')
@@ -56,7 +57,7 @@ def a_user_requests_the_list_of_comments_for_recipe_1(client):
     return response
 
 
-@then('the following list of comments is returned:{table}')
+@then(parsers.parse('the following list of comments is returned:{table}'))
 def attempt_to_view_comments(table, response):
     table = json.loads(table)[1:]
     if table:
