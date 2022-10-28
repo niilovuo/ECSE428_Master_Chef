@@ -12,7 +12,7 @@ from project.account import (
     search_account_by_email,
     convert_account_obj
 )
-from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe)
+from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -144,7 +144,15 @@ def create_app(setup_db=True):
     @app.route("/search")
     def search():
         title = request.args.get("q", "")
-        return render_template("/search_recipes.html", default_query=title)
+        default_tag = request.args.get("tag", "")
+
+        if default_tag:
+            default_tag = [default_tag]
+        else:
+            default_tag = []
+
+        return render_template("/search_recipes.html",
+                               default_query=title, default_tag=default_tag)
 
     @app.route("/recipes/<int:id>")
     def lookup_recipe(id):
@@ -321,6 +329,15 @@ def create_app(setup_db=True):
         err = delete_comment_by_id(id, user_id, author_id)
         if not err:
             return 'delete comment success', 200
+        else:
+            return err, 404
+
+    @app.route("/api/recipes/<int:recipe_id>/tags/<tag_name>", methods=["DELETE"])
+    def remove_tag(recipe_id, tag_name):
+        user_id = session.get('id')
+        err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
+        if not err:
+            return 'remove tag of recipe success', 200
         else:
             return err, 404
 

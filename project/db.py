@@ -290,6 +290,22 @@ class RecipeTagRepo:
             """, (recipe, tag))
         return cur.fetchone() is not None
 
+    @staticmethod
+    def delete_by_id(recipe_id, tag_id):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                    DELETE FROM recipe_tags WHERE 
+                    recipe = %s AND tag = %s
+                    """, (recipe_id, tag_id))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+
 class IngredientRepo:
 
     @staticmethod
@@ -306,14 +322,6 @@ class IngredientRepo:
 class CommentRepo:
 
     @staticmethod
-    def select_by_recipe_id(recipe_id):
-        _conn = Db.get_session()
-        cur = _conn.cursor()
-        cur.execute("""
-            SELECT * FROM comments WHERE recipe = %s
-            """, (recipe_id,))
-        return cur.fetchall()
-        
     def add_comment(title, body, author, recipe):
         _conn = Db.get_session()
         try:

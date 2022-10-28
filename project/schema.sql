@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS recipes (
   cook_time TIME,
   directions TEXT NOT NULL, -- assume it's all lumped as markdown text or sth
   author INTEGER NOT NULL REFERENCES accounts (id)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS ingredients (
@@ -26,14 +27,17 @@ CREATE TABLE IF NOT EXISTS ingredients (
   name TEXT NOT NULL,
   quantity TEXT NOT NULL,
   recipe INTEGER NOT NULL REFERENCES recipes (id)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS comments (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
   body TEXT NOT NULL,
-  author INTEGER NOT NULL REFERENCES accounts (id),
+  author INTEGER REFERENCES accounts (id)
+    ON DELETE SET NULL,
   recipe INTEGER NOT NULL REFERENCES recipes (id)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tags (
@@ -42,8 +46,10 @@ CREATE TABLE IF NOT EXISTS tags (
 );
 
 CREATE TABLE IF NOT EXISTS recipe_tags (
-  recipe INTEGER NOT NULL REFERENCES recipes (id),
-  tag INTEGER NOT NULL REFERENCES tags (id),
+  recipe INTEGER NOT NULL REFERENCES recipes (id)
+    ON DELETE CASCADE,
+  tag INTEGER NOT NULL REFERENCES tags (id)
+    ON DELETE CASCADE,
 
   PRIMARY KEY (recipe, tag)
 );
