@@ -41,6 +41,7 @@ def setup_comments(table, postgresql):
 def the_recipe_with_id_1_exists_in_the_system(postgresql):
     cur = postgresql.cursor()
     cur.execute("""
+        INSERT INTO accounts (id, name, email, password) VALUES (1, 'Chef', 'chef@mail.com', 'pass12$');
         INSERT INTO recipes VALUES (%s, %s, NULL, NULL, 'go', %s)
         """, (1, "recipe", 1))
     postgresql.commit()
