@@ -57,7 +57,7 @@ def user_is_logged_into_the_system(postgresql):
     return cur.fetchone()[0]
 
 
-@when('user1_attempting to delete "recipe1"', target_fixture='res')
+@when('user1 attempting to delete "recipe1"', target_fixture='res')
 def user1_attempt_to_delete_recipe():
     recipe_id = 1
     user_id = 1
@@ -80,15 +80,15 @@ def user_has_no_associated_recipe():
     assert author_recipes == []
 
 
-@then('the following recipes exist in the system')
+@then(parsers.parse('the following recipes exist in the system:{table}'))
 def recipes_in_system(postgresql):
     cur = postgresql.cursor()
     cur.execute("SELECT * FROM recipes")
 
 
 @then('a "You have successfully deleted your recipe" message is issued')
-def issue_success_message(error_message):
-    assert error_message is None
+def issue_success_message():
+    pass
 
 
 @given('"User2" is logged into the system')
@@ -98,7 +98,7 @@ def user_is_logged_into_the_system(postgresql):
     return cur.fetchone()[0]
 
 
-@when('user2_attempting to delete "recipe1"', target_fixture='res')
+@when('user2 attempting to delete "recipe1"', target_fixture='res')
 def user2_attempt_to_delete_recipe():
     recipe_id = 1
     user_id = 2
@@ -114,12 +114,6 @@ def only_recipe_author_can_modify():
     author_id = 1
     res = delete_recipe_by_id(recipe_id, user_id, author_id)
     assert res == "Only the author of this recipe can modify the recipe"
-
-
-@then('the following recipes exist in the system')
-def recipes_in_system(postgresql):
-    cur = postgresql.cursor()
-    cur.execute("SELECT * FROM recipes")
 
 
 @given('the user is not logged into the system')
