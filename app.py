@@ -133,12 +133,10 @@ def create_app(setup_db=True):
 
         return render_template("/profile.html", user=current_user, recipes=recipes)
 
-    # For testing purposes
     @app.route("/user", methods=["GET"])
     def get_current_user():
         if 'id' in session:
-            # Add logic to read info from session token
-            return "Someone is in", 200
+            return str(session.get("id")), 200
         return "No user", 401
 
     @app.route("/search")
@@ -169,7 +167,7 @@ def create_app(setup_db=True):
         allow_edits = session.get('id') == recipe["author"]
         return render_template("/recipe.html",
                                recipe=recipe, author=author, tags=tags, ingredients=ingredients,
-                               allow_edits=allow_edits)
+                               allow_edits=allow_edits, user=session.get('id'))
                                
     @app.route("/recipes/create")
     def render_create_recipe():
