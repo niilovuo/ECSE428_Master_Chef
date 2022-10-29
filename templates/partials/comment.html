@@ -1,8 +1,17 @@
 <div class="py-3">
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">This is a test</h5>
-      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+      <div class="row">
+        <div class="col">
+          <h5 class="card-title" x-text="comment[1]"></h5>
+        </div>
+        <div class="col-auto">
+          <template x-if="{{user}} == comment[3] || {{user}} == {{author['id']}}">
+            <button type="button" class="btn btn-danger" @click="delete_comment(comment[0])">Delete</button>
+          </template>
+        </div>
+      </div>
+      <p class="card-text" x-text="comment[2]"></p>
     </div>
   </div>
 </div>

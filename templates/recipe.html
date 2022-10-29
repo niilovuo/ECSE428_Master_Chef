@@ -111,19 +111,8 @@
 
   <div class="container py-3">
     <h3>Comments on this Recipe</h3>
-    <template x-for="(comment, index) in comments" :key="index">
-      <div class="py-3">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title" x-text="comment[1]"></h5>
-            <p class="card-text" x-text="comment[2]"></p>
-            <p class="text-muted p-0 m-0">{{author['name']}}</p>
-            <template x-if="{{user}} == comment[3] || {{user}} == {{author['id']}}">
-              <button type="button" class="btn btn-danger" @click="delete_comment(comment[0])">Temp delete</button>
-            </template>
-          </div>
-        </div>
-      </div>
+    <template x-for="comment in comments" :key="comment[0]">
+      {% include "partials/comment.html" %}
     </template>
   </div>
 
