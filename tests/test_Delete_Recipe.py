@@ -50,7 +50,7 @@ def attempt_to_delete_recipe():
     recipe_id = 1
     user_id = 1
     author_id = 1
-    res = delete_recipe(recipe_id, user_id, author_id)
+    res = delete_recipe_by_id(recipe_id, user_id, author_id)
     return res
 
 @then('"recipe1" does not exist in the system')
