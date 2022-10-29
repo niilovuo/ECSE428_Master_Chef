@@ -6,7 +6,7 @@
           <h5 class="card-title" x-text="comment[1]"></h5>
         </div>
         <div class="col-auto">
-          <template x-if="{{user}} == comment[3] || {{user}} == {{author['id']}}">
+          <template x-if="{{user}} == comment[3]">
             <button type="button" class="btn btn-danger" @click="delete_comment(comment[0])">Delete</button>
           </template>
         </div>
