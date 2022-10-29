@@ -1,6 +1,5 @@
 """Log out from account feature tests."""
 import pytest
-from flask import current_app
 from app import create_app
 
 from project.account import *
@@ -26,18 +25,16 @@ def app():
 @pytest.fixture
 def client(app):
     with app.test_client() as client:
-        with app.app_context():
-            assert current_app.config["ENV"] == "production"
         yield client
 
 
-@scenario(r'features\Log_Out.feature', 'Log out of account while logged out (Error flow)')
-def test_log_out_of_account_while_logged_out_error_flow():
+@scenario('features/Log_Out.feature', 'Log out of account while logged out (Error flow)')
+def test_log_out_of_account_while_logged_out_error_flow(app):
     """Log out of account while logged out (Error flow)."""
 
 
-@scenario(r'features\Log_Out.feature', 'Log out of account while logged in (Normal flow)')
-def test_log_out_of_account_while_logged_in_normal_flow():
+@scenario('features/Log_Out.feature', 'Log out of account while logged in (Normal flow)')
+def test_log_out_of_account_while_logged_in_normal_flow(app):
     """Log out of account while logged in (Normal flow)."""
 
 
