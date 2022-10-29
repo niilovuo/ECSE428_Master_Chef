@@ -49,12 +49,7 @@ def dont_log_me_in(client):
     # this is the default
     pass
 
-@when(parsers.parse('attempting to add comment to recipe id {recipe_id:d} with content ""'),
-      target_fixture='response')
-def add_comment_plz_1(recipe_id, client):
-    return do_add_comment(recipe_id, "", client)
-
-@when(parsers.parse('attempting to add comment to recipe id {recipe_id:d} with content "{body}"'),
+@when(parsers.re(r'attempting to add comment to recipe id (?P<recipe_id>\d+) with content "(?P<body>.*)"'),
       target_fixture='response')
 def do_add_comment(recipe_id, body, client):
     # let's just add body as both the title and the body
