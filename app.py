@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect,session
+from flask import Flask, render_template, request, flash, redirect, session
 from werkzeug.security import check_password_hash
 
 import os
@@ -12,7 +12,7 @@ from project.account import (
     search_account_by_email,
     convert_account_obj
 )
-from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe)
+from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -24,7 +24,7 @@ from project.recipe_query import (
     search_recipes_by_author,
     convert_recipe_obj
 )
-from project.comment import add_comment, search_comment_by_id, delete_comment_by_id
+from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
 from project.recipe import delete_recipe_by_id
 
 def create_app(setup_db=True):
@@ -48,7 +48,7 @@ def create_app(setup_db=True):
 
     @app.route("/")
     def home():
-        return render_template("/home.html", value = random.randrange(1024))
+        return render_template("/home.html", value=random.randrange(1024))
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
@@ -141,11 +141,18 @@ def create_app(setup_db=True):
             return "Someone is in", 200
         return "No user", 401
 
-
     @app.route("/search")
     def search():
         title = request.args.get("q", "")
-        return render_template("/search_recipes.html", default_query=title)
+        default_tag = request.args.get("tag", "")
+
+        if default_tag:
+            default_tag = [default_tag]
+        else:
+            default_tag = []
+
+        return render_template("/search_recipes.html",
+                               default_query=title, default_tag=default_tag)
 
     @app.route("/recipes/<int:id>")
     def lookup_recipe(id):
@@ -279,6 +286,12 @@ def create_app(setup_db=True):
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
 
+    @app.route("/api/recipes/<int:recipe_id>/comments", methods=["GET"])
+    def api_get_comments_of_recipe(recipe_id):
+        if search_recipe_by_id(recipe_id) is None:
+            return "Invalid recipe id", 404
+        return search_comment_by_recipe_id(recipe_id)
+        
     @app.route("/api/comments/add", methods=["POST"])
     def api_add_comment_to_recipe():
 
@@ -303,7 +316,6 @@ def create_app(setup_db=True):
 
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
-
 
     @app.route("/api/comments/<int:id>", methods=["DELETE"])
     def delete_comment(id):
@@ -332,13 +344,20 @@ def create_app(setup_db=True):
         err = delete_recipe_by_id(id, user_id, author_id)
         if not err:
             return 'delete recipe success', 200
+
+    @app.route("/api/recipes/<int:recipe_id>/tags/<tag_name>", methods=["DELETE"])
+    def remove_tag(recipe_id, tag_name):
+        user_id = session.get('id')
+        err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
+        if not err:
+            return 'remove tag of recipe success', 200
         else:
             return err, 404
 
     return app
 
+
 if __name__ == "__main__":
     app = create_app()
     app.debug = os.getenv("DEBUG") == "true"
     app.run()
-

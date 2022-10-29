@@ -116,3 +116,40 @@ def add_tag_to_recipe(tag, recipe, user):
             return "Recipe already has tag"
 
         return "Unknown error occurred"
+
+
+def remove_tag_of_recipe(tag_name, recipe_id, user_id):
+    """
+    remove a tag of a recipe as a certain user
+
+    Parameters
+    ----------
+    tag_name:
+      Name of the tag
+    recipe_id:
+      Id of the recipe
+    user_id:
+      Id of the user performing the change
+
+    Returns
+    -------
+    None on success
+    str  on failure where str is a error message
+    """
+    if user_id is None:
+        return "Need to log in to modify this recipe"
+    tag = TagRepo.select_by_name(str(tag_name).strip())
+    if not tag:
+        return "Tag does not exist"
+
+    recipe = RecipeRepo.select_by_id_and_author(recipe_id, user_id)
+    if not recipe:
+        return "Cannot modify this recipe"
+    exists = RecipeTagRepo.check_exists(recipe_id, tag[0])
+    if not exists:
+        return "Recipe does not have this tag"
+    try:
+        error = RecipeTagRepo.delete_by_id(recipe_id, tag[0])
+        return error
+    except Exception:
+        return "Could not remove tag of recipe, please try again"
