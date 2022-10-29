@@ -1,6 +1,5 @@
 """Log in to account feature tests."""
 import pytest
-from flask import current_app
 from app import create_app
 
 from project.account import *
@@ -25,22 +24,20 @@ def app():
 @pytest.fixture
 def client(app):
     with app.test_client() as client:
-        with app.app_context():
-            assert current_app.config["ENV"] == "production"
         yield client
 
 
-@scenario('features\Login_Account.feature', 'Log in to a non-existing account (Error Flow)')
+@scenario('features/Login_Account.feature', 'Log in to a non-existing account (Error Flow)')
 def test_log_in_to_a_nonexisting_account_error_flow():
     pass
 
 
-@scenario('features\Login_Account.feature', 'Log in to an existing account with email & password (Normal Flow)')
+@scenario('features/Login_Account.feature', 'Log in to an existing account with email & password (Normal Flow)')
 def test_log_in_to_an_existing_account_with_email__password_alternate_flow():
     pass
 
 
-@scenario('features\Login_Account.feature', 'Log in to an existing account with incorrect password (Error Flow)')
+@scenario('features/Login_Account.feature', 'Log in to an existing account with incorrect password (Error Flow)')
 def test_log_in_to_an_existing_account_with_incorrect_password_error_flow():
     pass
 
