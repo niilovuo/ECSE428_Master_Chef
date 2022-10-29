@@ -1,78 +1,99 @@
 """Log in to account feature tests."""
+import pytest
+from flask import current_app
+from app import create_app
 
+from project.account import *
 from pytest_bdd import (
     given,
     scenario,
     then,
     when,
+    parsers
 )
+
+@pytest.fixture()
+def app():
+    app = create_app()
+    app.config.update({
+        "TESTING": True,
+    })
+    yield app
+
+
+
+@pytest.fixture
+def client(app):
+    with app.test_client() as client:
+        with app.app_context():
+            assert current_app.config["ENV"] == "production"
+        yield client
 
 
 @scenario('features\Login_Account.feature', 'Log in to a non-existing account (Error Flow)')
 def test_log_in_to_a_nonexisting_account_error_flow():
-    """Log in to a non-existing account (Error Flow)."""
     pass
 
 
-@scenario('features\Login_Account.feature', 'Log in to an existing account with email & password (Alternate Flow)')
+@scenario('features\Login_Account.feature', 'Log in to an existing account with email & password (Normal Flow)')
 def test_log_in_to_an_existing_account_with_email__password_alternate_flow():
-    """Log in to an existing account with email & password (Alternate Flow)."""
+    pass
 
 
 @scenario('features\Login_Account.feature', 'Log in to an existing account with incorrect password (Error Flow)')
 def test_log_in_to_an_existing_account_with_incorrect_password_error_flow():
-    """Log in to an existing account with incorrect password (Error Flow)."""
-
-
-@scenario('features\Login_Account.feature', 'Log in to an existing account with username & password (Normal Flow)')
-def test_log_in_to_an_existing_account_with_username__password_normal_flow():
     pass
 
-@given('an account by the name "acc1" does not exist within the system')
-def an_account_by_the_name_acc1_does_not_exist_within_the_system():
-    """an account by the name "acc1" does not exist within the system."""
-    raise NotImplementedError
+@given(parsers.parse('an account by the email "{email}" does not exist within the system'))
+def an_account_by_the_name_acc1_does_not_exist_within_the_system(app, email):
+    with app.app_context():
+        if search_account_by_email(email):
+            _id = search_account_by_email(email)[0]
+            delete_account_by_id(_id)
+
+        res = search_account_by_name(email)
+        assert res is None
 
 
-@given('an account by the name "acc1", email "abc@mail.com", password "123" exists within the system')
-def an_account_by_the_name_acc1_email_abcmailcom_password_123_exists_within_the_system():
-    """an account by the name "acc1", email "abc@mail.com", password "123" exists within the system."""
-    raise NotImplementedError
+@given(
+    parsers.parse('an account by the name "{name}", email "{email}", password "{password}" exists within the system'))
+def an_account_by_the_name_acc1_email_abcmailcom_password_123_exists_within_the_system(app, name, email, password):
+    with app.app_context():
+        if search_account_by_email(email):
+            assert True
+        else:
+            res = db_save_account(name, email, password)
+            assert res[1] is None
 
 
 @given('the user is not logged into the system')
-def the_user_is_not_logged_into_the_system():
-    """the user is not logged into the system."""
-    raise NotImplementedError
+def the_user_is_not_logged_into_the_system(client):
+    with client.session_transaction() as session:
+        assert not ("id" in session)
 
+@when(parsers.parse('requesting to log in to account with email "{email}" and password "{password}"'))
+def requesting_to_log_in_to_account_with_email_abcmailcom_with_password_123(client, email, password):
+    payload = {'email': email, 'password': password}
+    client.post('/login', data=payload)
 
-@when('requesting to log in to account called "acc1" with password "123"')
-def requesting_to_log_in_to_account_called_acc1_with_password_123():
-    """requesting to log in to account called "acc1" with password "123"."""
-    raise NotImplementedError
+@when(parsers.parse('requesting to log in to account with email "{email}" and password "{password}"'))
+def requesting_to_log_in_to_account_with_email_abcmailcom_and_password_231(client, email, password):
+    payload = {'email': email, 'password': password}
+    client.post('/login', data=payload)
 
-
-@when('requesting to log in to account with email "abc@mail.com" with password "123"')
-def requesting_to_log_in_to_account_with_email_abcmailcom_with_password_123():
-    """requesting to log in to account with email "abc@mail.com" with password "123"."""
-    raise NotImplementedError
-
-    raise NotImplementedError
-
-
-@then('a "Incorrect username or password" message is issued')
+# Not supported by API
+@then(parsers.parse('a "{message}" message is issued'))
 def a_incorrect_username_or_password_message_is_issued():
-    """a "Incorrect username or password" message is issued."""
-    raise NotImplementedError
+    pass
 
 
-@then('the system updates the state for the user to be logged into account "acc1"')
-def the_system_updates_the_state_for_the_user_to_be_logged_into_account_acc1():
-    """the system updates the state for the user to be logged into account "acc1"."""
-    raise NotImplementedError
+@then(parsers.parse('the system updates the state for the user to be logged into account "{name}"'))
+def the_system_updates_the_state_for_the_user_to_be_logged_into_account_acc1(client, name):
+    with client.session_transaction() as session:
+        assert session["id"] == search_account_by_name(name)[0]
 
 
 @then('the user is not logged into the system')
-def the_user_is_not_logged_into_the_system():
-    """the user is not logged into the system."""
-    raise NotImplementedError
+def the_user_is_not_logged_into_the_system(client):
+    with client.session_transaction() as session:
+        assert not ("id" in session)
