@@ -82,7 +82,7 @@ def attempt_to_delete_recipe():
     recipe_id = 1
     user_id = 2
     author_id = 1
-    res = delete_recipe(recipe_id, user_id, author_id)
+    res = delete_recipe_by_id(recipe_id, user_id, author_id)
     return res
 
 @then('the "Only the author of this recipe can modify the recipe" error message is issued')
@@ -90,7 +90,7 @@ def only_recipe_author_can_modify():
     recipe_id = 1
     user_id = 2
     author_id = 1
-    res = delete_recipe(recipe_id, user_id, author_id)
+    res = delete_recipe_by_id(recipe_id, user_id, author_id)
     assert res is "Only the author of this recipe can modify the recipe"
 
 @then('the following recipes exist in the system')
@@ -107,7 +107,7 @@ def not_logged_in_user_attempts_to_delete_recipe():
     recipe_id = 1
     author_id = 1
     user_id = None
-    res = delete_recipe(recipe_id, user_id, author_id)
+    res = delete_recipe_by_id(recipe_id, user_id, author_id)
     return res
 
 @then('a  "You need to log in to delete this recipe" error message is issued')
@@ -115,7 +115,7 @@ def error_issue():
     recipe_id = 1
     author_id = 1
     user_id = None
-    res = delete_recipe(recipe_id, user_id, author_id)
+    res = delete_recipe_by_id(recipe_id, user_id, author_id)
     assert res is "You need to log in to delete this recipe"
 
 @then('the following recipes exist in the system')
