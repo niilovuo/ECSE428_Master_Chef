@@ -36,7 +36,7 @@ Scenario: Unauthorized user attempts to remove a recipe (Error Flow)
 Scenario: Logged out user attempts to remove a recipe (Error Flow)
     Given the user is not logged into the system
     When attempting to delete "recipe1"
-    Then a  "You need to log in to delete this recipe" error message is issued
+    Then a "You need to log in to delete this recipe" error message is issued
     And the following recipes exist in the system:
         | Recipe  |
 	| Recipe1 |
