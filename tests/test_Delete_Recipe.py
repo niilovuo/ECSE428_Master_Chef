@@ -29,7 +29,7 @@ def test_logged_out_user_attempts_to_remove_a_recipe_error_flow(app):
 
 
 @given(parsers.parse('the following accounts exist in the system:{table}'))
-def the_following_accounts_exists_in_the_system(postgresql):
+def the_following_accounts_exist_in_the_system(postgresql):
     cur = postgresql.cursor()
     cur.execute("INSERT INTO accounts VALUES (1, %s, %s, '');", ("User", "User"))
     cur.execute("INSERT INTO accounts VALUES (2, %s, %s, '');", ("User1", "User1"))

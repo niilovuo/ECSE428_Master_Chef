@@ -30,7 +30,7 @@ Scenario: Unauthorized user attempts to remove a recipe (Error Flow)
     Then the "Only the author of this recipe can modify the recipe" error message is issued
     And the following recipes exist in the system:
         | Recipe  |
-	| Recipe1 |
+        | Recipe1 |
         | Recipe2 |
 
 Scenario: Logged out user attempts to remove a recipe (Error Flow)
@@ -39,7 +39,7 @@ Scenario: Logged out user attempts to remove a recipe (Error Flow)
     Then a "You need to log in to delete this recipe" error message is issued
     And the following recipes exist in the system:
         | Recipe  |
-	| Recipe1 |
+        | Recipe1 |
         | Recipe2 |
 
 
