@@ -28,7 +28,7 @@ def test_logged_out_user_attempts_to_remove_a_recipe_error_flow(app):
     pass
 
 
-@given('the following accounts exist in the system')
+@given(parsers.parse('the following accounts exist in the system:{table}'))
 def the_following_accounts_exists_in_the_system(postgresql):
     cur = postgresql.cursor()
     cur.execute("INSERT INTO accounts VALUES (1, %s, %s, '');", ("User", "User"))
@@ -57,8 +57,8 @@ def user_is_logged_into_the_system(postgresql):
     return cur.fetchone()[0]
 
 
-@when('attempting to delete "recipe1"', target_fixture='res')
-def attempt_to_delete_recipe():
+@when('user1_attempting to delete "recipe1"', target_fixture='res')
+def user1_attempt_to_delete_recipe():
     recipe_id = 1
     user_id = 1
     author_id = 1
@@ -98,8 +98,8 @@ def user_is_logged_into_the_system(postgresql):
     return cur.fetchone()[0]
 
 
-@when('attempting to delete "recipe1"', target_fixture='res')
-def attempt_to_delete_recipe():
+@when('user2_attempting to delete "recipe1"', target_fixture='res')
+def user2_attempt_to_delete_recipe():
     recipe_id = 1
     user_id = 2
     author_id = 1
@@ -127,7 +127,7 @@ def user_is_not_logged_into_the_system():
     return None
 
 
-@when('attempting to delete "recipe1"', target_fixture='res')
+@when('guest attempting to delete "recipe1"', target_fixture='res')
 def not_logged_in_user_attempts_to_delete_recipe():
     recipe_id = 1
     author_id = 1

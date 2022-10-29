@@ -15,7 +15,7 @@ Background:
 
 Scenario: A recipe author deletes a recipe they created (Normal Flow)
     Given "User1" is logged into the system
-    When attempting to delete "recipe1"
+    When user1 attempting to delete "recipe1"
     Then "recipe1" does not exist in the system
     And "User1" has no associated recipes
     And the following recipes exist in the system:
@@ -26,7 +26,7 @@ Scenario: A recipe author deletes a recipe they created (Normal Flow)
 
 Scenario: Unauthorized user attempts to remove a recipe (Error Flow)
     Given "User2" is logged into the system
-    When attempting to delete "recipe1"
+    When user2 attempting to delete "recipe1"
     Then the "Only the author of this recipe can modify the recipe" error message is issued
     And the following recipes exist in the system:
         | Recipe  |
@@ -35,7 +35,7 @@ Scenario: Unauthorized user attempts to remove a recipe (Error Flow)
 
 Scenario: Logged out user attempts to remove a recipe (Error Flow)
     Given the user is not logged into the system
-    When attempting to delete "recipe1"
+    When guest attempting to delete "recipe1"
     Then a "You need to log in to delete this recipe" error message is issued
     And the following recipes exist in the system:
         | Recipe  |
