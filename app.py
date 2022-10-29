@@ -320,7 +320,7 @@ def create_app(setup_db=True):
         else:
             return err, 404
 
-    @app.route("/api/recipes/<int:id>", method=["DELETE"])
+    @app.route("/api/recipes/<int:id>", methods=["DELETE"])
     def delete_recipe(id):
         recipe = search_recipe_by_id(id)
         user_id = session.get('id')
