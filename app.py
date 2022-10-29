@@ -338,7 +338,7 @@ def create_app(setup_db=True):
         err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
         if not err:
             return 'remove tag of recipe success', 200
-    @app.route("/api/recipes/<int:id>", method=["DELETE"])
+    @app.route("/api/recipes/<int:id>", methods=["DELETE"])
     def delete_recipe(id):
         recipe = search_recipe_by_id(id)
         user_id = session.get('id')
