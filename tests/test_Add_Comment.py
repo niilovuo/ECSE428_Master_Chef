@@ -67,5 +67,5 @@ def check_comment(body, recipe_id, client):
 
 @then(parsers.parse('the "{message}" error message is issued'))
 def check_errmsg(message, response):
-    assert response.status_code == 500
+    assert response.status_code != 200
     assert response.data == bytes(message, 'utf-8')

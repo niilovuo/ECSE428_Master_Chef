@@ -312,7 +312,7 @@ def create_app(setup_db=True):
 
         author_id = session.get('id')
         if author_id is None:
-            return "You must log in to comment", 500
+            return "You must log in to comment", 401
 
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
