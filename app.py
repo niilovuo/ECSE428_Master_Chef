@@ -25,7 +25,7 @@ from project.recipe_query import (
     convert_recipe_obj
 )
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
-
+from project.recipe import delete_recipe_by_id
 
 def create_app(setup_db=True):
     app = Flask(__name__)
@@ -48,7 +48,7 @@ def create_app(setup_db=True):
 
     @app.route("/")
     def home():
-        return render_template("/home.html", value=random.randrange(1024))
+        return render_template("/home.html")
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
@@ -109,6 +109,7 @@ def create_app(setup_db=True):
     def logout():
         if 'id' in session:
             session.pop('id', None)
+
             return redirect('/')
         return "user not logged in", 401
 
@@ -299,18 +300,18 @@ def create_app(setup_db=True):
             comment_title = data.get('comment_title')
             comment_body = data.get('comment_body')
             recipe_id = int(data.get('recipe_id'))
-            author_id = session['id']
 
             assert comment_title is not None
             assert comment_body is not None
         except:
             return "Invalid request parameters", 400
 
-        if search_account_by_id(author_id) is None:
-            return "Invalid author id", 404
-
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
+
+        author_id = session.get('id')
+        if author_id is None:
+            return "You must log in to comment", 401
 
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
@@ -329,6 +330,19 @@ def create_app(setup_db=True):
             return 'delete comment success', 200
         else:
             return err, 404
+
+    @app.route("/api/recipes/<int:id>", methods=["DELETE"])
+    def delete_recipe(id):
+        recipe = search_recipe_by_id(id)
+        user_id = session.get('id')
+        if not user_id:
+            return "No user", 404
+        if recipe is None:
+            return "This recipe does not exist", 404
+        author_id = recipe[5]
+        err = delete_recipe_by_id(id, user_id, author_id)
+        if not err:
+            return 'delete recipe success', 200
 
     @app.route("/api/recipes/<int:recipe_id>/tags/<tag_name>", methods=["DELETE"])
     def remove_tag(recipe_id, tag_name):
