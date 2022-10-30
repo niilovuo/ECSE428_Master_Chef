@@ -68,7 +68,7 @@ def log_in_user(postgresql):
     cur.execute("SELECT id FROM accounts WHERE name = 'User1';")
     return cur.fetchone()[0]
 
-@given('the user is not logged into the system', target_fixture="user_session")
+@given('User1 is not logged in', target_fixture="user_session")
 def user_not_logged_in():
     return None
 
@@ -86,7 +86,7 @@ def the_following_list_of_ingredients(postgresql, create_partial_arguments, user
     except Exception as e:
         return ('error', e)
 
-@when(parsers.parse('trying to create a recipe with the following information\n{table_data}'), target_fixture="create_partial_args")
+@when(parsers.parse('trying to create a recipe with the following information\n{table_data}'), target_fixture="create_partial_arguments")
 def trying_to_create_a_recipe_with_the_following_information(table_data):
     table_data = json.loads(table_data)[1]
     keys = ['title', 'prep_time', 'cook_time', 'directions']
