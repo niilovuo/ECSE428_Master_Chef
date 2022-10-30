@@ -29,7 +29,7 @@ def a_user(postgresql):
     return user_id
 
 @given(parsers.parse('the user with id "{user_id}" exist in the system'), target_fixture="user_id")
-def user_info_exisits_int_the_system(user_id):
+def user_info_exisits_int_the_system(user_id, postgresql):
     cur = postgresql.cursor()
     cur.execute("INSERT INTO accounts VALUES (1, 'User1', 'user1@gmail.com', 'password1') RETURNING id")
     user_id = cur.fetchone()[0]
