@@ -8,108 +8,117 @@
     })
       .then(response => window.location.reload(true))
   }
+
+  function delete_comment(comment_id) {
+    fetch("/api/comments/" + comment_id, { method: 'DELETE' })
+    .then(res => {
+      if (res.ok) location.reload(); // reload page to redisplay comments
+    })
+  }
 </script>
 
 {% if recipe is none %}
 <p>The specified recipe does not exist!</p>
 {% else %}
-<div class="container">
-  <h1>{{ recipe["title"] }}</h1>
-  <div class="row">
-    <div class="col">
-      <h4>Estimated Time</h4>
-      <div class="row">
-        <div class="col">
-          {% if recipe["prep_time"] %}
-            <p>Prep time: {{ recipe["prep_time"] }}</p>
-          {% else %}
-            <p>Prep time: (unknown)</p>
-          {% endif %}
-        </div>
-        <div class="col">
-          {% if recipe["cook_time"] %}
-            <p>Cook time: {{ recipe["cook_time"] }}</p>
-          {% else %}
-            <p>Cook time: (unknown)</p>
-          {% endif %}
-        </div>
-      </div>
-
-      <h4>Ingredients</h4>
-      <div class="container">
-        {% if not ingredients %}
-          <p>(none)</p>
-        {% endif %}
-        <ul class="list-group">
-          {% for ingredient in ingredients %}
-            <li class="list-group-item">
-              <div class="ms-2 me-auto">
-                <div class="fw-bold">{{ ingredient[1] }}</div>
-                <label>{{ ingredient[2] }}</label>
-              </div>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-
-      <h4>Directions</h4>
-      <div class="container">
-        <p>{{ recipe["directions"] }}</p>
-      </div>
-    </div>
-
-    <div class="col-2">
-      <h4>Author</h4>
-      <a href="/profile/{{ author["id"] }}">{{ author["name"] }}</a>
-
-      <h4>Tags</h4>
-      {% if allow_edits %}
-        <div x-data="{ server_tags: [] }"
-             x-init="server_tags = await (await fetch('/api/tags')).json()">
-          <form action="/recipes/{{ recipe["id"] }}/tags" method="post">
-            <select class="form-select" name="tag">
-              <template x-for="server_tag in server_tags" :key="server_tag[0]">
-                <option :value="server_tag[1]" x-text="server_tag[1]"></option>
-              </template>
-            </select>
-            <input class="btn btn-primary" type="submit" value="Add tag"></input>
-          </form>
-        </div>
-        <br/>
-		<a href="/recipes/edit/{{recipe["id"]}}" class="btn btn-primary">Edit recipe</a>
-		<br/>
-      {% endif %}
-
-      {% if not tags %}
-        <p>(none)</p>
-      {% endif %}
-      <div x-data="{ remove_tag }">
-      {% for tag in tags %}
+<div x-data="{ comments: [] }" x-init="comments = await (await fetch('/api/recipes/{{ recipe["id"] }}/comments')).json()">
+  <div class="container">
+    <h1>{{ recipe["title"] }}</h1>
+    <div class="row">
+      <div class="col">
+        <h4>Estimated Time</h4>
         <div class="row">
           <div class="col">
-            <a class="btn btn-outline-secondary" href="/search?tag={{ tag[1] }}">{{ tag[1] }}</a>
+            {% if recipe["prep_time"] %}
+              <p>Prep time: {{ recipe["prep_time"] }}</p>
+            {% else %}
+              <p>Prep time: (unknown)</p>
+            {% endif %}
           </div>
-          {% if allow_edits %}
-            <div class="col">
-              <p class="btn" @click='remove_tag("{{ tag[1] }}")'>&cross;</p>
-            </div>
-          {% endif %}
+          <div class="col">
+            {% if recipe["cook_time"] %}
+              <p>Cook time: {{ recipe["cook_time"] }}</p>
+            {% else %}
+              <p>Cook time: (unknown)</p>
+            {% endif %}
+          </div>
         </div>
-      {% endfor %}
+
+        <h4>Ingredients</h4>
+        <div class="container">
+          {% if not ingredients %}
+            <p>(none)</p>
+          {% endif %}
+          <ul class="list-group">
+            {% for ingredient in ingredients %}
+              <li class="list-group-item">
+                <div class="ms-2 me-auto">
+                  <div class="fw-bold">{{ ingredient[1] }}</div>
+                  <label>{{ ingredient[2] }}</label>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <h4>Directions</h4>
+        <div class="container">
+          <p>{{ recipe["directions"] }}</p>
+        </div>
+      </div>
+
+      <div class="col-2">
+        <h4>Author</h4>
+        <a href="/profile/{{ author["id"] }}">{{ author["name"] }}</a>
+
+        <h4>Tags</h4>
+        {% if allow_edits %}
+          <div x-data="{ server_tags: [] }"
+              x-init="server_tags = await (await fetch('/api/tags')).json()">
+            <form action="/recipes/{{ recipe["id"] }}/tags" method="post">
+              <select class="form-select" name="tag">
+                <template x-for="server_tag in server_tags" :key="server_tag[0]">
+                  <option :value="server_tag[1]" x-text="server_tag[1]"></option>
+                </template>
+              </select>
+              <input class="btn btn-primary" type="submit" value="Add tag"></input>
+            </form>
+          </div>
+          <br/>
+      <a href="/recipes/edit/{{recipe["id"]}}" class="btn btn-primary">Edit recipe</a>
+      <br/>
+        {% endif %}
+
+        {% if not tags %}
+          <p>(none)</p>
+        {% endif %}
+        <div x-data="{ remove_tag }">
+        {% for tag in tags %}
+          <div class="row">
+            <div class="col">
+              <a class="btn btn-outline-secondary" href="/search?tag={{ tag[1] }}">{{ tag[1] }}</a>
+            </div>
+            {% if allow_edits %}
+              <div class="col">
+                <p class="btn" @click='remove_tag("{{ tag[1] }}")'>&cross;</p>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="container py-3">
-  <h3>Comments on this Recipe</h3>
-  <!-- This is temporary until we have view comment -->
-  {% include "partials/comment.html" %}
-  {% include "partials/comment.html" %}
-</div>
+  <div class="container py-3">
+    <h3>Comments on this Recipe</h3>
+    <template x-for="comment in comments" :key="comment[0]">
+      {% include "partials/comment.html" %}
+    </template>
+  </div>
 
-<div class="container py-3" x-data="{ recipe_id: {{ recipe['id'] }} }">
-  {% include "partials/add_comment.html" %}
+  <div class="container py-3">
+    {% include "partials/add_comment.html" %}
+  </div>
 </div>
 
 {% endif %}
