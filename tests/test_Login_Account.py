@@ -30,7 +30,7 @@ def an_account_by_the_name_acc1_does_not_exist_within_the_system(app, email):
             _id = search_account_by_email(email)[0]
             delete_account_by_id(_id)
 
-        res = search_account_by_name(email)
+        res = search_account_by_email(email)
         assert res is None
 
 
