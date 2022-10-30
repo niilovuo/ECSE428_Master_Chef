@@ -28,7 +28,7 @@ def a_user(postgresql):
     postgresql.commit()
     return user_id
 
-@given('the user with id "{user_id}" exist in the system', target_fixture="user_id")
+@given(parsers.parse('the user with id "{user_id}" exist in the system'), target_fixture="user_id")
 def user_info_exisits_int_the_system(user_id):
     cur = postgresql.cursor()
     cur.execute("INSERT INTO accounts VALUES (1, 'User1', 'user1@gmail.com', 'password1') RETURNING id")
@@ -36,13 +36,13 @@ def user_info_exisits_int_the_system(user_id):
     postgresql.commit()
     return user_id
 
-@given('the user with id "{user_id}" is logged into the system', target_fixture="user_id")
+@given(parsers.parse('the user with id "{user_id}" is logged into the system'), target_fixture="user_id")
 def user_is_logged_into_the_system(client, a_user):
     with client.session_transaction() as session:
         session['id'] = a_user
         return a_user
 
-@given('the user with id "{user_id}" is not logged into the system', target_fixture="user_id")
+@given(parsers.parse('the user with id "{user_id}" is not logged into the system'), target_fixture="user_id")
 def the_user_is_not_logged_into_the_system(client):
     with client.session_transaction() as session:
         session['id'] = None
