@@ -101,7 +101,7 @@ def the_please_log_in_to_create_a_recipe_error_message_will_be_issued(create_res
 def the_number_of_recipes_associated_with_user1_will_be(postgresql, recipe_count):
     cur = postgresql.cursor()
     cur.execute("SELECT COUNT(*) FROM recipes WHERE author = 999;")
-    count = cur.fetchone()[0]
+    count = cur.fetchone()
     assert count == int(recipe_count)
 
 @then(parsers.parse('the new recipe shall have "{ingredient_count}" ingredients'))
