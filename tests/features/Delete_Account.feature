@@ -13,7 +13,7 @@ So that my account information no longer exists on the system database.
     Then the user account with id "1" does not exist
 
   Scenario: Logged out user attempts to delete account (Error Flow)
-    Given the user with id "1" is not logged into the system
+    Given the user is not logged into the system
     When attempting to delete their account
     Then the system will display an error message
 
