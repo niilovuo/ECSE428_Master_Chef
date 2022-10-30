@@ -302,18 +302,18 @@ def create_app(setup_db=True):
             comment_title = data.get('comment_title')
             comment_body = data.get('comment_body')
             recipe_id = int(data.get('recipe_id'))
-            author_id = session['id']
 
             assert comment_title is not None
             assert comment_body is not None
         except:
             return "Invalid request parameters", 400
 
-        if search_account_by_id(author_id) is None:
-            return "Invalid author id", 404
-
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
+
+        author_id = session.get('id')
+        if author_id is None:
+            return "You must log in to comment", 401
 
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
