@@ -80,10 +80,11 @@ def the_following_list_of_ingredients(postgresql, create_partial_arguments, user
     for (i, e) in enumerate(table_data):
         create_partial_arguments['ingredients['+str(i)+'][name]'] = e[0]
         create_partial_arguments['ingredients['+str(i)+'][quantity]'] = e[1]
-    
-    id = create_recipe(create_partial_arguments, user_session)
-    return ('ok', id)
-    
+    try:
+        id = create_recipe(create_partial_arguments, user_session)
+        return ('ok', id)
+    except Exception as e:
+        return ('error', e)
 
 @when(parsers.parse('trying to create a recipe with the following information\n{table_data}'), target_fixture="create_partial_arguments")
 def trying_to_create_a_recipe_with_the_following_information(table_data):

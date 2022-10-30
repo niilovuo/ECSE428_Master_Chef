@@ -51,7 +51,7 @@ Then the number of recipes associated with "User1" will be "2"
 And the recipe with the following information exists
 	[[ "Recipe Title", "Prep Time", "Cook Time", "Directions" ],
 	[ "Pancakes with butter", "3:00", "5:00", "mix with water" ]]
-	And the new recipe shall have "3" ingredients
+And the new recipe shall have "3" ingredients
 
 Scenario: Logged out user attempts to create new recipe and with valid recipe information (Error flow)
 
