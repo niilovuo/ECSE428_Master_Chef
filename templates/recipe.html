@@ -9,11 +9,19 @@
       .then(response => window.location.reload(true))
   }
 
+  function delete_recipe(){
+    fetch('/api/recipes/{{ recipe["id"] }}', {
+      method: 'DELETE'
+    })
+      .then(response => {if (response.ok) window.location.href='/search'})
+}
+
   function delete_comment(comment_id) {
     fetch("/api/comments/" + comment_id, { method: 'DELETE' })
     .then(res => {
       if (res.ok) location.reload(); // reload page to redisplay comments
     })
+
   }
 </script>
 
@@ -69,7 +77,6 @@
       <div class="col-2">
         <h4>Author</h4>
         <a href="/profile/{{ author["id"] }}">{{ author["name"] }}</a>
-
         <h4>Tags</h4>
         {% if allow_edits %}
           <div x-data="{ server_tags: [] }"
@@ -85,6 +92,7 @@
           </div>
           <br/>
       <a href="/recipes/edit/{{recipe["id"]}}" class="btn btn-primary">Edit recipe</a>
+      <a x-data="{delete_recipe}" @click='delete_recipe' class="btn btn-primary">Delete recipe</a>
       <br/>
         {% endif %}
 
