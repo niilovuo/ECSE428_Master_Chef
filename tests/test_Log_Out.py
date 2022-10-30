@@ -1,9 +1,5 @@
 """Log out from account feature tests."""
-import pytest
-from app import create_app
-
 from project.account import *
-
 from pytest_bdd import (
     given,
     scenario,
@@ -12,30 +8,14 @@ from pytest_bdd import (
     parsers
 )
 
-
-@pytest.fixture()
-def app():
-    app = create_app()
-    app.config.update({
-        "TESTING": True,
-    })
-    yield app
-
-
-@pytest.fixture
-def client(app):
-    with app.test_client() as client:
-        yield client
-
-
 @scenario('features/Log_Out.feature', 'Log out of account while logged out (Error flow)')
-def test_log_out_of_account_while_logged_out_error_flow(app):
-    """Log out of account while logged out (Error flow)."""
+def test_log_out_of_account_while_logged_out_error_flow():
+    pass
 
 
 @scenario('features/Log_Out.feature', 'Log out of account while logged in (Normal flow)')
-def test_log_out_of_account_while_logged_in_normal_flow(app):
-    """Log out of account while logged in (Normal flow)."""
+def test_log_out_of_account_while_logged_in_normal_flow():
+    pass
 
 
 @given(parsers.parse('account with email "{email}" and password "{password}" exists in the system'))

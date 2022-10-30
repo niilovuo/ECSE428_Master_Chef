@@ -1,6 +1,4 @@
 """Log in to account feature tests."""
-import pytest
-from app import create_app
 
 from project.account import *
 from pytest_bdd import (
@@ -10,22 +8,6 @@ from pytest_bdd import (
     when,
     parsers
 )
-
-@pytest.fixture()
-def app():
-    app = create_app()
-    app.config.update({
-        "TESTING": True,
-    })
-    yield app
-
-
-
-@pytest.fixture
-def client(app):
-    with app.test_client() as client:
-        yield client
-
 
 @scenario('features/Login_Account.feature', 'Log in to a non-existing account (Error Flow)')
 def test_log_in_to_a_nonexisting_account_error_flow():
