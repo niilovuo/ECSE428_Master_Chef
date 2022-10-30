@@ -1,6 +1,7 @@
 """Delete Account feature tests."""
 
 import pytest
+import re
 from pytest_bdd import (
     given,
     scenario,
