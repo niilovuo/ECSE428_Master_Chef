@@ -30,11 +30,11 @@ def a_user(postgresql):
 
 @given(parsers.parse('the user with id "{user_id}" exist in the system'), target_fixture="user_id")
 def user_info_exisits_int_the_system(user_id, postgresql):
+    user_id = 1
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (1, 'User1', 'user1@gmail.com', 'password1') RETURNING id")
-    user_id = cur.fetchone()[0]
+    cur.execute("""SELECT * FROM accounts where id =  %s""", (user_id,))
     postgresql.commit()
-    return user_id
+    return a_user
 
 @given(parsers.parse('the user with id "{user_id}" is logged into the system'), target_fixture="user_id")
 def user_is_logged_into_the_system(client, a_user):
@@ -62,5 +62,5 @@ def the_account_deleted_successfully(user_id):
 def the_account_not_deleted(user_id):
     res = delete_account_by_id(user_id)
     account_id = search_account_by_id(user_id)
-    assert account_id is not None
-    assert res is "Unknown error occurred. Please try again later"
+    assert account_id is user_id
+    assert res is None
