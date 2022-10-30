@@ -80,11 +80,10 @@ def the_following_list_of_ingredients(postgresql, create_partial_arguments, user
     for (i, e) in enumerate(table_data):
         create_partial_arguments['ingredients['+str(i)+'][name]'] = e[0]
         create_partial_arguments['ingredients['+str(i)+'][quantity]'] = e[1]
-    try:
-        id = create_recipe(create_partial_arguments, user_session)
-        return ('ok', id)
-    except Exception as e:
-        return ('error', e)
+    
+    id = create_recipe(create_partial_arguments, user_session)
+    return ('ok', id)
+    
 
 @when(parsers.parse('trying to create a recipe with the following information\n{table_data}'), target_fixture="create_partial_arguments")
 def trying_to_create_a_recipe_with_the_following_information(table_data):
@@ -100,7 +99,7 @@ def the_please_log_in_to_create_a_recipe_error_message_will_be_issued(create_res
 @then(parsers.parse('the number of recipes associated with "User1" will be "{recipe_count}"'))
 def the_number_of_recipes_associated_with_user1_will_be(postgresql, recipe_count):
     cur = postgresql.cursor()
-    cur.execute("SELECT COUNT(*) FROM recipes;")
+    cur.execute("SELECT COUNT(*) FROM recipes WHERE author = 999;")
     count = cur.fetchone()[0]
     assert count == int(recipe_count)
 
