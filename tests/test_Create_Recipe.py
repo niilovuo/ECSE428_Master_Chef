@@ -120,4 +120,7 @@ def the_recipe_with_the_following_information_exists(create_result, table_data):
     recipe = search_recipe_by_id(recipe_id)
     assert recipe is not None
     for (val, index) in zip(table_data, keys):
-        assert recipe[index] == val
+        fetched_val = recipe[index]
+        if isinstance(fetched_val, datetime.time):
+            fetched_val = fetched_val.strftime("%M:%S")
+        assert fetched_val == val

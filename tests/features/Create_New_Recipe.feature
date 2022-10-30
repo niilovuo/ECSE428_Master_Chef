@@ -33,7 +33,7 @@ And the following list of ingredients
 Then the number of recipes associated with "User1" will be "2"
 And the recipe with the following information exists
 	[[ "Recipe Title", "Prep Time", "Cook Time", "Directions" ],
-	[ "Pancakes with oil", "3:00", "5:00", "mix with water" ]]
+	[ "Pancakes with oil", "03:00", "05:00", "mix with water" ]]
 And the new recipe shall have "4" ingredients
 
 Scenario: Logged in user attempts to create new recipe with a title that they have already created (Alternate Flow)
@@ -50,7 +50,7 @@ And the following list of ingredients
 Then the number of recipes associated with "User1" will be "2"
 And the recipe with the following information exists
 	[[ "Recipe Title", "Prep Time", "Cook Time", "Directions" ],
-	[ "Pancakes with butter", "3:00", "5:00", "mix with water" ]]
+	[ "Pancakes with butter", "03:00", "05:00", "mix with water" ]]
 And the new recipe shall have "3" ingredients
 
 Scenario: Logged out user attempts to create new recipe and with valid recipe information (Error flow)
