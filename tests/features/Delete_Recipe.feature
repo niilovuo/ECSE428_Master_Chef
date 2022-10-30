@@ -11,7 +11,7 @@ Background:
         | User1  |
         | User2  |
     And the recipe "Recipe1" exists in the system and belongs to "User1"
-    And the recipe "Recipe2" exists in the system and belongs to "User1"
+    And the recipe "Recipe2" exists in the system and belongs to "User2"
 
 Scenario: A recipe author deletes a recipe they created (Normal Flow)
     Given "User1" is logged into the system
