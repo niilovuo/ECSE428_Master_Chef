@@ -54,12 +54,12 @@ def user_has_created_a_recipe_with_the_following_information(postgresql, table_d
         cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s);", (id, title, prep_time, cook_time, directions, 999))
     postgresql.commit()
 
-@given(parsers.parse('the recipe with id "1" has the following ingredients\n{table_data}'))
-def recipe_has_following_ingredients(postgresql, table_data):
+@given(parsers.parse('the recipe with id "{recipe_id}" has the following ingredients\n{table_data}'))
+def recipe_has_following_ingredients(postgresql, recipe_id, table_data):
     table_data = json.loads(table_data)[1:]
     cur = postgresql.cursor()
     for (name, quantity) in table_data:
-        cur.execute("INSERT INTO ingredients VALUES (DEFAULT, %s, %s, %s);", (name, quantity, 1))
+        cur.execute("INSERT INTO ingredients VALUES (DEFAULT, %s, %s, %s);", (name, quantity, recipe_id))
     postgresql.commit()
 
 @given('"User1" is logged into the system', target_fixture="user_session")

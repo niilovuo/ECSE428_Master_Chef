@@ -12,7 +12,7 @@ And "User1" has created a recipe with the following information
 	[[ "Recipe ID", "Recipe Title", "Prep Time", "Cook Time", "Directions" ],
 	[ "230", "Pancakes with butter", "3:00", "5:00", "mix with water" ]]
 
-And the recipe with id "1" has the following ingredients
+And the recipe with id "230" has the following ingredients
 	[["Ingredient Name", "Quantity"],
 	["eggs", "2"],
 	["butter", "1/4 tbsp"],
