@@ -9,8 +9,8 @@
 	</head>
 	<body>
 	  <div>
-		<div style="padding-bottom: 8em;">
-			<nav class="navbar navbar-expand-lg fixed-top navbar-scroll shadow-0" style="background-color: #ffede7; ">
+		<div class="position-fixed fixed-top w-100 shadow-0 d-flex flex-column">
+			<nav class="w-100 navbar navbar-expand-lg navbar-scroll" style="background-color: #ffede7; z-index: 1200;">
 				<div class="container">
 				  <a class="navbar-brand" href="/">Master Chef</a>
 				  <button class="navbar-toggler ps-0" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarExample01"
@@ -66,20 +66,20 @@
 				  </div>
 				</div>
 			</nav>
-		</div>
-		<div class="position-relative">
-		  {% with messages = get_flashed_messages() %}
-          {% if messages %}
-          <ul class="w-full flashes bg-danger position-absolute">
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-          </ul>
-          {% endif %}
-          {% endwith %}
+			<div class="w-100">
+			  {% with messages = get_flashed_messages() %}
+			  {% if messages %}
+			  <ul class="w-100 flashes list-group">
+				{% for message in messages %}
+				<li class="w-100 bg-danger list-group-item"  x-data="{show: true}" x-show="show" x-transition @click="show = false;" style="cursor: pointer;">{{ message }}</li>
+				{% endfor %}
+			  </ul>
+			  {% endif %}
+			  {% endwith %}
 
+			</div>
 		</div>
-		<div>
+		<div style="margin-top: 5rem;">
 		  {% block content %}
 		  {% endblock %}
 		</div>
