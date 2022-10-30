@@ -57,7 +57,9 @@ def the_account_deleted_successfully(user_id):
     assert account_id is None
 
 @then('the system will display an error message')
-def the_account_not_deleted(a_user, res):
+def the_account_not_deleted(a_user, res, client):
     account_id = search_account_by_id(a_user)
     assert account_id is not None
-    assert res.status_code != 200
+    with client.session_transaction() as session:
+        flash_messages = session['_flashes']
+        assert len(flash_messages) != 0
