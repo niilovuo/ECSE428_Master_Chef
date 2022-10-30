@@ -46,6 +46,7 @@ def create_partial_arguments():
 def user1_exists_in_the_system(postgresql):
     cur = postgresql.cursor()
     cur.execute("INSERT INTO accounts VALUES (999, %s, %s, '');", ("User1", "User1"))
+    postgresql.commit()
 
 @given(parsers.parse('"User1" has created a recipe with the following information\n{table_data}'))
 def user_has_created_a_recipe_with_the_following_information(postgresql, table_data):
