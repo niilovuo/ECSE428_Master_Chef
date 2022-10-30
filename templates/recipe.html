@@ -8,6 +8,12 @@
     })
       .then(response => window.location.reload(true))
   }
+  function delete_recipe(){
+    fetch('/api/recipes/{{ recipe["id"] }}', {
+      method: 'DELETE'
+    })
+      .then(response => {if (response.ok) window.location.href='/search'})
+  }
 </script>
 
 {% if recipe is none %}
@@ -77,6 +83,7 @@
         </div>
         <br/>
 		<a href="/recipes/edit/{{recipe["id"]}}" class="btn btn-primary">Edit recipe</a>
+        <a x-data="{delete_recipe}" @click='delete_recipe' class="btn btn-primary">Delete recipe</a>
 		<br/>
       {% endif %}
 

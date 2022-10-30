@@ -344,6 +344,8 @@ def create_app(setup_db=True):
         err = delete_recipe_by_id(id, user_id, author_id)
         if not err:
             return 'delete recipe success', 200
+        else:
+            return err, 404
 
     @app.route("/api/recipes/<int:recipe_id>/tags/<tag_name>", methods=["DELETE"])
     def remove_tag(recipe_id, tag_name):
