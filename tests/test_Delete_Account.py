@@ -60,4 +60,4 @@ def the_account_deleted_successfully(user_id):
 def the_account_not_deleted(a_user, res):
     account_id = search_account_by_id(a_user)
     assert account_id is not None
-    assert re.search("Your account cannot be deleted at the moment", response.get_data(as_text=True))
+    assert re.search("Your account cannot be deleted at the moment", res.get_data(as_text=True))
