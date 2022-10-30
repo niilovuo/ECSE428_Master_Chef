@@ -77,7 +77,7 @@ def user_not_logged_in():
 @when(parsers.parse('the following list of ingredients\n{table_data}'), target_fixture="create_result")
 def the_following_list_of_ingredients(postgresql, create_partial_arguments, user_session, table_data):
     table_data = json.loads(table_data)[1:]
-    for (e, i) in enumerate(table_data):
+    for (i, e) in enumerate(table_data):
         create_partial_arguments['ingredients['+str(i)+'][name]'] = e[0]
         create_partial_arguments['ingredients['+str(i)+'][quantity]'] = e[1]
     try:
