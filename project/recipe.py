@@ -22,6 +22,40 @@ def edit_recipe(recipe_id, data, author):
     (data, ingredients) = parse_recipe_params(data)
     return RecipeRepo.update_recipe(recipe_id = recipe_id, author_id = author, ingredients = ingredients, **data)
 
+def delete_recipe_by_id(recipe_id, user_id, author_id):
+    """
+    Delete the recipe by id
+
+    Parameters
+    ----------
+    id:
+      recipe id
+    user_id
+        the user_id
+    author_id
+        the author_id
+    Returns
+    -------
+    error message if failed
+    None if success
+    """
+    if user_id is None:
+        return "You need to log in to delete this recipe"
+    if user_id != author_id:
+        return "Only the author of this recipe can modify the recipe"
+
+    recipe = RecipeRepo.select_by_id(recipe_id)
+    if recipe is None:
+        return "This recipe does not exist"
+
+    try:
+        err = RecipeRepo.delete_by_id(id)
+        return err
+    except Exception:
+        # General message to abstract internal error from user
+        return "Could not delete recipe, please try again"
+
+
 def parse_recipe_params(data):
     recipe_data = {}
     ingredients = {}
