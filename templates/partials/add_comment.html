@@ -3,7 +3,7 @@
   #
   # x-data input
   # ------------
-  # recipe_id
+  # recipe: object { id, title, prep_time, cook_time, directions, author }
   #
   #}
 
@@ -15,14 +15,14 @@ function init_model() {
     comment_body: '',
     display_error: false,
 
-    submit_comment(recipe_id) {
+    submit_comment() {
       fetch("/api/comments/add", {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           comment_title: this.comment_title,
           comment_body: this.comment_body,
-          recipe_id: recipe_id
+          recipe_id: {{recipe["id"]}}
         })
       })
       .then(res => {
@@ -44,5 +44,5 @@ function init_model() {
       <textarea x-model="comment_body" class="form-control" style="min-height: 8rem"></textarea>
     </div>
     <div class="invalid-feedback pb-3" :class="display_error ? 'd-block' : ''" id="invalid-comment-feedback">Please verify that both the comment title and body are filled, then try again.</div>
-    <button type="button" class="btn btn-primary" @click="submit_comment(`${recipe_id}`)">Submit</button>
+    <button type="button" class="btn btn-primary" @click="submit_comment()">Submit</button>
 </div>

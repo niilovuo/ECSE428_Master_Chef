@@ -48,7 +48,7 @@ def create_app(setup_db=True):
 
     @app.route("/")
     def home():
-        return render_template("/home.html", value=random.randrange(1024))
+        return render_template("/home.html")
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
@@ -109,6 +109,7 @@ def create_app(setup_db=True):
     def logout():
         if 'id' in session:
             session.pop('id', None)
+
             return redirect('/')
         return "user not logged in", 401
 
@@ -133,12 +134,10 @@ def create_app(setup_db=True):
 
         return render_template("/profile.html", user=current_user, recipes=recipes)
 
-    # For testing purposes
     @app.route("/user", methods=["GET"])
     def get_current_user():
         if 'id' in session:
-            # Add logic to read info from session token
-            return "Someone is in", 200
+            return str(session.get("id")), 200
         return "No user", 401
 
     @app.route("/search")
@@ -169,7 +168,7 @@ def create_app(setup_db=True):
         allow_edits = session.get('id') == recipe["author"]
         return render_template("/recipe.html",
                                recipe=recipe, author=author, tags=tags, ingredients=ingredients,
-                               allow_edits=allow_edits)
+                               allow_edits=allow_edits, user=session.get('id'))
                                
     @app.route("/recipes/create")
     def render_create_recipe():
@@ -301,18 +300,18 @@ def create_app(setup_db=True):
             comment_title = data.get('comment_title')
             comment_body = data.get('comment_body')
             recipe_id = int(data.get('recipe_id'))
-            author_id = session['id']
 
             assert comment_title is not None
             assert comment_body is not None
         except:
             return "Invalid request parameters", 400
 
-        if search_account_by_id(author_id) is None:
-            return "Invalid author id", 404
-
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
+
+        author_id = session.get('id')
+        if author_id is None:
+            return "You must log in to comment", 401
 
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)

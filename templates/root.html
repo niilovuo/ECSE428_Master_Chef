@@ -9,8 +9,8 @@
 	</head>
 	<body>
 	  <div>
-		<div style=" padding-bottom: 8em;">
-			<nav class="navbar navbar-expand-lg fixed-top navbar-scroll shadow-0" style="background-color: #ffede7; ">
+		<div class="position-fixed fixed-top w-100 shadow-0 d-flex flex-column">
+			<nav class="w-100 navbar navbar-expand-lg navbar-scroll" style="background-color: #ffede7; z-index: 1200;">
 				<div class="container">
 				  <a class="navbar-brand" href="/">Master Chef</a>
 				  <button class="navbar-toggler ps-0" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarExample01"
@@ -19,20 +19,32 @@
 					  <i class="fas fa-bars"></i>
 					</span>
 				  </button>
-				  <div class="collapse navbar-collapse" id="navbarExample01">
+				  <div class="collapse navbar-collapse" id="navbarExample01"
+                       x-data="{ logged_in: false }"
+                       x-init="fetch('/user').then(response => logged_in = response.ok)">
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 					  <li class="nav-item active">
 						<a class="nav-link px-3" href="/search">Recipes</a>
 					  </li>
-					  <li class="nav-item">
-						<a class="nav-link px-3" href="/register"> Create Account</a>
+
+					  <li class="nav-item" x-show="logged_in">
+						<a class="nav-link px-3" href="/profile">My Recipes</a>
 					  </li>
-					  <li class="nav-item">
-						<a class="nav-link px-3" href="/login"> Sign Up </a>
+					  
+					  <li class="nav-item" x-show="logged_in">
+						<a class="nav-link px-3" href="/recipes/create">Create Recipe</a>
 					  </li>
-					  <li class="nav-item">
-						<a class="nav-link px-3" href="#!"> Log out </a>
+					  
+					  <li class="nav-item" x-show="!logged_in">
+						<a class="nav-link px-3" href="/register">Create Account</a>
 					  </li>
+
+					  <li class="nav-item">
+						<a class="nav-link px-3"
+                           :href="logged_in ? '/logout' : '/login'"
+                           x-text="logged_in ? 'Log out' : 'Log in'"></a>
+					  </li>
+
 					  <li class="nav-item">
 						<a class="nav-link px-3" href="/setting"> Account Settings</a>
 					  </li>
@@ -53,21 +65,23 @@
 					</ul>
 				  </div>
 				</div>
-			  </nav>
+			</nav>
+			<div class="w-100">
+			  {% with messages = get_flashed_messages() %}
+			  {% if messages %}
+			  <ul class="w-100 flashes list-group">
+				{% for message in messages %}
+				<li class="w-100 bg-danger list-group-item"  x-data="{show: true}" x-show="show" x-transition @click="show = false;" style="cursor: pointer;">{{ message }}</li>
+				{% endfor %}
+			  </ul>
+			  {% endif %}
+			  {% endwith %}
+
+			</div>
 		</div>
-		<div>
+		<div style="margin-top: 5rem;">
 		  {% block content %}
 		  {% endblock %}
-
-          {% with messages = get_flashed_messages() %}
-            {% if messages %}
-              <ul class=flashes>
-              {% for message in messages %}
-                <li>{{ message }}</li>
-              {% endfor %}
-              </ul>
-            {% endif %}
-          {% endwith %}
 		</div>
 	  </div>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
