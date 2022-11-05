@@ -28,7 +28,7 @@ def setup_accounts(table, postgresql):
     cur = postgresql.cursor()
     for (id, name, password, email) in table:
         cur.execute("""
-            INSERT INTO accounts VALUES (%s, %s, %s, %s)
+            INSERT INTO accounts VALUES (%s, %s, %s, %s, '')
             """, (id, name, email, password))
     postgresql.commit()
 
@@ -38,7 +38,7 @@ def setup_recipes(table, postgresql):
     cur = postgresql.cursor()
     for (id, author, title, _) in table:
         cur.execute("""
-            INSERT INTO recipes VALUES (%s, %s, NULL, NULL, '', %s)
+            INSERT INTO recipes VALUES (%s, %s, NULL, NULL, '', %s, NULL)
             """, (id, title, AccountRepo.select_by_name(author)[0]))
     postgresql.commit()
 

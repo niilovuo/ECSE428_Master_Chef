@@ -69,11 +69,11 @@ def the_following_recipes_exist_in_the_system(table_data, postgresql):
     cur = postgresql.cursor()
     for (id, author, title, body) in table_data:
         cur.execute("""
-            INSERT INTO accounts VALUES (DEFAULT, %s, %s, '')
+            INSERT INTO accounts VALUES (DEFAULT, %s, %s, '', '')
             """, (author, author))
         cur.execute("""
             INSERT INTO recipes VALUES
-            (DEFAULT, %s, NULL, NULL, %s, %s)
+            (DEFAULT, %s, NULL, NULL, %s, %s, NULL)
             """, (title, body, id))
     postgresql.commit()
 
@@ -132,7 +132,7 @@ def the_following_list_of_recipes_is_returned(table_data, res):
     res = res[0]
     assert len(res) == len(table_data)
     for (id, author, title, body) in table_data:
-        assert (id, title, None, None, body, AccountRepo.select_by_name(author)[0]) in res
+        assert (id, title, None, None, body, AccountRepo.select_by_name(author)[0], None) in res
 
 @then(parsers.parse('the "{errmsg}" error message is issued'))
 def the__error_message_is_issued(errmsg, res):

@@ -31,21 +31,21 @@ def test_logged_out_user_attempts_to_remove_a_recipe_error_flow(app):
 @given(parsers.parse('the following accounts exist in the system:{table}'))
 def the_following_accounts_exist_in_the_system(postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (1, %s, %s, '');", ("User1", "User1"))
-    cur.execute("INSERT INTO accounts VALUES (2, %s, %s, '');", ("User2", "User2"))
+    cur.execute("INSERT INTO accounts VALUES (1, %s, %s, '', '');", ("User1", "User1"))
+    cur.execute("INSERT INTO accounts VALUES (2, %s, %s, '', '');", ("User2", "User2"))
 
 
 @given('the recipe "Recipe1" exists in the system and belongs to "User1"')
 def the_recipe_exists_in_the_system_and_belongs_to_user(postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s);",
+    cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s, NULL);",
                 (1, "Recipe 1", None, None, "Recipe 1 directions", 1))
 
 
 @given('the recipe "Recipe2" exists in the system and belongs to "User2"')
 def the_recipe_exists_in_the_system_and_belongs_to_user(postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s);",
+    cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s, NULL);",
                 (2, "Recipe 2", None, None, "Recipe 2 directions", 2))
 
 

@@ -24,13 +24,13 @@ def test_add_comment_no_login(app):
 @given('there is at least one user registered')
 def setup_user_1(postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (1, 'User1', 'user1@mail.com', '1234555')")
+    cur.execute("INSERT INTO accounts VALUES (1, 'User1', 'user1@mail.com', '1234555', '')")
     postgresql.commit()
 
 @given(parsers.parse('the recipe id {recipe_id:d} exists in the system'))
 def setup_recipe(recipe_id, postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO recipes VALUES (%s, %s, NULL, NULL, '', 1)", (recipe_id, str(recipe_id)))
+    cur.execute("INSERT INTO recipes VALUES (%s, %s, NULL, NULL, '', 1, NULL)", (recipe_id, str(recipe_id)))
     postgresql.commit()
 
 @given(parsers.parse('recipe id {recipe_id:d} has {count:d} comments'))

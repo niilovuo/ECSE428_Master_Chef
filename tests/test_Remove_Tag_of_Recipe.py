@@ -54,7 +54,7 @@ def clear_out_all_tags(postgresql):
 @pytest.fixture
 def a_user(postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (1, 'owner', 'Dummy', 'Dummy') RETURNING id")
+    cur.execute("INSERT INTO accounts VALUES (1, 'owner', 'Dummy', 'Dummy', '') RETURNING id")
     user_id = cur.fetchone()[0]
     postgresql.commit()
     return user_id
@@ -76,7 +76,7 @@ def the_user_is_not_logged_into_the_system(client):
 def recipe_title_is_a_recipe_which_was_authored_by_author(title, a_user, postgresql):
     cur = postgresql.cursor()
     cur.execute("""
-        INSERT INTO recipes VALUES (DEFAULT, %s, NULL, NULL, 'go', %s)
+        INSERT INTO recipes VALUES (DEFAULT, %s, NULL, NULL, 'go', %s, NULL)
         RETURNING id""", (title, a_user,))
     recipe_id = cur.fetchone()[0]
     postgresql.commit()
@@ -86,11 +86,11 @@ def recipe_title_is_a_recipe_which_was_authored_by_author(title, a_user, postgre
 @given(parsers.parse('"{title}" is a recipe which was not authored by Recipe Author'), target_fixture="recipe_id")
 def recipe_title_is_a_recipe_which_was_not_authored_by_author(title, postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (2, 'test1', 'test1', 'test1') RETURNING id")
+    cur.execute("INSERT INTO accounts VALUES (2, 'test1', 'test1', 'test1', '') RETURNING id")
     other_id = cur.fetchone()[0]
     postgresql.commit()
     cur.execute("""
-        INSERT INTO recipes VALUES (DEFAULT, %s, NULL, NULL, 'go', %s)
+        INSERT INTO recipes VALUES (DEFAULT, %s, NULL, NULL, 'go', %s, NULL)
         RETURNING id""", (title, other_id,))
     recipe_id = cur.fetchone()[0]
     postgresql.commit()

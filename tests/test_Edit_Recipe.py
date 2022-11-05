@@ -36,14 +36,14 @@ def error_message():
 @given('"User1" exists in the system')
 def user_exists_in_the_system(postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (999, %s, %s, '');", ("User1", "User1")) 
+    cur.execute("INSERT INTO accounts VALUES (999, %s, %s, '', '');", ("User1", "User1")) 
 
 @given(parsers.parse('"User1" has created a recipe with the following information {table_data}'))
 def user_has_created_a_recipe_with_the_following_information(postgresql, table_data):
     table_data = json.loads(table_data)[1:]
     cur = postgresql.cursor()
     for (id, title, prep_time, cook_time, directions) in table_data:
-        cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s);", (id, title, prep_time, cook_time, directions, 999))
+        cur.execute("INSERT INTO recipes VALUES (%s, %s, %s, %s, %s, %s, NULL);", (id, title, prep_time, cook_time, directions, 999))
     postgresql.commit()
 
 @given(parsers.parse('the recipe with id "1" has the following ingredients {table_data}'))

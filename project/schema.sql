@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS accounts (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
   email TEXT NOT NULL UNIQUE,
-  password TEXT NOT NULL
+  password TEXT NOT NULL,
+  bio TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS recipes (
@@ -19,7 +20,8 @@ CREATE TABLE IF NOT EXISTS recipes (
   cook_time TIME,
   directions TEXT NOT NULL, -- assume it's all lumped as markdown text or sth
   author INTEGER NOT NULL REFERENCES accounts (id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+  image BYTEA
 );
 
 CREATE TABLE IF NOT EXISTS ingredients (
@@ -28,6 +30,15 @@ CREATE TABLE IF NOT EXISTS ingredients (
   quantity TEXT NOT NULL,
   recipe INTEGER NOT NULL REFERENCES recipes (id)
     ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS shopping_items (
+  account INTEGER NOT NULL REFERENCES accounts (id)
+    ON DELETE CASCADE,
+  ingredient INTEGER NOT NULL REFERENCES ingredients (id)
+    ON DELETE CASCADE,
+
+  PRIMARY KEY (account, ingredient)
 );
 
 CREATE TABLE IF NOT EXISTS comments (
@@ -52,4 +63,26 @@ CREATE TABLE IF NOT EXISTS recipe_tags (
     ON DELETE CASCADE,
 
   PRIMARY KEY (recipe, tag)
+);
+
+CREATE TABLE IF NOT EXISTS liked_recipes (
+  author INTEGER NOT NULL REFERENCES accounts (id)
+    ON DELETE CASCADE,
+  recipe INTEGER NOT NULL REFERENCES recipes (id)
+    ON DELETE CASCADE,
+
+  PRIMARY KEY (author, recipe)
+);
+
+CREATE TABLE IF NOT EXISTS followers (
+  -- Alice has follower Bob; Bob follows Alice
+  --   Alice's ID is the account
+  --   Bob's ID is the follower
+
+  account INTEGER NOT NULL REFERENCES accounts (id)
+    ON DELETE CASCADE,
+  follower INTEGER NOT NULL REFERENCES accounts (id)
+    ON DELETE CASCADE,
+
+  PRIMARY KEY (account, follower)
 );
