@@ -66,12 +66,16 @@ CREATE TABLE IF NOT EXISTS recipe_tags (
 );
 
 CREATE TABLE IF NOT EXISTS liked_recipes (
-  author INTEGER NOT NULL REFERENCES accounts (id)
+  -- Alice likes recipe Foo
+  --   Alice's ID is the liker
+  --   Foo's ID is the recipe
+
+  liker INTEGER NOT NULL REFERENCES accounts (id)
     ON DELETE CASCADE,
   recipe INTEGER NOT NULL REFERENCES recipes (id)
     ON DELETE CASCADE,
 
-  PRIMARY KEY (author, recipe)
+  PRIMARY KEY (liker, recipe)
 );
 
 CREATE TABLE IF NOT EXISTS followers (
