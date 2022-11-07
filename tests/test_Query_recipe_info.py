@@ -21,7 +21,7 @@ def test_search_for_ingredients(app, postgresql):
 @given('a user')
 def a_user(postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (DEFAULT, 'Dummy', 'Dummy', 'Dummy')")
+    cur.execute("INSERT INTO accounts VALUES (DEFAULT, 'Dummy', 'Dummy', 'Dummy', '')")
     postgresql.commit()
 
 @given('no tags at all')
@@ -34,7 +34,7 @@ def clear_out_all_tags(postgresql):
 def a_recipe_named(name, postgresql):
     cur = postgresql.cursor()
     cur.execute("""
-        INSERT INTO recipes VALUES (DEFAULT, %s, NULL, NULL, 'go', 1)
+        INSERT INTO recipes VALUES (DEFAULT, %s, NULL, NULL, 'go', 1, NULL)
         RETURNING id""", (name,))
     recipe_id = cur.fetchone()[0]
     postgresql.commit()

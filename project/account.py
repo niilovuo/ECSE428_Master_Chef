@@ -252,6 +252,7 @@ def convert_account_obj(account):
     return {
         'id': account[0],
         'name': account[1],
-        'email': account[2]
+        'email': account[2],
+        'bio': account[4]   # skip [3], it's the password
     }
 

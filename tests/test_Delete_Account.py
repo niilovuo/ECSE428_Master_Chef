@@ -27,7 +27,8 @@ def a_user():
 @given(parsers.parse('the user with id "{user_id}" exist in the system'), target_fixture="a_user")
 def user_info_exisits_int_the_system(postgresql, user_id):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (%s, 'User1', 'user1@gmail.com', 'password1') RETURNING id", (user_id,))
+    cur.execute("INSERT INTO accounts VALUES (%s, 'User1', 'user1@gmail.com', 'password1', '') RETURNING id",
+                (user_id,))
     user_id = cur.fetchone()[0]
     postgresql.commit()
     return user_id

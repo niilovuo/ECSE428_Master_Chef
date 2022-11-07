@@ -76,8 +76,8 @@ class AccountRepo:
             cur = _conn.cursor()
             cur.execute("""
                 INSERT INTO accounts
-                VALUES (DEFAULT, %s, %s, %s) RETURNING id
-                """, (name, email, password))
+                VALUES (DEFAULT, %s, %s, %s, %s) RETURNING id
+                """, (name, email, password, ''))
             _conn.commit()
             return cur.fetchone()[0]
         except Exception as e:

@@ -16,7 +16,7 @@ def users_exist_in_the_system(table, postgresql):
     for (id, name, email, password) in table:
         cur.execute("""
                         INSERT INTO accounts
-                        VALUES (%s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s, '')
                         """, (id, name, email, password))
     postgresql.commit()
 
@@ -54,7 +54,7 @@ def setup_comments(table, postgresql):
 def the_recipe_with_id_1_exists_in_the_system(postgresql):
     cur = postgresql.cursor()
     cur.execute("""
-        INSERT INTO recipes VALUES (%s, %s, NULL, NULL, 'go', %s)
+        INSERT INTO recipes VALUES (%s, %s, NULL, NULL, 'go', %s, NULL)
         """, (1, "recipe", 1))
     postgresql.commit()
 

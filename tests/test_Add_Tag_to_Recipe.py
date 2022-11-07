@@ -52,7 +52,7 @@ def clear_tags(postgresql):
 def add_user(id, name, email, password, postgresql):
     cur = postgresql.cursor()
     cur.execute("""
-        INSERT INTO accounts VALUES (%s, %s, %s, %s)
+        INSERT INTO accounts VALUES (%s, %s, %s, %s, '')
         """, (id, name, email, password))
     postgresql.commit()
 
@@ -60,7 +60,7 @@ def add_user(id, name, email, password, postgresql):
 def add_recipe(id, title, author_id, postgresql):
     cur = postgresql.cursor()
     cur.execute("""
-        INSERT INTO recipes VALUES (%s, %s, NULL, NULL, '', %s)
+        INSERT INTO recipes VALUES (%s, %s, NULL, NULL, '', %s, NULL)
         """, (id, title, author_id))
     postgresql.commit()
 
