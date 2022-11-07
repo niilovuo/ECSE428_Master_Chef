@@ -40,7 +40,7 @@ def setup_users(table, postgresql):
     table = json.loads(table)
     cur = postgresql.cursor()
     for name in table:
-        cur.execute("INSERT INTO accounts VALUES (DEFAULT, %s, %s, '')",
+        cur.execute("INSERT INTO accounts VALUES (DEFAULT, %s, %s, '', '')",
                     (name, name))
 
     postgresql.commit()
