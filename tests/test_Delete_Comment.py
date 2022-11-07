@@ -32,7 +32,7 @@ def test_try_to_delete_comments_without_logging_in_error_flow(app):
 @pytest.fixture
 def a_user(postgresql):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (1, 'owner', 'Dummy', 'Dummy') RETURNING id")
+    cur.execute("INSERT INTO accounts VALUES (1, 'owner', 'Dummy', 'Dummy', '') RETURNING id")
     user_id = cur.fetchone()[0]
     postgresql.commit()
     return user_id
@@ -42,7 +42,7 @@ def a_user(postgresql):
 def the_recipe_name_exist_in_the_system(postgresql, a_user, title):
     cur = postgresql.cursor()
     cur.execute("""
-        INSERT INTO recipes VALUES (DEFAULT, %s, NULL, NULL, 'go', %s)
+        INSERT INTO recipes VALUES (DEFAULT, %s, NULL, NULL, 'go', %s, NULL)
         RETURNING id""", (title, a_user,))
     recipe_id = cur.fetchone()[0]
     postgresql.commit()
@@ -52,7 +52,7 @@ def the_recipe_name_exist_in_the_system(postgresql, a_user, title):
 @given(parsers.parse('the user "{name}" exists in the system'), target_fixture='commenter_id')
 def the_user_exist_in_the_system(postgresql, name):
     cur = postgresql.cursor()
-    cur.execute("INSERT INTO accounts VALUES (2, %s, %s, %s) RETURNING id", (name, name, name))
+    cur.execute("INSERT INTO accounts VALUES (2, %s, %s, %s, '') RETURNING id", (name, name, name))
     commenter_id = cur.fetchone()[0]
     postgresql.commit()
     return commenter_id
