@@ -10,6 +10,7 @@ from project.account import (
     delete_account_by_id,
     search_account_by_name,
     search_account_by_email,
+    search_account_by_filter,
     convert_account_obj
 )
 from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
@@ -139,6 +140,18 @@ def create_app(setup_db=True):
         if 'id' in session:
             return str(session.get("id")), 200
         return "No user", 401
+
+    @app.route("/users")
+    def search_users():
+        PAGE_ENTRIES = 10
+
+        name = request.args.get("q", "")
+        page = request.args.get("start", 0, type=int)
+        results = search_account_by_filter(name, page * PAGE_ENTRIES, PAGE_ENTRIES)
+        return render_template("/search_users.html",
+                               default_query=name,
+                               default_page=page,
+                               results=[convert_account_obj(e) for e in results])
 
     @app.route("/search")
     def search():
