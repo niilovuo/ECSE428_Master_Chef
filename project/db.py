@@ -144,7 +144,7 @@ class RecipeRepo:
                 LEFT JOIN liked_recipes ON recipes.id = liked_recipes.recipe
                 WHERE title ~* %s
                 GROUP BY recipes.id
-                ORDER BY num_likes DESC
+                ORDER BY num_likes DESC, recipes.id
                 LIMIT {limit} OFFSET {offset};
                 """, (title,))
         else:
@@ -156,7 +156,7 @@ class RecipeRepo:
                   GROUP BY recipe
                   HAVING ARRAY_AGG(tag) @> %s::integer[])
                 GROUP BY recipes.id
-                ORDER BY num_likes DESC
+                ORDER BY num_likes DESC, recipes.id
                 LIMIT {limit} OFFSET {offset};
                 """, (title, tags))
         return cur.fetchall()
@@ -183,7 +183,7 @@ class RecipeRepo:
             LEFT JOIN liked_recipes ON recipes.id = liked_recipes.recipe
             WHERE recipes.author = %s
             GROUP BY recipes.id
-            ORDER BY num_likes DESC;
+            ORDER BY num_likes DESC, recipes.id;
             """, (author_id,))
         return cur.fetchall()
 
