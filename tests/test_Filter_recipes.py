@@ -132,7 +132,7 @@ def the_following_list_of_recipes_is_returned(table_data, res):
     res = res[0]
     assert len(res) == len(table_data)
     for (id, author, title, body) in table_data:
-        assert (id, title, None, None, body, AccountRepo.select_by_name(author)[0], None) in res
+        assert (id, title, None, None, body, AccountRepo.select_by_name(author)[0], None, 0) in res
 
 @then(parsers.parse('the "{errmsg}" error message is issued'))
 def the__error_message_is_issued(errmsg, res):
