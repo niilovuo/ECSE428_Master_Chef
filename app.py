@@ -11,7 +11,7 @@ from project.account import (
     search_account_by_name,
     search_account_by_email,
     convert_account_obj
-)
+    )
 from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
 from project.tag_query import (
     get_all_tags,
@@ -71,7 +71,14 @@ def create_app(setup_db=True):
 
     @app.route("/setting")
     def account_setting():
-        return render_template("/setting.html")
+        if 'id' in session:
+            account = search_account_by_id(session.get('id'))
+        if request.method == "POST":
+            bio = request.form['newBio']
+        return render_template("/setting.html", 
+        name = account[1],
+        email = account[2],
+        bio = account[4])
 
     @app.route("/delete_account")
     def delete_account():
