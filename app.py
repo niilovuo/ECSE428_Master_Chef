@@ -26,6 +26,7 @@ from project.recipe_query import (
 )
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
 from project.recipe import delete_recipe_by_id
+from project.likes import did_user_like, like_recipe, unlike_recipe
 
 def create_app(setup_db=True):
     app = Flask(__name__)
@@ -166,9 +167,10 @@ def create_app(setup_db=True):
         tags = get_tags_of_recipe(id)
         ingredients = get_ingredients_of_recipe(id)
         allow_edits = session.get('id') == recipe["author"]
+        is_liked = did_user_like(id, session.get('id')) if 'id' in session else False
         return render_template("/recipe.html",
                                recipe=recipe, author=author, tags=tags, ingredients=ingredients,
-                               allow_edits=allow_edits, user=session.get('id'))
+                               allow_edits=allow_edits, user=session.get('id'), is_liked=is_liked)
                                
     @app.route("/recipes/create")
     def render_create_recipe():
@@ -247,6 +249,23 @@ def create_app(setup_db=True):
 
         return convert_recipe_obj(recipe)
 
+    @app.route("/api/recipes/<int:id>/like", methods=["POST"])
+    def api_like_recipe(id):
+        try:
+            like_recipe(id, session["id"])
+            return "Success", 200
+        except Exception as e:
+            return "Could not like recipe", 404
+
+    @app.route("/api/recipes/<int:id>/like", methods=["DELETE"])
+    def api_unlike_recipe(id):
+        
+        try:
+            unlike_recipe(id, session["id"])
+            return "Success", 200
+        except Exception as e:
+            return "Could not unlike recipe", 404
+        
     @app.route("/api/recipes/<int:id>/tags")
     def api_lookup_recipe_tags(id):
         if search_recipe_by_id(id) is None:

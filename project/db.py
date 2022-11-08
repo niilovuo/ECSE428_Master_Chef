@@ -140,18 +140,24 @@ class RecipeRepo:
             # avoid querying recipe tags if we are not filtering based on tags
             # otherwise an empty recipe_tags table will cause trouble
             cur.execute(f"""
-                SELECT * FROM recipes WHERE title ~* %s
-                ORDER BY id
-                LIMIT {limit} OFFSET {offset}
+                SELECT recipes.*, COUNT(liked_recipes.*) AS num_likes FROM recipes
+                LEFT JOIN liked_recipes ON recipes.id = liked_recipes.recipe
+                WHERE title ~* %s
+                GROUP BY recipes.id
+                ORDER BY num_likes DESC, recipes.id
+                LIMIT {limit} OFFSET {offset};
                 """, (title,))
         else:
             cur.execute(f"""
-                SELECT * FROM recipes WHERE title ~* %s AND id IN (
+                SELECT recipes.*, COUNT(liked_recipes.*) AS num_likes FROM recipes
+                LEFT JOIN liked_recipes ON recipes.id = liked_recipes.recipe
+                WHERE title ~* %s AND id IN (
                   SELECT recipe FROM recipe_tags
                   GROUP BY recipe
                   HAVING ARRAY_AGG(tag) @> %s::integer[])
-                ORDER BY id
-                LIMIT {limit} OFFSET {offset}
+                GROUP BY recipes.id
+                ORDER BY num_likes DESC, recipes.id
+                LIMIT {limit} OFFSET {offset};
                 """, (title, tags))
         return cur.fetchall()
 
@@ -160,7 +166,10 @@ class RecipeRepo:
         _conn = Db.get_session()
         cur = _conn.cursor()
         cur.execute("""
-            SELECT * FROM recipes WHERE id = %s
+            SELECT recipes.*, COUNT(liked_recipes.*) AS num_likes FROM recipes
+            LEFT JOIN liked_recipes ON recipes.id = liked_recipes.recipe
+            WHERE recipes.id = %s
+            GROUP BY recipes.id;
             """, (id,))
         return cur.fetchone()
 
@@ -170,7 +179,11 @@ class RecipeRepo:
         cur = _conn.cursor()
 
         cur.execute("""
-            SELECT * FROM recipes WHERE author = %s
+            SELECT recipes.*, COUNT(liked_recipes.*) AS num_likes FROM recipes
+            LEFT JOIN liked_recipes ON recipes.id = liked_recipes.recipe
+            WHERE recipes.author = %s
+            GROUP BY recipes.id
+            ORDER BY num_likes DESC, recipes.id;
             """, (author_id,))
         return cur.fetchall()
 
@@ -334,6 +347,39 @@ class IngredientRepo:
             WHERE recipe = %s
             """, (recipe_id,))
         return cur.fetchall()
+
+class LikeRepo:
+    @staticmethod
+    def did_user_like(recipe_id, user_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("SELECT liker FROM liked_recipes WHERE liker = %s AND recipe = %s;", (user_id, recipe_id))
+        return cur.fetchone() is not None
+    
+    @staticmethod
+    def like_recipe(recipe_id, user_id):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("INSERT INTO liked_recipes (liker, recipe) VALUES (%s, %s) RETURNING liker", (user_id, recipe_id))
+            _conn.commit()
+            return cur.fetchone()[0]
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def unlike_recipe(recipe_id, user_id):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("DELETE FROM liked_recipes WHERE liker = %s AND recipe = %s RETURNING liker;", (user_id, recipe_id))
+
+            _conn.commit()
+            return cur.fetchone()[0]
+        except Exception as e:
+            _conn.rollback()
+            raise e
 
 class CommentRepo:
 

@@ -73,7 +73,6 @@ def search_recipe_by_id(id):
     -------
     The recipe or None if not found
     """
-
     return RecipeRepo.select_by_id(id)
 
 def convert_recipe_obj(recipe):
@@ -97,6 +96,8 @@ def convert_recipe_obj(recipe):
         'prep_time': str(recipe[2]) if recipe[2] else None,
         'cook_time': str(recipe[3]) if recipe[3] else None,
         'directions': recipe[4],
-        'author': recipe[5]
+        'author': recipe[5],
+        'image': recipe[6],
+        'num_likes': recipe[7]
     }
 
