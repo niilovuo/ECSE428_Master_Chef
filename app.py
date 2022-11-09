@@ -6,6 +6,7 @@ import random
 from project.db import Db
 from project.account import (
     add_new_account,
+    process_account_form,
     search_account_by_id,
     delete_account_by_id,
     search_account_by_name,
@@ -70,9 +71,27 @@ def create_app(setup_db=True):
 
         return render_template("/register.html")
 
-    @app.route("/setting")
+    @app.route("/setting", methods=["GET", "POST"])
     def account_setting():
-        return render_template("/setting.html")
+        # regardless of GET or POST, we kick them out if not logged in
+        user_id = session.get('id')
+        if user_id is None:
+            flash('Please login first')
+            return redirect("/login?redirect_url=/setting")
+
+        err = None
+        if request.method == "POST":
+            err = process_account_form(user_id, request.form)
+
+        user = convert_account_obj(search_account_by_id(user_id))
+        if user is None:
+            session.pop('id', None)
+            flash('Something went wrong')
+            return redirect("/login?redirect_url=/setting")
+
+        if err:
+            flash(err)
+        return render_template("/setting.html", user=user)
 
     @app.route("/delete_account")
     def delete_account():

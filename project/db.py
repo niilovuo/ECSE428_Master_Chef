@@ -140,6 +140,19 @@ class AccountRepo:
             """, (id,))
         return cur.fetchone()
 
+    @staticmethod
+    def update_password(id, password):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                UPDATE accounts SET password = %s WHERE id = %s
+                """, (password, id))
+            _conn.commit()
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
 class RecipeRepo:
 
     @staticmethod

@@ -57,7 +57,6 @@
   }
 </style>
 
-
 </header>
 <div class="container">
   <div class="row justify-content-center">
@@ -69,7 +68,7 @@
                       <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">Profile</a>
                   </li>
               </ul>
-              <form>
+              <form action="/setting" method="post">
                   <div class="row mt-5 align-items-center">
                     <!--TODO: EDIT USER PROFILE-->
                       <div class="col-md-3 text-center mb-5">
@@ -80,20 +79,12 @@
                       <div class="col">
                           <div class="row align-items-center">
                               <div class="col-md-7">
-                                  <h4 class="mb-1">User Name</h4> <!--TODO: user name should go here-->
+                                  <h4 class="mb-1">{{ user["name"] }}</h4>
                               </div>
                           </div>
                           <div class="row mb-4">
                               <div class="col-md-7">
-                                  <p class="text-muted"><!--TODO: user description should go here-->
-                                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris blandit nisl ullamcorper, rutrum metus in, congue lectus. In hac habitasse platea dictumst. Cras urna quam, malesuada vitae risus at,
-                                      pretium blandit sapien.
-                                  </p>
-                              </div>
-                              <div class="col"><!--TODO: user address should go here-->
-                                  <p class="small mb-0 text-muted">Nec Urna Suscipit Ltd</p>
-                                  <p class="small mb-0 text-muted">P.O. Box 464, 5975 Eget Avenue</p>
-                                  <p class="small mb-0 text-muted">(537) 315-1481</p>
+                                  <p class="text-muted">{{ user["bio"] }}</p>
                               </div>
                           </div>
                       </div>
@@ -119,13 +110,7 @@
                           the new input value should be the new value to be updated-->
                       <input type="email" class="form-control" id="inputEmail4" placeholder="default user email" />
                   </div>
-                  <div class="form-group">
-                      <label for="inputAddress5">Address</label>
-                      <!--TODO: old/default user address be appeared as a place holder,
-                          the new input value should be the new value to be updated-->
-                      <input type="text" class="form-control" id="inputAddress5" placeholder="default user address" />
-                  </div>
-                   <!-- EDIT USER PROFILE ends here -->
+                  <!-- EDIT USER PROFILE ends here -->
 
                   <!-- EDIT USER PASSWORD -->
                   <hr class="my-4" />
@@ -133,15 +118,15 @@
                       <div class="col-md-6">
                           <div class="form-group">
                               <label for="inputPassword4">Old Password</label>
-                              <input type="password" class="form-control" id="inputPassword5" />
+                              <input type="password" class="form-control" name="current_passwd">
                           </div>
                           <div class="form-group">
                               <label for="inputPassword5">New Password</label>
-                              <input type="password" class="form-control" id="inputPassword5" />
+                              <input type="password" class="form-control" name="new_passwd">
                           </div>
                           <div class="form-group">
                               <label for="inputPassword6">Confirm Password</label>
-                              <input type="password" class="form-control" id="inputPassword6" />
+                              <input type="password" class="form-control" name="confirm_passwd">
                           </div>
                       </div>
                       <div class="col-md-6">
@@ -150,15 +135,15 @@
                           <ul class="small text-muted pl-4 mb-0">
                               <li>Minimum 4 character</li>
                               <li>Cannot contain any spaces</li>
-                              <li>Can’t be the same as a previous password</li>
+                              <li>Must be different from the current password</li>
                           </ul>
                       </div>
                   </div>
+                  <!-- EDIT USER PASSWORD ends here -->
 
-                  <input class = "form-submit-button" type="button" value="Save Change">                  
+                  <input class="form-submit-button" type="submit" value="Save Change">
                   <a href="/delete_account"><input  class = "form-delete-button"  type="button" value="Delete Account"></a> 
               </form>
-              <!-- EDIT USER PASSWORD ends here -->
           </div>
       </div>
   </div>
