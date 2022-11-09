@@ -177,6 +177,43 @@ def search_account_by_name(name):
 
     return AccountRepo.select_by_name(name)
 
+def search_account_by_filter(name, start, limit):
+    """
+    Searches account by name from some offset page
+
+    Special handling around blank characters:
+    -  empty name matches everything
+    -  blank (non-empty) title never matches
+       (though technically names can't have spaces anyways)
+    -  everything else is matched as a substring / contains thing
+
+    Parameters
+    ----------
+    name:
+      name filter (case insensitive)
+    start:
+      starts from this offset (for pagination purposes)
+    limit:
+      returns at most this amount of entries (for pagination purposes)
+
+    Returns
+    -------
+    list containing optionally many accounts
+    """
+
+    import re
+
+    assert start >= 0
+    assert limit >= 0
+
+    if name and not name.strip():
+        # name was blank (non-empty)
+        return []
+
+    name = re.escape(name.strip())
+    results = AccountRepo.select_many_filtered(name, start, limit)
+    return results
+
 def search_account_by_email(email):
     """
     Searches the account by email

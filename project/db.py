@@ -100,6 +100,20 @@ class AccountRepo:
             raise e
 
     @staticmethod
+    def select_many_filtered(name, offset=0, limit=None):
+        if limit is None:
+            limit = "ALL"
+
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute(f"""
+            SELECT * FROM accounts WHERE name ~* %s
+            ORDER BY id
+            LIMIT {limit} OFFSET {offset}
+            """, (name,))
+        return cur.fetchall()
+
+    @staticmethod
     def select_by_name(name):
         _conn = Db.get_session()
         cur = _conn.cursor()

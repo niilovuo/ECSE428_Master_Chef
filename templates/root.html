@@ -27,6 +27,10 @@
 						<a class="nav-link px-3" href="/search">Recipes</a>
 					  </li>
 
+                      <li class="nav-item">
+                        <a class="nav-link px-3" href="/users">Users</a>
+                      </li>
+
 					  <li class="nav-item" x-show="logged_in">
 						<a class="nav-link px-3" href="/profile">My Recipes</a>
 					  </li>
@@ -35,11 +39,9 @@
 						<a class="nav-link px-3" href="/recipes/create">Create Recipe</a>
 					  </li>
 
-					  <li class="nav-item">
-						<a class="nav-link px-3"                            
-						:href="logged_in ? '' : '/register'"
-						x-text="logged_in ? '' : 'Create Account'"></a>
-					</li>
+					  <li class="nav-item" x-show="!logged_in">
+						<a class="nav-link px-3" href="/register">Create Account</a>
+					  </li>
 
 					  <li class="nav-item">
 						<a class="nav-link px-3"
