@@ -15,6 +15,7 @@ from project.account import (
     convert_account_obj
 )
 from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
+from project.shopping_list import get_shopping_list_of_account
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -403,6 +404,15 @@ def create_app(setup_db=True):
         err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
         if not err:
             return 'remove tag of recipe success', 200
+        else:
+            return err, 404
+
+    @app.route("/api/shopping_list")
+    def view_shopping_list():
+        user_id = session.get('id')
+        shopping_list, err = get_shopping_list_of_account(user_id)
+        if shopping_list:
+            return shopping_list, 200
         else:
             return err, 404
 

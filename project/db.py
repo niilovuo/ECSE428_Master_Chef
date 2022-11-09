@@ -375,6 +375,32 @@ class IngredientRepo:
             """, (recipe_id,))
         return cur.fetchall()
 
+    @staticmethod
+    def select_name_quantity_by_id(id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+
+        cur.execute("""
+            SELECT name, quantity FROM ingredients
+            WHERE id = %s
+            """, (id,))
+        return cur.fetchone()
+
+    @staticmethod
+    def insert_row(name, quantity, recipe):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                INSERT INTO ingredients
+                VALUES (DEFAULT, %s, %s, %s) RETURNING id
+                """, (name, quantity, recipe))
+            _conn.commit()
+            return cur.fetchone()[0]
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
 class LikeRepo:
     @staticmethod
     def did_user_like(recipe_id, user_id):
@@ -464,3 +490,31 @@ class CommentRepo:
             _conn.rollback()
             raise e
 
+
+class ShoppingItemsRepo:
+
+    @staticmethod
+    def select_ingredient_by_account(account_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+
+        cur.execute("""
+            SELECT name, quantity FROM ingredients LEFT JOIN 
+            shopping_items ON ingredients.id=shopping_items.ingredient 
+            WHERE shopping_items.account = %s;
+            """, (account_id,))
+        return cur.fetchall()
+
+    @staticmethod
+    def insert_row(account, ingredient):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                INSERT INTO shopping_items
+                VALUES (%s, %s)
+                """, (account, ingredient))
+            _conn.commit()
+        except Exception as e:
+            _conn.rollback()
+            raise e
