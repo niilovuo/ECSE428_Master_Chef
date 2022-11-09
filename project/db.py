@@ -467,13 +467,14 @@ class CommentRepo:
 class ShoppingItemsRepo:
 
     @staticmethod
-    def select_by_account(account_id):
+    def select_ingredient_by_account(account_id):
         _conn = Db.get_session()
         cur = _conn.cursor()
 
         cur.execute("""
-            SELECT * FROM shopping_items
-            WHERE account = %s
+            SELECT name, quantity FROM ingredients LEFT JOIN 
+            shopping_items ON ingredients.id=shopping_items.ingredient 
+            WHERE shopping_items.account = %s;
             """, (account_id,))
         return cur.fetchall()
 

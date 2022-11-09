@@ -17,12 +17,7 @@ def get_shopping_list_of_account(account_id):
     """
     if not account_id:
         return None, "You must log in before viewing a shopping list"
-    shopping_items = ShoppingItemsRepo.select_by_account(account_id)
-    if not shopping_items:
+    shopping_list = ShoppingItemsRepo.select_ingredient_by_account(account_id)
+    if not shopping_list:
         return None, "No items in shopping list"
-    shopping_list = []
-    for item in shopping_items:
-        ingredient = IngredientRepo.select_name_quantity_by_id(item[1])
-        if ingredient:
-            shopping_list.append(list(ingredient))
     return shopping_list, None

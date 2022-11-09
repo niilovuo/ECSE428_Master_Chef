@@ -83,9 +83,13 @@ def the_user_requests_to_view_their_shopping_list(user_id):
 
 @then(parsers.parse("the system returns the following list\n{table}"))
 def the_system_returns_the_following_list(res, table):
-    table_data = json.loads(table)
-    assert res[0] == table_data[1:]
-    assert res[1] is None
+    table_data = json.loads(table)[1:]
+    data = res[0]
+    error = res[1]
+    assert len(data) == len(table_data)
+    assert error is None
+    for (name, quantity) in data:
+        assert [name, quantity] in table_data
 
 
 @then(parsers.parse('the system issues a message "{error}"'))

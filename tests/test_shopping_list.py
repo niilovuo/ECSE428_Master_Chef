@@ -2,14 +2,13 @@ from project.shopping_list import *
 
 
 def test_view_shopping_list_valid_info(monkeypatch):
-    monkeypatch.setattr("project.db.ShoppingItemsRepo.select_by_account", lambda id: ((1, 1),))
-    monkeypatch.setattr("project.db.IngredientRepo.select_name_quantity_by_id", lambda id: (('test', '20g'),))
+    monkeypatch.setattr("project.db.ShoppingItemsRepo.select_ingredient_by_account", lambda id: [('test', '20g')])
     shopping_list, err = get_shopping_list_of_account(1)
     assert err is None
 
 
 def test_view_shopping_list_no_entries(monkeypatch):
-    monkeypatch.setattr("project.db.ShoppingItemsRepo.select_by_account", lambda id: ())
+    monkeypatch.setattr("project.db.ShoppingItemsRepo.select_ingredient_by_account", lambda id: [])
     shopping_list, err = get_shopping_list_of_account(1)
     assert err == "No items in shopping list"
 
