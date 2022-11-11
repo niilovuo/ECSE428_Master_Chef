@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, session
 from werkzeug.security import check_password_hash
 
 import os
+import base64
 import random
 from project.db import Db
 from project.account import (
@@ -12,7 +13,13 @@ from project.account import (
     search_account_by_email,
     convert_account_obj
 )
-from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
+from project.recipe import (
+    add_tag_to_recipe,
+    create_recipe,
+    edit_recipe,
+    remove_tag_of_recipe,
+    add_image_to_recipe
+)
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -168,9 +175,14 @@ def create_app(setup_db=True):
         ingredients = get_ingredients_of_recipe(id)
         allow_edits = session.get('id') == recipe["author"]
         is_liked = did_user_like(id, session.get('id')) if 'id' in session else False
+        if recipe["image"] is not None:
+            b64data = base64.b64encode(bytes(recipe["image"])).decode('UTF-8')
+            image = b64data
+        else:
+            image = None
         return render_template("/recipe.html",
                                recipe=recipe, author=author, tags=tags, ingredients=ingredients,
-                               allow_edits=allow_edits, user=session.get('id'), is_liked=is_liked)
+                               allow_edits=allow_edits, user=session.get('id'), is_liked=is_liked, image=image)
                                
     @app.route("/recipes/create")
     def render_create_recipe():
@@ -293,9 +305,9 @@ def create_app(setup_db=True):
         except Exception as e:
             flash("Could not update recipe")
             return redirect("/")
-        
-        
-    
+
+
+
     @app.route("/api/recipes/<int:id>/ingredients")
     def api_lookup_recipe_ingredients(id):
         if search_recipe_by_id(id) is None:
@@ -334,6 +346,22 @@ def create_app(setup_db=True):
 
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
+
+    @app.route("/api/recipes/<int:recipe_id>/images/add", methods=["POST"])
+    def api_add_image_to_recipe(recipe_id):
+        author_id = session.get('id')
+        if author_id is None:
+            return "You must log in to add an image", 401
+        try:
+            image = request.files['image'].read()
+            print("IMAGE IS OF TYPE ",type(image))
+            err = add_image_to_recipe(image, recipe_id, author_id)
+            if err is not None:
+                flash(err)
+        except Exception as e:
+            flash("Invalid Request Parameters")
+
+        return redirect(f"/recipes/{recipe_id}")
 
     @app.route("/api/comments/<int:id>", methods=["DELETE"])
     def delete_comment(id):

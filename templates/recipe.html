@@ -54,6 +54,12 @@
   <div class="container">
 	<div class="row">
       <h1 class="col">{{ recipe["title"] }}</h1>
+      <div class="align-left">
+        {% if recipe["image"] %}
+          <img src="data:image/png;base64,{{ image }}"
+               width="500" height="500"/>
+        {% endif %}
+      </div>
 	  <div class="col align-center align-self-center">
 		{% if user is none %}
 		<div class="align-center align-self-center" style="width: min-content; display: flex;">
@@ -133,6 +139,12 @@
                 </template>
               </select>
               <input class="btn btn-primary" type="submit" value="Add tag"></input>
+            </form>
+            <form action="/api/recipes/{{ recipe["id"] }}/images/add" method="post" enctype="multipart/form-data">
+              <div class="form-group">
+                  <input class="form-control" name="image" type="file">
+              </div>
+              <input class="btn btn-primary" type="submit" value="Add image"></input>
             </form>
           </div>
           <br/>

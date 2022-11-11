@@ -253,6 +253,17 @@ class RecipeRepo:
             _conn.rollback()
             raise e
 
+    @staticmethod
+    def update_image_by_id(image, recipe_id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("UPDATE recipes SET image = %s WHERE id = %s;", (image, recipe_id))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
 
 class TagRepo:
 
