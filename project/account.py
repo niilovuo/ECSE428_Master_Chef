@@ -320,6 +320,12 @@ def update_name_by_id(name, id):
     None or error message
     """
 
+    if (name.isspace()):
+      return "The account name cannot be an empty space."
+
+    if (name.replace('_', '').isalnum() == False):
+      return "The account name must be alphanumeric or underscore."
+      
     if (search_account_by_name(name) != None):
       return "There is another account under this name. Please provide another name."
     
@@ -348,6 +354,9 @@ def update_bio_by_id(bio, id):
     None or error message
     """
 
+    if (bio.isspace()):
+      return AccountRepo.update_bio_by_id('/', id) 
+
     try:
       AccountRepo.update_bio_by_id(bio, id)  
     
@@ -375,6 +384,12 @@ def update_email_by_id(email, id):
 
     if(search_account_by_email(email) != None):
       return "There is another account under this email. Please provide another email."
+
+    if (email.isspace()):
+      return "Email cannot be an empty space."
+
+    if("@" not in email):
+      return "Please provide a valid email address."
 
     try:
       AccountRepo.update_email_by_id(email, id)
