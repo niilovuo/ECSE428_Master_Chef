@@ -75,7 +75,7 @@
                             aria-controls="home" aria-selected="false">Profile</a>
                     </li>
                 </ul>
-                <form>
+                <form method = "POST">
                     <table style="width:100%">
                         <tr>
                             <td style="width:30%">
@@ -107,17 +107,17 @@
                                 <div class="text-muted">
                                     <div class="form-group">
                                         <label for="name">User Name</label>
-                                        <input type="text" id="Newname" class="form-control" placeholder={{name}} />
+                                        <input type="text" id="NewName" name="NewName" class="form-control" placeholder={{name}} />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="email">Email</label>
-                                        <input type="email" id="NewEmail" class="form-control" placeholder={{email}} />
+                                        <input type="email" id="NewEmail" name = "NewEmail" class="form-control" placeholder={{email}} />
                                     </div>
 
                                     <div class="form-group" class="mb-2">
                                         <label for="inputAddress5" class="mb-2">Bio</label>
-                                        <input type="bio" id="NewBio" class="form-control" id="inputAddress5"
+                                        <input type="bio" id="NewBio" name="NewBio" class="form-control" id="inputAddress5"
                                             placeholder={{bio}} />
                                     </div>
                                 </div>
@@ -133,7 +133,8 @@
                             </td>
                             <td></td>
                             <td style="width:10%">
-                                <input class="form-submit-button" type="button" value="Update Profile">
+                                    <input class="form-submit-button" type="submit" name="submit"
+                                        value="Update Profile">
                             </td>
                         </tr>
                     </table>

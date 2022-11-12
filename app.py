@@ -10,8 +10,12 @@ from project.account import (
     delete_account_by_id,
     search_account_by_name,
     search_account_by_email,
+    update_name_by_id,
+    update_bio_by_id,
+    update_email_by_id,
     convert_account_obj
     )
+
 from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
 from project.tag_query import (
     get_all_tags,
@@ -69,12 +73,34 @@ def create_app(setup_db=True):
 
         return render_template("/register.html")
 
-    @app.route("/setting")
+    @app.route("/setting", methods=["GET", "POST"])
     def account_setting():
         if 'id' in session:
             account = search_account_by_id(session.get('id'))
+        else:
+            flash("invalid access")
+            return render_template("/setting.html",  name = account[1], email = account[2], bio = account[4])
+
         if request.method == "POST":
-            bio = request.form['newBio']
+            if request.form.get("submit"):
+                name = request.form['NewName']
+                bio = request.form['NewBio']
+                email = request.form['NewEmail']
+
+                if (name != ''):
+                    err = update_name_by_id(name, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                if (bio != ''):
+                    err = update_bio_by_id(bio, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                if (email != ''):
+                    err = update_email_by_id(email, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                return redirect('/setting')
+
         return render_template("/setting.html", 
         name = account[1],
         email = account[2],
