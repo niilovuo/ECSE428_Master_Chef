@@ -152,6 +152,49 @@ class AccountRepo:
         except Exception as e:
             _conn.rollback()
             raise e
+    
+    @staticmethod
+    def update_name_by_id(name,id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                UPDATE accounts SET name = %s WHERE id = %s 
+                """, (name, id,))
+            _conn.commit()
+            return None
+
+        except Exception as e:
+            _conn.rollback()
+            raise e
+            
+    @staticmethod
+    def update_bio_by_id(bio, id):
+        try: 
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                UPDATE accounts SET bio = %s WHERE id = %s 
+                """, (bio, id,))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def update_email_by_id(email, id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                UPDATE accounts SET email = %s WHERE id = %s 
+                """, (email, id,))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
 
 class RecipeRepo:
 
