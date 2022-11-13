@@ -18,7 +18,7 @@ def search_recipes_by_filter(title, tags, start):
       recipes' names will contain this (case ignored)
     tags:
       recipes' tags will contain ALL of these
-    offset:
+    start:
       starts from this offset (for pagination purposes)
 
     Returns
@@ -43,6 +43,23 @@ def search_recipes_by_filter(title, tags, start):
             title, tag_ids, start * PAGE_ENTRIES, PAGE_ENTRIES)
     return (results, None)
 
+def search_recipes_by_author(author_id):
+    """
+    Searches recipes by the author id
+
+    Parameters
+    ----------
+    author_id:
+      the id of the author
+
+    Returns
+    -------
+    list of all recipes belonging to some author
+    will happily return an empty list if author does not exist
+    """
+
+    return RecipeRepo.select_by_author(author_id)
+
 def search_recipe_by_id(id):
     """
     Searches the recipe by id
@@ -56,7 +73,6 @@ def search_recipe_by_id(id):
     -------
     The recipe or None if not found
     """
-
     return RecipeRepo.select_by_id(id)
 
 def convert_recipe_obj(recipe):
@@ -80,6 +96,8 @@ def convert_recipe_obj(recipe):
         'prep_time': str(recipe[2]) if recipe[2] else None,
         'cook_time': str(recipe[3]) if recipe[3] else None,
         'directions': recipe[4],
-        'author': recipe[5]
+        'author': recipe[5],
+        'image': recipe[6],
+        'num_likes': recipe[7]
     }
 

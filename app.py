@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect,session
+from flask import Flask, render_template, request, flash, redirect, session
 from werkzeug.security import check_password_hash
 
 import os
@@ -6,9 +6,16 @@ import random
 from project.db import Db
 from project.account import (
     add_new_account,
+    process_account_form,
     search_account_by_id,
-    convert_account_obj, search_account_by_email
+    delete_account_by_id,
+    search_account_by_name,
+    search_account_by_email,
+    search_account_by_filter,
+    convert_account_obj
 )
+from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
+from project.shopping_list import get_shopping_list_of_account
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -17,19 +24,35 @@ from project.ingredient_query import get_ingredients_of_recipe
 from project.recipe_query import (
     search_recipes_by_filter,
     search_recipe_by_id,
+    search_recipes_by_author,
     convert_recipe_obj
 )
+from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
+from project.recipe import delete_recipe_by_id
+from project.likes import did_user_like, like_recipe, unlike_recipe
 
-from project.comment import add_comment, search_comment_by_id, delete_comment_by_id
-
-
-def create_app():
+def create_app(setup_db=True):
     app = Flask(__name__)
     app.secret_key = b'_123kjhmnb23!!'
 
+    pg_user = os.getenv("POSTGRES_USER", "postgres")
+    db_args = {
+        "password": os.getenv("POSTGRES_PASSWORD"),
+        "user": pg_user,
+        "dbname": os.getenv("POSTGRES_DB", pg_user),
+        "host": os.getenv("POSTGRES_HOST", "localhost"),
+        "port": os.getenv("POSTGRES_PORT", 5432)
+    }
+
+    if setup_db:
+        with app.app_context():
+            Db.init_session(**db_args)
+            Db.setup_tables()
+            app.teardown_appcontext(lambda e: Db.deinit_session())
+
     @app.route("/")
     def home():
-        return render_template("/home.html", value = random.randrange(1024))
+        return render_template("/home.html")
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
@@ -49,33 +72,60 @@ def create_app():
 
         return render_template("/register.html")
 
+    @app.route("/setting", methods=["GET", "POST"])
+    def account_setting():
+        # regardless of GET or POST, we kick them out if not logged in
+        user_id = session.get('id')
+        if user_id is None:
+            flash('Please login first')
+            return redirect("/login?redirect_url=/setting")
+
+        err = None
+        if request.method == "POST":
+            err = process_account_form(user_id, request.form)
+
+        user = convert_account_obj(search_account_by_id(user_id))
+        if user is None:
+            session.pop('id', None)
+            flash('Something went wrong')
+            return redirect("/login?redirect_url=/setting")
+
+        if err:
+            flash(err)
+        return render_template("/setting.html", user=user)
+
+    @app.route("/delete_account")
+    def delete_account():
+        if 'id' in session:
+            delete_account_by_id(session.get('id'))
+            session.pop('id', None)
+            return render_template('/account_delete.html')
+        else:
+            flash('Your account cannot be deleted at the moment')
+            return redirect('/setting')
+
     @app.route("/login", methods=["GET", "POST"])
     def login():
-        if request.method == "POST":
-            if 'id' in session:
-                # Will need to be changed to redirect to a user's page
-                return redirect('/')
+        redirect_url = request.args.get('redirect_url', default='/profile')
+        if 'id' in session:
+            return redirect(redirect_url)
 
+        if request.method == "POST":
             email = request.form['email']
             user = search_account_by_email(email)
 
             if user:
                 if check_password_hash(user[3], request.form['password']):
                     session['id'] = user[0]
-                    redirect_url = request.args.get('redirect_url')
-                    if redirect_url:
-                        return redirect(redirect_url)
-                    else:
-                        # Need to specify default URL after login
-                        return redirect('/')
+                    return redirect(redirect_url)
                 else:
                     flash("Wrong password")
-                    return render_template("/login.html")
+                    return render_template("/login.html", redirect_url=redirect_url)
             else:
                 flash("That account does not exist")
-                return render_template("/login.html")
+                return render_template("/login.html", redirect_url=redirect_url)
 
-        return render_template("/login.html")
+        return render_template("/login.html", redirect_url=redirect_url)
 
     @app.route("/logout", methods=["GET"])
     def logout():
@@ -89,31 +139,115 @@ def create_app():
         return render_template("/logout.html")
 
     # For testing purposes
+
+    @app.route("/profile")
+    @app.route("/profile/<int:id>")
+    def user_profile(id=None):
+        uses_login_info = id is None
+        if uses_login_info:
+            id = session.get("id")
+            if not id:
+                return redirect("/login")
+
+        current_user = convert_account_obj(search_account_by_id(id))
+        recipes = []
+        if not current_user:
+            if uses_login_info:
+                # but the account no longer exists, assume the worst and logout
+                return redirect("/logout")
+        else:
+            recipes = search_recipes_by_author(id)
+            recipes = [convert_recipe_obj(e) for e in recipes]
+
+        return render_template("/profile.html", user=current_user, recipes=recipes)
+
     @app.route("/user", methods=["GET"])
     def get_current_user():
         if 'id' in session:
-            # Add logic to read info from session token
-            return "Someone is in", 200
+            return str(session.get("id")), 200
         return "No user", 401
 
+    @app.route("/users")
+    def search_users():
+        PAGE_ENTRIES = 10
+
+        name = request.args.get("q", "")
+        page = request.args.get("start", 0, type=int)
+        results = search_account_by_filter(name, page * PAGE_ENTRIES, PAGE_ENTRIES)
+        return render_template("/search_users.html",
+                               default_query=name,
+                               default_page=page,
+                               results=[convert_account_obj(e) for e in results])
 
     @app.route("/search")
     def search():
-        return render_template("/search_recipes.html")
+        title = request.args.get("q", "")
+        default_tag = request.args.get("tag", "")
+
+        if default_tag:
+            default_tag = [default_tag]
+        else:
+            default_tag = []
+
+        return render_template("/search_recipes.html",
+                               default_query=title, default_tag=default_tag)
 
     @app.route("/recipes/<int:id>")
     def lookup_recipe(id):
         recipe = search_recipe_by_id(id)
         if recipe is None:
             return render_template("/recipe.html",
-                                   recipe=None, author=None, tags=[], ingredients=[])
+                                   recipe=None, author=None, tags=[], ingredients=[],
+                                   allow_edits=False)
 
         recipe = convert_recipe_obj(recipe)
         author = convert_account_obj(search_account_by_id(recipe["author"]))
         tags = get_tags_of_recipe(id)
         ingredients = get_ingredients_of_recipe(id)
+        allow_edits = session.get('id') == recipe["author"]
+        is_liked = did_user_like(id, session.get('id')) if 'id' in session else False
         return render_template("/recipe.html",
-                               recipe=recipe, author=author, tags=tags, ingredients=ingredients)
+                               recipe=recipe, author=author, tags=tags, ingredients=ingredients,
+                               allow_edits=allow_edits, user=session.get('id'), is_liked=is_liked)
+                               
+    @app.route("/recipes/create")
+    def render_create_recipe():
+        if 'id' not in session:
+            flash("Not logged in")
+            return redirect("/")
+        return render_template("/upsert_recipe.html", recipe=None, ingredients=[])
+
+    @app.route("/recipes/edit/<int:id>")
+    def render_edit_recipe(id):
+        if "id" not in session:
+            flash("Not logged in")
+            return redirect("/")
+        recipe = search_recipe_by_id(id)
+        if recipe is None:
+            flash("Recipe does not exist")
+            return redirect("/")
+        recipe = convert_recipe_obj(recipe)
+        author = convert_account_obj(search_account_by_id(recipe["author"]))
+        if author is None or author["id"] != session["id"]:
+            flash("Cannot edit this recipe")
+            return redirect("/")
+        ingredients = [{"name": e[1], "quantity": e[2]} for e in get_ingredients_of_recipe(id)]
+        return render_template("/upsert_recipe.html", recipe=recipe, ingredients=ingredients)
+
+    @app.route("/recipes/<int:id>/tags", methods=["POST"])
+    def add_tag(id):
+        if 'id' not in session:
+            return redirect(f"/login?redirect_url=/recipes/{id}")
+
+        user_id = session['id']
+        tag = request.form['tag']
+        err = add_tag_to_recipe(tag, id, user_id)
+
+        if err:
+            flash(err)
+
+        # whatever happens, just redirect to the recipe page
+        return redirect(f"/recipes/{id}")
 
     @app.route("/api/search")
     def api_search():
@@ -153,6 +287,23 @@ def create_app():
 
         return convert_recipe_obj(recipe)
 
+    @app.route("/api/recipes/<int:id>/like", methods=["POST"])
+    def api_like_recipe(id):
+        try:
+            like_recipe(id, session["id"])
+            return "Success", 200
+        except Exception as e:
+            return "Could not like recipe", 404
+
+    @app.route("/api/recipes/<int:id>/like", methods=["DELETE"])
+    def api_unlike_recipe(id):
+        
+        try:
+            unlike_recipe(id, session["id"])
+            return "Success", 200
+        except Exception as e:
+            return "Could not unlike recipe", 404
+        
     @app.route("/api/recipes/<int:id>/tags")
     def api_lookup_recipe_tags(id):
         if search_recipe_by_id(id) is None:
@@ -161,6 +312,28 @@ def create_app():
         tags = get_tags_of_recipe(id)
         return tags
 
+    @app.route("/api/recipes/add", methods=["POST"])
+    def api_create_recipe():
+        data = request.form.to_dict()
+        try:
+            result = create_recipe(data, session["id"])
+            return redirect("/recipes/{}".format(result))
+        except Exception as e:
+            flash("Could not create recipe")
+            return redirect("/")
+        
+    @app.route("/api/recipes/edit/<int:id>", methods=["POST"])
+    def api_edit_recipe(id):
+        data = request.form.to_dict()
+        try:
+            result = edit_recipe(id, data, session["id"])
+            return redirect("/recipes/{}".format(result))
+        except Exception as e:
+            flash("Could not update recipe")
+            return redirect("/")
+        
+        
+    
     @app.route("/api/recipes/<int:id>/ingredients")
     def api_lookup_recipe_ingredients(id):
         if search_recipe_by_id(id) is None:
@@ -169,6 +342,12 @@ def create_app():
         ingredients = get_ingredients_of_recipe(id)
         return ingredients
 
+    @app.route("/api/recipes/<int:recipe_id>/comments", methods=["GET"])
+    def api_get_comments_of_recipe(recipe_id):
+        if search_recipe_by_id(recipe_id) is None:
+            return "Invalid recipe id", 404
+        return search_comment_by_recipe_id(recipe_id)
+        
     @app.route("/api/comments/add", methods=["POST"])
     def api_add_comment_to_recipe():
 
@@ -178,22 +357,21 @@ def create_app():
             comment_title = data.get('comment_title')
             comment_body = data.get('comment_body')
             recipe_id = int(data.get('recipe_id'))
-            author_id = session['id']
 
             assert comment_title is not None
             assert comment_body is not None
         except:
             return "Invalid request parameters", 400
 
-        if search_account_by_id(author_id) is None:
-            return "Invalid author id", 404
-
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
 
+        author_id = session.get('id')
+        if author_id is None:
+            return "You must log in to comment", 401
+
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
-
 
     @app.route("/api/comments/<int:id>", methods=["DELETE"])
     def delete_comment(id):
@@ -210,23 +388,43 @@ def create_app():
         else:
             return err, 404
 
+    @app.route("/api/recipes/<int:id>", methods=["DELETE"])
+    def delete_recipe(id):
+        recipe = search_recipe_by_id(id)
+        user_id = session.get('id')
+        if not user_id:
+            return "No user", 404
+        if recipe is None:
+            return "This recipe does not exist", 404
+        author_id = recipe[5]
+        err = delete_recipe_by_id(id, user_id, author_id)
+        if not err:
+            return 'delete recipe success', 200
+        else:
+            return err, 404
+
+    @app.route("/api/recipes/<int:recipe_id>/tags/<tag_name>", methods=["DELETE"])
+    def remove_tag(recipe_id, tag_name):
+        user_id = session.get('id')
+        err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
+        if not err:
+            return 'remove tag of recipe success', 200
+        else:
+            return err, 404
+
+    @app.route("/api/shopping_list")
+    def view_shopping_list():
+        user_id = session.get('id')
+        shopping_list, err = get_shopping_list_of_account(user_id)
+        if shopping_list:
+            return shopping_list, 200
+        else:
+            return err, 404
+
     return app
 
+
 if __name__ == "__main__":
-    pg_user = os.getenv("POSTGRES_USER", "postgres")
-    db_args = {
-        "password": os.getenv("POSTGRES_PASSWORD"),
-        "user": pg_user,
-        "dbname": os.getenv("POSTGRES_DB", pg_user),
-        "host": os.getenv("POSTGRES_HOST", "localhost"),
-        "port": os.getenv("POSTGRES_PORT", 5432)
-    }
-
-    Db.init_session(**db_args)
-    Db.setup_tables()
-
     app = create_app()
     app.debug = os.getenv("DEBUG") == "true"
     app.run()
-    Db.deinit_session()
-

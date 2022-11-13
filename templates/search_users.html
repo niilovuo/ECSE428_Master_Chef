@@ -1,0 +1,46 @@
+{% extends "root.html" %}
+{% block content %}
+
+<div>
+  <form action="/users">
+    <div class="row">
+      <div class="col">
+        <div class="input-group">
+          <input type="text" name="q" class="form-control" aria-describedby="button-search"
+                 placeholder="Type user name here" value="{{ default_query }}">
+          <input class="btn btn-outline-primary" id="button-search" type="submit" value="Search">
+        </div>
+      </div>
+      <div class="col-2 btn-group" role="group-pagination" aria-label="Pagination">
+        <a class="btn btn-secondary"
+          {% if default_page > 0 %}
+           href="/users?q={{ default_query }}&start={{ default_page - 1 }}"
+          {% endif %}
+           >&laquo;</a>
+        <a class="btn btn-secondary"
+          {% if results|length > 0 %}
+           href="/users?q={{ default_query }}&start={{ default_page + 1 }}"
+          {% endif %}
+           >&raquo;</a>
+      </div>
+    </div>
+  </form>
+
+  {% if results|length == 0 %}
+    (none on this page)
+  {% endif %}
+
+  {% for user in results %}
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">
+          <a href="/profile/{{ user['id'] }}" class="stretched-link">{{ user['name'] }}</a>
+          <h6 class="card-subtitle mb-2 text-muted">{{ user['email'] }}</h6>
+          <p class="card-text">{{ user['bio'] }}</p>
+        </h5>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -16,7 +16,6 @@ Forum website to share recipes and other cooking related things
 | Paul Teng | 260862906 |
 | Niilo Vuokila | 260926706 |
 | Jasmine Cheung | 260985168 |
-| Filip Piekarek | 260805461 |
 
 ## Setting up the environment
 
@@ -87,3 +86,9 @@ Once the environment is setup, you can also run the tests:
 ```sh
 pytest --cov=project --cov-branch --cov-report term
 ```
+
+***Note: For Windows folks***
+
+Due to unfortunate database stuff, you also need to supply a running database when testing
+(just like how you would if you run the app).
+***Warning: Whatever you pick, it likely will destroy existing data, so don't supply the production database!!!***

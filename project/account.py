@@ -1,6 +1,57 @@
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from email_validator import validate_email
 from project.db import AccountRepo
+
+def process_account_form(user_id, form):
+    """
+    Attempts to process an account change request
+
+    Parameters
+    ----------
+    user_id:
+      a id of the user being updated
+    form:
+      a dictionary-like entity that likely comes from POSTed data
+
+    Returns
+    -------
+    None on success
+    str  on failure with error message
+    """
+    user_info = search_account_by_id(user_id)
+    if user_info is None:
+        return "Cannot find specified user"
+
+    current_passwd = form["current_passwd"]
+    new_passwd = form["new_passwd"]
+    confirm_passwd = form["confirm_passwd"]
+
+    # only try to update the password if one of them is not empty
+    if current_passwd or new_passwd or confirm_passwd:
+        if not (current_passwd and check_password_hash(user_info[3], current_passwd)):
+            return "Your current password information is incorrect"
+
+        (new_passwd, err) = check_password_criteria(new_passwd)
+        if err:
+            return err
+        (confirm_passwd, err) = check_password_criteria(confirm_passwd)
+        if err or new_passwd != confirm_passwd:
+            return "The confirm password does not match"
+        if current_passwd == new_passwd:
+            return "The new password cannot be identical to the current one"
+
+        try:
+            # the likelyhood of an id gone missing / changed is low
+            # (only when you delete accounts)
+            #
+            # if it happens, so be it, let app.py logic handle it
+            AccountRepo.update_password(
+                user_id,
+                generate_password_hash(new_passwd))
+        except:
+            return "Unknown error occurred. Please try again later"
+
+    return None
 
 def add_new_account(name, email, password):
     """
@@ -71,6 +122,29 @@ def normalize_account_info(name, email, password):
     except:
         return (None, "The email is malformed")
 
+    (password, err) = check_password_criteria(password)
+    if err:
+        return (None, err)
+
+    return ((name, email, password), None)
+
+def check_password_criteria(password):
+    """
+    Check the following:
+    * not blank
+    * no blanks
+    * at least 4 characters
+
+    Parameters
+    ----------
+    password
+
+    Returns
+    -------
+    (password, None) on success
+    (None, str)      on failure with error message
+    """
+
     password = str(password).strip()
     if not password:
         return (None, "The password cannot be blank")
@@ -79,7 +153,7 @@ def normalize_account_info(name, email, password):
     if any((c.isspace() for c in password)):
         return (None, "The password cannot contain spaces")
 
-    return ((name, email, password), None)
+    return (password, None)
 
 def db_save_account(name, email, password):
     """
@@ -123,6 +197,28 @@ def db_save_account(name, email, password):
         # if we can't determine why, just re-raise the old error
         raise e
 
+def delete_account_by_id(id):
+    """
+    Delte account by id
+
+    Parameters
+    ----------
+    id:
+      the id
+
+    Returns
+    -------
+    None on success
+    """
+
+    try:
+      AccountRepo.delete_row_by_id(id)
+
+    except Exception as e:
+        return "Unknown error occurred. Please try again later"
+
+    return None
+
 def search_account_by_id(id):
     """
     Searches the account by id
@@ -138,6 +234,59 @@ def search_account_by_id(id):
     """
 
     return AccountRepo.select_by_id(id)
+
+def search_account_by_name(name):
+    """
+    Searchs the account by exact username
+
+    Parameters
+    ----------
+    name:
+      the exact username
+
+    Returns
+    -------
+    The account or None if not found
+    """
+
+    return AccountRepo.select_by_name(name)
+
+def search_account_by_filter(name, start, limit):
+    """
+    Searches account by name from some offset page
+
+    Special handling around blank characters:
+    -  empty name matches everything
+    -  blank (non-empty) title never matches
+       (though technically names can't have spaces anyways)
+    -  everything else is matched as a substring / contains thing
+
+    Parameters
+    ----------
+    name:
+      name filter (case insensitive)
+    start:
+      starts from this offset (for pagination purposes)
+    limit:
+      returns at most this amount of entries (for pagination purposes)
+
+    Returns
+    -------
+    list containing optionally many accounts
+    """
+
+    import re
+
+    assert start >= 0
+    assert limit >= 0
+
+    if name and not name.strip():
+        # name was blank (non-empty)
+        return []
+
+    name = re.escape(name.strip())
+    results = AccountRepo.select_many_filtered(name, start, limit)
+    return results
 
 def search_account_by_email(email):
     """
@@ -167,12 +316,17 @@ def convert_account_obj(account):
 
     Returns
     -------
+    None if account was None
     a dict, password field is removed
     """
+
+    if account is None:
+        return None
 
     return {
         'id': account[0],
         'name': account[1],
-        'email': account[2]
+        'email': account[2],
+        'bio': account[4]   # skip [3], it's the password
     }
 
