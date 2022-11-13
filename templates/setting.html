@@ -1,116 +1,144 @@
 {% extends "root.html" %}
 {% block content %}
 <header>
-  <style>
-  body{
-    color: #8e9194;
-    background-color: #f4f6f9;
-  }
-  .avatar-xl img {
-      width: 110px;
-  }
-  .rounded-circle {
-      border-radius: 50% !important;
-  }
-  img {
-      vertical-align: middle;
-      border-style: none;
-  }
-  .text-muted {
-      color: #aeb0b4 !important;
-      font-weight: 300;
-  }
-  .form-submit-button {
-    background: #016ABC;
-      color: #fff;
-      border: 1px solid #eee;
-      border-radius: 20px;
-      box-shadow: 5px 5px 5px #eee;
-      text-shadow: none;
-      margin-right: 50vw;
-  }
-    .form-submit-button:hover {
-      background: #B9DFFF;
-      color: #fff;
-      border: 1px solid #eee;
-      border-radius: 20px;
-      box-shadow: 5px 5px 5px #eee;
-      text-shadow: none;
-      margin-right: 50vw;
-  }
+    <style>
+        body {
+            color: #8e9194;
+            background-color: #f4f6f9;
+        }
 
-  .form-delete-button {
-      background: #6ab0a2;
-      color: #fff;
-      border: 1px solid #eee;
-      border-radius: 20px;
-      box-shadow: 5px 5px 5px #eee;
-      text-shadow: none;
-  }
-    .form-delete-button:hover {
-      background: #064b2a;
-      color: #fff;
-      border: 1px solid #eee;
-      border-radius: 20px;
-      box-shadow: 5px 5px 5px #eee;
-      text-shadow: none;
-  }
-</style>
+        .avatar-xl img {
+            width: 110px;
+        }
+
+        .rounded-circle {
+            border-radius: 50% !important;
+        }
+
+        img {
+            vertical-align: middle;
+            border-style: none;
+        }
+
+        .text-muted {
+            color: #aeb0b4 !important;
+            font-weight: 300;
+        }
+
+        .form-submit-button {
+            background: #016ABC;
+            color: #fff;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            box-shadow: 5px 5px 5px #eee;
+            text-shadow: none;
+        }
+
+        .form-submit-button:hover {
+            background: #B9DFFF;
+            color: #fff;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            box-shadow: 5px 5px 5px #eee;
+            text-shadow: none;
+        }
+
+        .form-delete-button {
+            background: #6ab0a2;
+            color: #fff;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            box-shadow: 5px 5px 5px #eee;
+            text-shadow: none;
+        }
+
+        .form-delete-button:hover {
+            background: #064b2a;
+            color: #fff;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            box-shadow: 5px 5px 5px #eee;
+            text-shadow: none;
+        }
+    </style>
+
 
 </header>
 <div class="container">
-  <div class="row justify-content-center">
-      <div class="col-12 col-lg-10 col-xl-8 mx-auto">
-          <h2 class="h3 mb-4 page-title">Account Settings</h2>
-          <div class="my-4">
-              <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
-                  <li class="nav-item">
-                      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">Profile</a>
-                  </li>
-              </ul>
-              <form action="/setting" method="post">
-                  <div class="row mt-5 align-items-center">
-                    <!--TODO: EDIT USER PROFILE-->
-                      <div class="col-md-3 text-center mb-5">
-                          <div class="avatar avatar-xl">
-                              <img src="https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1160&q=80" alt="..." class="avatar-img rounded-circle" /><!--TODO: user profile should go here-->
-                          </div>
-                      </div>
-                      <div class="col">
-                          <div class="row align-items-center">
-                              <div class="col-md-7">
-                                  <h4 class="mb-1">{{ user["name"] }}</h4>
-                              </div>
-                          </div>
-                          <div class="row mb-4">
-                              <div class="col-md-7">
-                                  <p class="text-muted">{{ user["bio"] }}</p>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                  <hr class="my-4" />
-                  <div class="form-row">
-                      <div class="form-group col-md-6">
-                          <label for="firstname">Firstname</label> 
-                          <!--TODO: old/default user name be appeared as a place holder,
-                          the new input value should be the new value to be updated-->
-                          <input type="text" id="firstname" class="form-control" placeholder="default user first name" />
-                      </div>
-                      <div class="form-group col-md-6">
-                          <label for="lastname">Lastname</label>
-                          <!--TODO: old/default user name be appeared as a place holder,
-                          the new input value should be the new value to be updated-->
-                          <input type="text" id="lastname" class="form-control" placeholder="default user last name" />
-                      </div>
-                  </div>
-                  <div class="form-group">
-                      <label for="inputEmail4">Email</label>
-                      <!--TODO: old/default user email be appeared as a place holder,
-                          the new input value should be the new value to be updated-->
-                      <input type="email" class="form-control" id="inputEmail4" placeholder="default user email" />
-                  </div>
-                  <!-- EDIT USER PROFILE ends here -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8 mx-auto">
+            <h2 class="h3 mb-4 page-title">Account Settings</h2>
+            <div class="my-4">
+                <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                            aria-controls="home" aria-selected="false">Profile</a>
+                    </li>
+                </ul>
+                <form method = "POST">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="width:30%">
+                                <div class="row mt-5 align-items-center">
+                                    <div class="col">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-7">
+                                                <h4 class="mb-1"> {{name}} </h4>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-4">
+                                            <div class="col-md-7">
+                                                <p class="text-muted">
+                                                    {{email}}
+                                                </p>
+                                            </div>
+                                            <div class="row mb-4">
+                                                <div class="col-md-7">
+                                                    <p class="text-muted">
+                                                        {{bio}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </td>
+                            <td>
+                                </br>
+                                <div class="text-muted">
+                                    <div class="form-group">
+                                        <label for="name">User Name</label>
+                                        <input type="text" id="NewName" name="NewName" class="form-control" placeholder= "{{name}}" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <input type="email" id="NewEmail" name = "NewEmail" class="form-control" placeholder= "{{email}}"  />
+                                    </div>
+
+                                    <div class="form-group" class="mb-2">
+                                        <label for="inputAddress5" class="mb-2">Bio</label>
+                                        <input type="bio" id="NewBio" name="NewBio" class="form-control" id="inputAddress5"
+                                            placeholder= "{{bio}}"  />
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    </br>
+                    <table style="width:100%">
+                        <tr>
+                            <td style="width:10%">
+                                <a href="/delete_account"><input class="form-delete-button" type="button"
+                                        value="Delete Account"></a>
+                            </td>
+                            <td></td>
+                            <td style="width:10%">
+                                    <input class="form-submit-button" type="submit" name="submit-profile"
+                                        value="Update Profile">
+                            </td>
+                        </tr>
+                    </table>
+                        <!-- EDIT USER PROFILE ends here -->
 
                   <!-- EDIT USER PASSWORD -->
                   <hr class="my-4" />
@@ -141,8 +169,7 @@
                   </div>
                   <!-- EDIT USER PASSWORD ends here -->
 
-                  <input class="form-submit-button" type="submit" value="Save Change">
-                  <a href="/delete_account"><input  class = "form-delete-button"  type="button" value="Delete Account"></a> 
+                  <input class="form-submit-button" type="submit" value="Update Password">
               </form>
           </div>
       </div>

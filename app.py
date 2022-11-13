@@ -12,6 +12,9 @@ from project.account import (
     search_account_by_name,
     search_account_by_email,
     search_account_by_filter,
+    update_name_by_id,
+    update_bio_by_id,
+    update_email_by_id,
     convert_account_obj
 )
 from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
@@ -92,7 +95,32 @@ def create_app(setup_db=True):
 
         if err:
             flash(err)
-        return render_template("/setting.html", user=user)
+
+        account = search_account_by_id(session.get('id'))
+        if request.method == "POST":
+            if request.form.get("submit-profile"):
+                name = request.form['NewName']
+                bio = request.form['NewBio']
+                email = request.form['NewEmail']
+
+                if (name != ''):
+                    err = update_name_by_id(name, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                if (bio != ''):
+                    err = update_bio_by_id(bio, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                if (email != ''):
+                    err = update_email_by_id(email, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                return redirect('/setting')
+
+        return render_template("/setting.html", 
+        name = account[1],
+        email = account[2],
+        bio = account[4])
 
     @app.route("/delete_account")
     def delete_account():
