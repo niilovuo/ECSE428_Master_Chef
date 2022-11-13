@@ -354,9 +354,6 @@ def update_bio_by_id(bio, id):
     None or error message
     """
 
-    if (bio.isspace()):
-      return AccountRepo.update_bio_by_id('/', id) 
-
     try:
       AccountRepo.update_bio_by_id(bio, id)  
     
