@@ -134,8 +134,6 @@ def create_app(setup_db=True):
             return redirect('/')
         return "user not logged in", 401
 
-    # For testing purposes
-
     @app.route("/profile")
     @app.route("/profile/<int:id>")
     def user_profile(id=None):
