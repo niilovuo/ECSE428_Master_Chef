@@ -17,6 +17,7 @@ from project.account import (
     update_email_by_id,
     convert_account_obj
 )
+from project.followers import unfollow_account_by_id
 from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
 from project.shopping_list import get_shopping_list_of_account
 from project.tag_query import (
@@ -440,6 +441,15 @@ def create_app(setup_db=True):
         shopping_list, err = get_shopping_list_of_account(user_id)
         if shopping_list:
             return shopping_list, 200
+        else:
+            return err, 404
+
+    @app.route("/api/followed_accounts/<int:account_id>", methods=["DELETE"])
+    def unfollow_account(account_id):
+        user_id = session.get('id')
+        err = unfollow_account_by_id(account_id, user_id)
+        if not err:
+            return 'unfollow account success', 200
         else:
             return err, 404
 
