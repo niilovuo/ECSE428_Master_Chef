@@ -561,3 +561,43 @@ class ShoppingItemsRepo:
         except Exception as e:
             _conn.rollback()
             raise e
+
+
+class FollowersRepo:
+
+    @staticmethod
+    def insert_row(account, follower):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                INSERT INTO followers
+                VALUES (%s, %s)
+                """, (account, follower))
+            _conn.commit()
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def delete_by_id(account, follower):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                    DELETE FROM followers WHERE account = %s AND follower = %s
+                    """, (account, follower))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def select_by_id(account, follower):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+                SELECT * FROM followers WHERE account = %s AND follower = %s
+                """, (account, follower))
+        return cur.fetchone()
