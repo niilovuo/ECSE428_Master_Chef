@@ -168,8 +168,9 @@ def create_app(setup_db=True):
             return render_template("/recipe.html",
                                    recipe=None, author=None, tags=[], ingredients=[],
                                    allow_edits=False)
-
+        image = recipe[6]  # Added back image here to display when looking at recipe page
         recipe = convert_recipe_obj(recipe)
+        recipe['image'] = image
         author = convert_account_obj(search_account_by_id(recipe["author"]))
         tags = get_tags_of_recipe(id)
         ingredients = get_ingredients_of_recipe(id)
@@ -349,12 +350,17 @@ def create_app(setup_db=True):
 
     @app.route("/api/recipes/<int:recipe_id>/images/add", methods=["POST"])
     def api_add_image_to_recipe(recipe_id):
+        recipe = search_recipe_by_id(recipe_id)
+        if recipe is None:
+            return "Invalid edit", 400
         author_id = session.get('id')
+        actual_author_id = convert_recipe_obj(recipe)['author']
         if author_id is None:
-            return "You must log in to add an image", 401
+            return "Need to log in to modify this recipe", 401
+        if author_id != actual_author_id:
+            return "Invalid edit", 401
         try:
             image = request.files['image'].read()
-            print("IMAGE IS OF TYPE ",type(image))
             err = add_image_to_recipe(image, recipe_id, author_id)
             if err is not None:
                 flash(err)
