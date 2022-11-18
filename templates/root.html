@@ -1,16 +1,63 @@
+
 <!DOCTYPE html>
+
 <html lang="en">
 	<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Master Chef</title>
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-		<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+		<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js">
+		</script>
+		<script>
+			function mybtn(){
+				//Will need a global variable user_profile_url so var bgImg = user_profile_url
+				var bgImg;
+				let myButton = document.getElementById("drop");
+				//If a global variable user_profile_pic is null set default picture else set user_profile_pic
+				if(bgImg == null){
+					myButton.style.backgroundImage = 'url(https://images.unsplash.com/photo-1554050857-c84a8abdb5e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8MXx8fGVufDB8fHx8&w=1000&q=80)';
+				} else {
+					myButton.style.backgroundImage = bgImg;
+				}
+   			}
+		</script>
+		<style>
+			.drop-btn {
+				color: white;
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				font-size: 16px;
+				border: 1px solid black;
+			}
+			.dropdown-content {
+				position: absolute;
+				background-color: #00000000;
+				min-width: 80px;
+				z-index: 1;
+				margin-top: 20px;
+			}
+			.dropdown-content a {
+				color: black;
+				font-family: helvetica;
+				padding: 5px 5px;
+				text-decoration: none;
+				display: block;
+			}
+			hr.solid {
+				border-left: none;
+				border-right: none;
+				border-top: 1px solid #000000;
+				border-bottom: none;
+			}
+		
+		</style>
 	</head>
 	<body>
 	  <div>
-		<div class="position-fixed fixed-top w-100 shadow-0 d-flex flex-column">
-			<nav class="w-100 navbar navbar-expand-lg navbar-scroll" style="background-color: #ffede7; z-index: 1200;">
+		<div style=" padding-bottom: 5em;">
+			<nav class="navbar navbar-expand-lg fixed-top navbar-scroll shadow-0" style="background-color: #ffede7; ">
 				<div class="container">
 				  <a class="navbar-brand" href="/">Master Chef</a>
 				  <button class="navbar-toggler ps-0" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarExample01"
@@ -26,67 +73,69 @@
 					  <li class="nav-item active">
 						<a class="nav-link px-3" href="/search">Recipes</a>
 					  </li>
-
-					  <li class="nav-item" x-show="logged_in">
-						<a class="nav-link px-3" href="/profile">My Recipes</a>
-					  </li>
-					  
-					  <li class="nav-item" x-show="logged_in">
-						<a class="nav-link px-3" href="/recipes/create">Create Recipe</a>
+					  <li class="nav-item">
+						<a class="nav-link px-3" href="/register"> Create Account</a>
 					  </li>
 
 					  <li class="nav-item">
-						<a class="nav-link px-3"                            
-						:href="logged_in ? '' : '/register'"
-						x-text="logged_in ? '' : 'Create Account'"></a>
-					</li>
+						<a class="nav-link px-3" href="/setting"> Account Settings</a>
+					  </li>
 
-					  <li class="nav-item">
+					  <li class="nav-item" x-show = "!logged_in">
 						<a class="nav-link px-3"
-                           :href="logged_in ? '/logout' : '/login'"
-                           x-text="logged_in ? 'Log out' : 'Log in'"></a>
+                           :href="'/login'"
+                           x-text="'Log in'"></a>
 					  </li>
-
-					  
-					  <li class="nav-item" x-show="logged_in">
-						<a class="nav-link px-3" href="/setting">Account Settings</a>
-					  </li>
+					 
 					</ul>
-					<ul>
-						<div class="container">
-							<div class="row height d-flex justify-content-center align-items-center">
-							  <div class="col-md-8">
-								<div class="search">
-                                  <form action="/search">
-								    <i class="fa fa-search"></i>
-								    <input type="text" class="form-control" placeholder="Search Recipe" name="q">
-                                  </form>
-								</div>
-							  </div>
+
+					<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+						<li>
+							<div class="container">
+								<div class="row height d-flex justify-content-center align-items-center">
+								  <div class="col-md-8">
+									<div class="search">
+									  <form action="/search">
+										<i class="fa fa-search"></i>
+										<input type="text" class="form-control" placeholder="Search Recipe" name="q">
+									  </form>
+									</div>
+								  </div>
 							</div>
-						</div>
+	
+							</li>
+							<li>
+								<div class="dropdown" x-data="{ open : false}" x-show = "logged_in">
+									<button id="drop" class="drop-btn" @click="open = !open" x-init="mybtn()"></button>
+									<div class="dropdown-content" x-show = "open">
+									<hr class="solid">
+									<a href="/logout">Logout</a>
+									<hr class="solid">
+									</div>
+								</div>
+							</li>
 					</ul>
 				  </div>
 				</div>
 			</nav>
 			<div class="w-100">
-			  {% with messages = get_flashed_messages() %}
-			  {% if messages %}
-			  <ul class="w-100 flashes list-group">
-				{% for message in messages %}
-				<li class="w-100 bg-danger list-group-item"  x-data="{show: true}" x-show="show" x-transition @click="show = false;" style="cursor: pointer;">{{ message }}</li>
-				{% endfor %}
-			  </ul>
-			  {% endif %}
-			  {% endwith %}
-
-			</div>
-		</div>
-		<div style="margin-top: 5rem;">
-		  {% block content %}
-		  {% endblock %}
-		</div>
-	  </div>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+				{% with messages = get_flashed_messages() %}
+				{% if messages %}
+				<ul class="w-100 flashes list-group">
+				  {% for message in messages %}
+				  <li class="w-100 bg-danger list-group-item"  x-data="{show: true}" x-show="show" x-transition @click="show = false;" style="cursor: pointer;">{{ message }}</li>
+				  {% endfor %}
+				</ul>
+				{% endif %}
+				{% endwith %}
+  
+			  </div>
+		  </div>
+		  <div>
+			{% block content %}
+			{% endblock %}
+		  </div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
   </body>
 </html>

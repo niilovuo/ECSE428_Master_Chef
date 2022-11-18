@@ -7,12 +7,18 @@ import random
 from project.db import Db
 from project.account import (
     add_new_account,
+    process_account_form,
     search_account_by_id,
     delete_account_by_id,
     search_account_by_name,
     search_account_by_email,
+    search_account_by_filter,
+    update_name_by_id,
+    update_bio_by_id,
+    update_email_by_id,
     convert_account_obj
 )
+
 from project.recipe import (
     add_tag_to_recipe,
     create_recipe,
@@ -20,6 +26,10 @@ from project.recipe import (
     remove_tag_of_recipe,
     add_image_to_recipe
 )
+
+from project.followers import unfollow_account_by_id
+from project.shopping_list import get_shopping_list_of_account
+
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -76,9 +86,52 @@ def create_app(setup_db=True):
 
         return render_template("/register.html")
 
-    @app.route("/setting")
+    @app.route("/setting", methods=["GET", "POST"])
     def account_setting():
-        return render_template("/setting.html")
+        # regardless of GET or POST, we kick them out if not logged in
+        user_id = session.get('id')
+        if user_id is None:
+            flash('Please login first')
+            return redirect("/login?redirect_url=/setting")
+
+        err = None
+        if request.method == "POST":
+            err = process_account_form(user_id, request.form)
+
+        user = convert_account_obj(search_account_by_id(user_id))
+        if user is None:
+            session.pop('id', None)
+            flash('Something went wrong')
+            return redirect("/login?redirect_url=/setting")
+
+        if err:
+            flash(err)
+
+        account = search_account_by_id(session.get('id'))
+        if request.method == "POST":
+            if request.form.get("submit-profile"):
+                name = request.form['NewName']
+                bio = request.form['NewBio']
+                email = request.form['NewEmail']
+
+                if (name != ''):
+                    err = update_name_by_id(name, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                if (bio != ''):
+                    err = update_bio_by_id(bio, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                if (email != ''):
+                    err = update_email_by_id(email, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                return redirect('/setting')
+
+        return render_template("/setting.html", 
+        name = account[1],
+        email = account[2],
+        bio = account[4])
 
     @app.route("/delete_account")
     def delete_account():
@@ -117,7 +170,6 @@ def create_app(setup_db=True):
     def logout():
         if 'id' in session:
             session.pop('id', None)
-
             return redirect('/')
         return "user not logged in", 401
 
@@ -147,6 +199,18 @@ def create_app(setup_db=True):
         if 'id' in session:
             return str(session.get("id")), 200
         return "No user", 401
+
+    @app.route("/users")
+    def search_users():
+        PAGE_ENTRIES = 10
+
+        name = request.args.get("q", "")
+        page = request.args.get("start", 0, type=int)
+        results = search_account_by_filter(name, page * PAGE_ENTRIES, PAGE_ENTRIES)
+        return render_template("/search_users.html",
+                               default_query=name,
+                               default_page=page,
+                               results=[convert_account_obj(e) for e in results])
 
     @app.route("/search")
     def search():
@@ -405,6 +469,24 @@ def create_app(setup_db=True):
         err = remove_tag_of_recipe(tag_name, recipe_id, user_id)
         if not err:
             return 'remove tag of recipe success', 200
+        else:
+            return err, 404
+
+    @app.route("/api/shopping_list")
+    def view_shopping_list():
+        user_id = session.get('id')
+        shopping_list, err = get_shopping_list_of_account(user_id)
+        if shopping_list:
+            return shopping_list, 200
+        else:
+            return err, 404
+
+    @app.route("/api/followed_accounts/<int:account_id>", methods=["DELETE"])
+    def unfollow_account(account_id):
+        user_id = session.get('id')
+        err = unfollow_account_by_id(account_id, user_id)
+        if not err:
+            return 'unfollow account success', 200
         else:
             return err, 404
 
