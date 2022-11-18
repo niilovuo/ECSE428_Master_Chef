@@ -1,4 +1,6 @@
 from project.db import LikeRepo
+from project.recipe_query import search_recipe_by_id
+
 
 def did_user_like(recipe_id, user_id):
     """
@@ -13,6 +15,7 @@ def did_user_like(recipe_id, user_id):
     -------
     boolean
     """
+
     return LikeRepo.did_user_like(recipe_id, user_id)
 
 def like_recipe(recipe_id, user_id):
@@ -34,7 +37,14 @@ def like_recipe(recipe_id, user_id):
     id of user on success;
     error message if failed
     """
-    return LikeRepo.like_recipe(recipe_id, user_id)
+    if user_id is None:
+        return 'Please log in first'
+    elif recipe_id is None:
+        return 'Invalid recipe id'
+    elif search_recipe_by_id(recipe_id) is None:
+        return 'This recipe does not exist'
+    else:
+        return LikeRepo.like_recipe(recipe_id, user_id)
 
 def unlike_recipe(recipe_id, user_id):
     """
@@ -50,4 +60,11 @@ def unlike_recipe(recipe_id, user_id):
     id of user on success;
     error message if failed
     """
-    return LikeRepo.unlike_recipe(recipe_id, user_id)
+    if user_id is None:
+        return 'Please log in first'
+    elif recipe_id is None:
+        return 'Invalid recipe id'
+    elif search_recipe_by_id(recipe_id) is None:
+        return 'This recipe does not exist'
+    else:
+        return LikeRepo.unlike_recipe(recipe_id, user_id)
