@@ -185,3 +185,32 @@ def remove_tag_of_recipe(tag_name, recipe_id, user_id):
         return error
     except Exception:
         return "Could not remove tag of recipe, please try again"
+
+def add_image_to_recipe(image, recipe_id, user_id):
+    """
+    add an image to a recipe as the author
+
+    Parameters
+    ----------
+    image:
+      Image data
+    recipe_id:
+      Id of the recipe
+    user_id:
+      Id of the user performing the change
+
+    Returns
+    -------
+    None on success
+    str  on failure where str is a error message
+    """
+    if user_id is None:
+        return "Need to log in to modify this recipe"
+    recipe = RecipeRepo.select_by_id_and_author(recipe_id, user_id)
+    if not recipe:
+        return "Cannot modify this recipe"
+    try:
+        error = RecipeRepo.update_image_by_id(image, recipe_id)
+        return error
+    except Exception as e:
+        return "Could not add image to recipe, please try again"
