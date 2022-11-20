@@ -453,6 +453,15 @@ def create_app(setup_db=True):
         else:
             return err, 404
 
+    @app.route('//api/followed_accounts/<int:account_id>', method=['POST'])
+    def follow_account(account_id):
+        user_id = session.get('id')
+        err = unfollow_account_by_id(account_id, user_id)
+        if not err:
+            return 'follow account success', 200
+        else:
+            return err, 404
+
     return app
 
 

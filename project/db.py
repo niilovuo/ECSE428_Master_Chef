@@ -575,6 +575,7 @@ class FollowersRepo:
                 VALUES (%s, %s)
                 """, (account, follower))
             _conn.commit()
+            return cur.fetchone()[0]
         except Exception as e:
             _conn.rollback()
             raise e
