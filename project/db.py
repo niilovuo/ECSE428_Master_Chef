@@ -198,7 +198,6 @@ class AccountRepo:
             _conn.rollback()
             raise e
 
-
 class RecipeRepo:
 
     @staticmethod
