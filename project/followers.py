@@ -45,8 +45,7 @@ def follow_account_by_id(account_id, follower_id):
     if not account:
         return "This user does not exist"
     try:
-        err = FollowersRepo.insert_row(account_id, follower_id)
-        return err
+        FollowersRepo.insert_row(account_id, follower_id)
     except Exception:
         return "Could not follow account, please try again"
 

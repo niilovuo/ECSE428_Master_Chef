@@ -64,7 +64,7 @@ def the_user_join_my_following_list(postgresql, account_id, user_id, res):
                        """, (account_id, user_id))
     follow = cur.fetchone()
     assert follow is not None
-    assert res is not None
+    assert res is None
 
 @given("this user's account has been deleted")
 def this_users_account_has_been_deleted(postgresql, account_id):

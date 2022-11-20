@@ -457,7 +457,7 @@ def create_app(setup_db=True):
     def follow_account(account_id):
         user_id = session.get('id')
         err = follow_account_by_id(account_id, user_id)
-        if not err:
+        if err is None:
             return 'follow account success', 200
         else:
             return err, 404
