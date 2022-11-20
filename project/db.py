@@ -154,6 +154,49 @@ class AccountRepo:
         except Exception as e:
             _conn.rollback()
             raise e
+    
+    @staticmethod
+    def update_name_by_id(name,id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                UPDATE accounts SET name = %s WHERE id = %s 
+                """, (name, id,))
+            _conn.commit()
+            return None
+
+        except Exception as e:
+            _conn.rollback()
+            raise e
+            
+    @staticmethod
+    def update_bio_by_id(bio, id):
+        try: 
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                UPDATE accounts SET bio = %s WHERE id = %s 
+                """, (bio, id,))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def update_email_by_id(email, id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("""
+                UPDATE accounts SET email = %s WHERE id = %s 
+                """, (email, id,))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
 
 
 class RecipeRepo:
@@ -286,6 +329,17 @@ class RecipeRepo:
             _conn.rollback()
             raise e
 
+    @staticmethod
+    def update_image_by_id(image, recipe_id):
+        try:
+            _conn = Db.get_session()
+            cur = _conn.cursor()
+            cur.execute("UPDATE recipes SET image = %s WHERE id = %s;", (image, recipe_id))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
 
 class TagRepo:
 
@@ -536,3 +590,43 @@ class ShoppingItemsRepo:
         except Exception as e:
             _conn.rollback()
             raise e
+
+
+class FollowersRepo:
+
+    @staticmethod
+    def insert_row(account, follower):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                INSERT INTO followers
+                VALUES (%s, %s)
+                """, (account, follower))
+            _conn.commit()
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def delete_by_id(account, follower):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                    DELETE FROM followers WHERE account = %s AND follower = %s
+                    """, (account, follower))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
+    @staticmethod
+    def select_by_id(account, follower):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""
+                SELECT * FROM followers WHERE account = %s AND follower = %s
+                """, (account, follower))
+        return cur.fetchone()

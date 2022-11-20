@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, flash, redirect, session
 from werkzeug.security import check_password_hash
 
 import os
+import base64
 import random
 from project.db import Db
 from project.account import (
@@ -12,10 +13,23 @@ from project.account import (
     search_account_by_name,
     search_account_by_email,
     search_account_by_filter,
+    update_name_by_id,
+    update_bio_by_id,
+    update_email_by_id,
     convert_account_obj
 )
-from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
+
+from project.recipe import (
+    add_tag_to_recipe,
+    create_recipe,
+    edit_recipe,
+    remove_tag_of_recipe,
+    add_image_to_recipe
+)
+
+from project.followers import unfollow_account_by_id
 from project.shopping_list import get_shopping_list_of_account
+
 from project.tag_query import (
     get_all_tags,
     get_tags_of_recipe
@@ -93,7 +107,32 @@ def create_app(setup_db=True):
 
         if err:
             flash(err)
-        return render_template("/setting.html", user=user)
+
+        account = search_account_by_id(session.get('id'))
+        if request.method == "POST":
+            if request.form.get("submit-profile"):
+                name = request.form['NewName']
+                bio = request.form['NewBio']
+                email = request.form['NewEmail']
+
+                if (name != ''):
+                    err = update_name_by_id(name, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                if (bio != ''):
+                    err = update_bio_by_id(bio, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                if (email != ''):
+                    err = update_email_by_id(email, session.get('id'))
+                    if (err != None): 
+                        flash (err)
+                return redirect('/setting')
+
+        return render_template("/setting.html", 
+        name = account[1],
+        email = account[2],
+        bio = account[4])
 
     @app.route("/delete_account")
     def delete_account():
@@ -132,7 +171,6 @@ def create_app(setup_db=True):
     def logout():
         if 'id' in session:
             session.pop('id', None)
-
             return redirect('/')
         return "user not logged in", 401
 
@@ -195,17 +233,23 @@ def create_app(setup_db=True):
             return render_template("/recipe.html",
                                    recipe=None, author=None, tags=[], ingredients=[],
                                    allow_edits=False)
-
+        image = recipe[6]  # Added back image here to display when looking at recipe page
         recipe = convert_recipe_obj(recipe)
+        recipe['image'] = image
         author = convert_account_obj(search_account_by_id(recipe["author"]))
         tags = get_tags_of_recipe(id)
         ingredients = get_ingredients_of_recipe(id)
         allow_edits = session.get('id') == recipe["author"]
         is_liked = did_user_like(id, session.get('id')) if 'id' in session else False
+        if recipe["image"] is not None:
+            b64data = base64.b64encode(bytes(recipe["image"])).decode('UTF-8')
+            image = b64data
+        else:
+            image = None
         return render_template("/recipe.html",
                                recipe=recipe, author=author, tags=tags, ingredients=ingredients,
-                               allow_edits=allow_edits, user=session.get('id'), is_liked=is_liked)
-
+                               allow_edits=allow_edits, user=session.get('id'), is_liked=is_liked, image=image)
+                               
     @app.route("/recipes/create")
     def render_create_recipe():
         if 'id' not in session:
@@ -375,6 +419,27 @@ def create_app(setup_db=True):
         new_id = add_comment(comment_title, comment_body, author_id, recipe_id)
         return (str(new_id), 200) if isinstance(new_id, int) else (str(new_id), 500)
 
+    @app.route("/api/recipes/<int:recipe_id>/images/add", methods=["POST"])
+    def api_add_image_to_recipe(recipe_id):
+        recipe = search_recipe_by_id(recipe_id)
+        if recipe is None:
+            return "Invalid edit", 400
+        author_id = session.get('id')
+        actual_author_id = convert_recipe_obj(recipe)['author']
+        if author_id is None:
+            return "Need to log in to modify this recipe", 401
+        if author_id != actual_author_id:
+            return "Invalid edit", 401
+        try:
+            image = request.files['image'].read()
+            err = add_image_to_recipe(image, recipe_id, author_id)
+            if err is not None:
+                flash(err)
+        except Exception as e:
+            flash("Invalid Request Parameters")
+
+        return redirect(f"/recipes/{recipe_id}")
+
     @app.route("/api/comments/<int:id>", methods=["DELETE"])
     def delete_comment(id):
         comment = search_comment_by_id(id)
@@ -427,6 +492,15 @@ def create_app(setup_db=True):
     def api_get_recipes_liked():
         user_id = session.get('id')
         return get_recipes_liked_by_liker(user_id)
+        
+    @app.route("/api/followed_accounts/<int:account_id>", methods=["DELETE"])
+    def unfollow_account(account_id):
+        user_id = session.get('id')
+        err = unfollow_account_by_id(account_id, user_id)
+        if not err:
+            return 'unfollow account success', 200
+        else:
+            return err, 404
 
     return app
 

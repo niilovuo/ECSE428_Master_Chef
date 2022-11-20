@@ -304,6 +304,98 @@ def search_account_by_email(email):
 
     return AccountRepo.select_by_email(email)
 
+def update_name_by_id(name, id):
+    """
+    update account name by id
+
+    Parameters
+    ----------
+    name:
+      the name
+    id:
+      the id
+
+    Returns
+    -------
+    None or error message
+    """
+
+    if (name.isspace()):
+      return "The account name cannot be an empty space."
+
+    if (name.replace('_', '').isalnum() == False):
+      return "The account name must be alphanumeric or underscore."
+      
+    if (search_account_by_name(name) != None):
+      return "There is another account under this name. Please provide another name."
+    
+    try:
+      AccountRepo.update_name_by_id(name, id)
+      return None
+  
+    except Exception as e:
+        return "Unknown error occurred. Please try it again later"
+
+    
+
+def update_bio_by_id(bio, id):
+    """
+    update bio by id
+
+    Parameters
+    ----------
+    bio:
+      the bio
+    id:
+      the id
+
+    Returns
+    -------
+    None or error message
+    """
+
+    try:
+      AccountRepo.update_bio_by_id(bio, id)  
+    
+    except Exception as e:
+        return "Unknown error occurred. Please try it again later"
+
+    return None
+
+
+def update_email_by_id(email, id):
+    """
+    update email by id
+
+    Parameters
+    ----------
+    email:
+      the email
+    id:
+      the id
+
+    Returns
+    -------
+    None or error message
+    """
+
+    if(search_account_by_email(email) != None):
+      return "There is another account under this email. Please provide another email."
+
+    if (email.isspace()):
+      return "Email cannot be an empty space."
+
+    if("@" not in email):
+      return "Please provide a valid email address."
+
+    try:
+      AccountRepo.update_email_by_id(email, id)
+    
+    except Exception as e:
+        return "Unknown error occurred. Please try it again later"
+
+    return None
+    
 def convert_account_obj(account):
     """
     Converts account to a dict that can be jsonified

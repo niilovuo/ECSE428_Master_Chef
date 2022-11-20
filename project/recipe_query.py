@@ -97,7 +97,7 @@ def convert_recipe_obj(recipe):
         'cook_time': str(recipe[3]) if recipe[3] else None,
         'directions': recipe[4],
         'author': recipe[5],
-        'image': recipe[6],
+        # 'image': recipe[6],  # Commented out because tojson does not enjoy memoryview objects
         'num_likes': recipe[7]
     }
 
