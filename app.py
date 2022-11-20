@@ -29,7 +29,8 @@ from project.recipe_query import (
 )
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
 from project.recipe import delete_recipe_by_id
-from project.likes import did_user_like, like_recipe, unlike_recipe
+from project.likes import did_user_like, like_recipe, unlike_recipe, get_recipes_liked_by_liker
+
 
 def create_app(setup_db=True):
     app = Flask(__name__)
@@ -204,7 +205,7 @@ def create_app(setup_db=True):
         return render_template("/recipe.html",
                                recipe=recipe, author=author, tags=tags, ingredients=ingredients,
                                allow_edits=allow_edits, user=session.get('id'), is_liked=is_liked)
-                               
+
     @app.route("/recipes/create")
     def render_create_recipe():
         if 'id' not in session:
@@ -228,6 +229,14 @@ def create_app(setup_db=True):
             return redirect("/")
         ingredients = [{"name": e[1], "quantity": e[2]} for e in get_ingredients_of_recipe(id)]
         return render_template("/upsert_recipe.html", recipe=recipe, ingredients=ingredients)
+
+    @app.route("/recipes_liked")
+    def render_recipes_liked():
+        user_id = session.get('id')
+        if user_id is None:
+            flash('Please login first')
+            return redirect("/login?redirect_url=/recipes_liked")
+        return render_template("/recipes_liked.html", user_id=user_id)
 
     @app.route("/recipes/<int:id>/tags", methods=["POST"])
     def add_tag(id):
@@ -292,13 +301,13 @@ def create_app(setup_db=True):
 
     @app.route("/api/recipes/<int:id>/like", methods=["DELETE"])
     def api_unlike_recipe(id):
-        
+
         try:
             unlike_recipe(id, session["id"])
             return "Success", 200
         except Exception as e:
             return "Could not unlike recipe", 404
-        
+
     @app.route("/api/recipes/<int:id>/tags")
     def api_lookup_recipe_tags(id):
         if search_recipe_by_id(id) is None:
@@ -316,7 +325,7 @@ def create_app(setup_db=True):
         except Exception as e:
             flash("Could not create recipe")
             return redirect("/")
-        
+
     @app.route("/api/recipes/edit/<int:id>", methods=["POST"])
     def api_edit_recipe(id):
         data = request.form.to_dict()
@@ -326,9 +335,7 @@ def create_app(setup_db=True):
         except Exception as e:
             flash("Could not update recipe")
             return redirect("/")
-        
-        
-    
+
     @app.route("/api/recipes/<int:id>/ingredients")
     def api_lookup_recipe_ingredients(id):
         if search_recipe_by_id(id) is None:
@@ -342,7 +349,7 @@ def create_app(setup_db=True):
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
         return search_comment_by_recipe_id(recipe_id)
-        
+
     @app.route("/api/comments/add", methods=["POST"])
     def api_add_comment_to_recipe():
 
@@ -415,6 +422,11 @@ def create_app(setup_db=True):
             return shopping_list, 200
         else:
             return err, 404
+
+    @app.route("/api/recipes_liked", methods=["GET"])
+    def api_get_recipes_liked():
+        user_id = session.get('id')
+        return get_recipes_liked_by_liker(user_id)
 
     return app
 

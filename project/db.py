@@ -6,6 +6,7 @@ from flask import g
 # XXX: You should never access these (unless you are Db)
 _db_conf = None
 
+
 class Db:
 
     @staticmethod
@@ -67,6 +68,7 @@ class Db:
             _conn.rollback()
             raise e
 
+
 class AccountRepo:
 
     @staticmethod
@@ -84,7 +86,7 @@ class AccountRepo:
             # rollback so continue (postgres's safety feature)
             _conn.rollback()
             raise e
-    
+
     @staticmethod
     def delete_row_by_id(id):
         try:
@@ -152,6 +154,7 @@ class AccountRepo:
         except Exception as e:
             _conn.rollback()
             raise e
+
 
 class RecipeRepo:
 
@@ -224,7 +227,8 @@ class RecipeRepo:
                 VALUES (%s, %s, %s, %s, %s) RETURNING id;
                 """, (title, prep_time, cook_time, directions, author_id))
             recipe_id = cur.fetchone()[0]
-            cur.executemany("INSERT INTO ingredients (name, quantity, recipe) VALUES (%s, %s, %s);", [(e["name"], e["quantity"], recipe_id) for e in ingredients])
+            cur.executemany("INSERT INTO ingredients (name, quantity, recipe) VALUES (%s, %s, %s);",
+                            [(e["name"], e["quantity"], recipe_id) for e in ingredients])
             _conn.commit()
             return recipe_id
         except Exception as e:
@@ -240,16 +244,19 @@ class RecipeRepo:
             author_recipe_id = cur.fetchone()[0]
             if author_recipe_id != author_id:
                 raise Exception("Not your recipe")
-            cur.execute("UPDATE recipes SET title = %s, prep_time = %s, cook_time = %s, directions = %s WHERE id = %s;", (title, prep_time, cook_time, directions, recipe_id))
+            cur.execute("UPDATE recipes SET title = %s, prep_time = %s, cook_time = %s, directions = %s WHERE id = %s;",
+                        (title, prep_time, cook_time, directions, recipe_id))
             cur.execute("SELECT id FROM ingredients WHERE recipe = %s;", (recipe_id,))
             extant_ingredients = cur.fetchall()
             for (new, ext) in zip_longest(ingredients, extant_ingredients):
                 if new == None:
                     cur.execute("DELETE FROM ingredients WHERE id = %s;", ext)
                 elif ext == None:
-                    cur.execute("INSERT INTO ingredients (name, quantity, recipe) VALUES (%s, %s, %s);", (new["name"], new.get("quantity", ""), recipe_id))
+                    cur.execute("INSERT INTO ingredients (name, quantity, recipe) VALUES (%s, %s, %s);",
+                                (new["name"], new.get("quantity", ""), recipe_id))
                 else:
-                    cur.execute("UPDATE ingredients SET name = %s, quantity = %s WHERE id = %s", (new["name"], new.get("quantity", ""), ext[0]))
+                    cur.execute("UPDATE ingredients SET name = %s, quantity = %s WHERE id = %s",
+                                (new["name"], new.get("quantity", ""), ext[0]))
             _conn.commit()
             return recipe_id
         except Exception as e:
@@ -264,7 +271,6 @@ class RecipeRepo:
             SELECT * FROM recipes WHERE id = %s AND author = %s
             """, (id, author_id))
         return cur.fetchone()
-
 
     @staticmethod
     def delete_by_id(id):
@@ -319,6 +325,7 @@ class TagRepo:
               WHERE recipe = %s)
             """, (recipe_id,))
         return cur.fetchall()
+
 
 class RecipeTagRepo:
 
@@ -401,6 +408,7 @@ class IngredientRepo:
             _conn.rollback()
             raise e
 
+
 class LikeRepo:
     @staticmethod
     def did_user_like(recipe_id, user_id):
@@ -408,13 +416,21 @@ class LikeRepo:
         cur = _conn.cursor()
         cur.execute("SELECT liker FROM liked_recipes WHERE liker = %s AND recipe = %s;", (user_id, recipe_id))
         return cur.fetchone() is not None
-    
+
+    @staticmethod
+    def select_all_recipes_liked_by_liker_id(liker_id):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("SELECT recipe FROM liked_recipes WHERE liker = %s;", liker_id)
+        return cur.fetchall()
+
     @staticmethod
     def like_recipe(recipe_id, user_id):
         _conn = Db.get_session()
         try:
             cur = _conn.cursor()
-            cur.execute("INSERT INTO liked_recipes (liker, recipe) VALUES (%s, %s) RETURNING liker", (user_id, recipe_id))
+            cur.execute("INSERT INTO liked_recipes (liker, recipe) VALUES (%s, %s) RETURNING liker",
+                        (user_id, recipe_id))
             _conn.commit()
             return cur.fetchone()[0]
         except Exception as e:
@@ -426,13 +442,15 @@ class LikeRepo:
         _conn = Db.get_session()
         try:
             cur = _conn.cursor()
-            cur.execute("DELETE FROM liked_recipes WHERE liker = %s AND recipe = %s RETURNING liker;", (user_id, recipe_id))
+            cur.execute("DELETE FROM liked_recipes WHERE liker = %s AND recipe = %s RETURNING liker;",
+                        (user_id, recipe_id))
 
             _conn.commit()
             return cur.fetchone()[0]
         except Exception as e:
             _conn.rollback()
             raise e
+
 
 class CommentRepo:
 
