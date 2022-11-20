@@ -41,7 +41,7 @@ def create_app(setup_db=True):
 
     pg_user = os.getenv("POSTGRES_USER", "postgres")
     db_args = {
-        "password": "Tuzy0828",
+        "password": os.getenv("POSTGRES_PASSWORD"),
         "user": pg_user,
         "dbname": os.getenv("POSTGRES_DB", pg_user),
         "host": os.getenv("POSTGRES_HOST", "localhost"),
