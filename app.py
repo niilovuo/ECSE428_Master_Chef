@@ -17,7 +17,7 @@ from project.account import (
     update_email_by_id,
     convert_account_obj
 )
-from project.followers import unfollow_account_by_id
+from project.followers import unfollow_account_by_id, follow_account_by_id
 from project.recipe import (add_tag_to_recipe, create_recipe, edit_recipe, remove_tag_of_recipe)
 from project.shopping_list import get_shopping_list_of_account
 from project.tag_query import (
@@ -41,7 +41,7 @@ def create_app(setup_db=True):
 
     pg_user = os.getenv("POSTGRES_USER", "postgres")
     db_args = {
-        "password": os.getenv("POSTGRES_PASSWORD"),
+        "password": "Tuzy0828",
         "user": pg_user,
         "dbname": os.getenv("POSTGRES_DB", pg_user),
         "host": os.getenv("POSTGRES_HOST", "localhost"),
@@ -453,10 +453,10 @@ def create_app(setup_db=True):
         else:
             return err, 404
 
-    @app.route('//api/followed_accounts/<int:account_id>', method=['POST'])
+    @app.route("/api/followed_accounts/<int:account_id>", methods=["POST"])
     def follow_account(account_id):
         user_id = session.get('id')
-        err = unfollow_account_by_id(account_id, user_id)
+        err = follow_account_by_id(account_id, user_id)
         if not err:
             return 'follow account success', 200
         else:
