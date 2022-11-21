@@ -280,7 +280,10 @@ def create_app(setup_db=True):
         if user_id is None:
             flash('Please login first')
             return redirect("/login?redirect_url=/recipes_liked")
-        return render_template("/recipes_liked.html", user_id=user_id)
+        recipe_ids = get_recipes_liked_by_liker(user_id)
+        recipes = [search_recipe_by_id(recipe_id) for recipe_id in recipe_ids]
+        recipes = [convert_recipe_obj(e) for e in recipes]
+        return render_template("/recipes_liked.html", recipes=recipes)
 
     @app.route("/recipes/<int:id>/tags", methods=["POST"])
     def add_tag(id):
@@ -487,11 +490,6 @@ def create_app(setup_db=True):
             return shopping_list, 200
         else:
             return err, 404
-
-    @app.route("/api/recipes_liked", methods=["GET"])
-    def api_get_recipes_liked():
-        user_id = session.get('id')
-        return get_recipes_liked_by_liker(user_id)
         
     @app.route("/api/followed_accounts/<int:account_id>", methods=["DELETE"])
     def unfollow_account(account_id):
