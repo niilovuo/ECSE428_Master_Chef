@@ -474,7 +474,7 @@ class LikeRepo:
     def select_all_recipes_liked_by_liker_id(liker_id):
         _conn = Db.get_session()
         cur = _conn.cursor()
-        cur.execute("SELECT recipe FROM liked_recipes WHERE liker = %s;", liker_id)
+        cur.execute("SELECT recipe FROM liked_recipes WHERE liker = %s;", (liker_id,))
         return cur.fetchall()
 
     @staticmethod
