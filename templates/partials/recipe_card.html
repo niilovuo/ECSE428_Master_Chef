@@ -7,16 +7,21 @@
  #
  #}
 
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title">
-      <a :href="'/recipes/' + recipe.id" class="stretched-link"
-         x-text="recipe.title"></a>
-    </h5>
-	<p x-text="'Likes: '+recipe.num_likes"></p>
-    <h6 class="card-subtitle mb-2 text-muted" x-text="'Prep time: ' + (recipe.prep_time || '(unknown)')"></h6>
-    <h6 class="card-subtitle mb-2 text-muted" x-text="'Cook time: ' + (recipe.cook_time || '(unknown)')"></h6>
-    <p class="card-text" x-text="recipe.directions"></p>
-  </div>
+<div class="py-3">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <h5 class="card-title">
+                  <a :href="'/recipes/' + recipe.id" class="stretched-link"
+                     x-text="recipe.title"></a>
+                </h5>
+                <p x-text="'Likes: '+recipe.num_likes"></p>
+                <h6 class="card-subtitle mb-2 text-muted" x-text="'Prep time: ' + (recipe.prep_time || '(unknown)')"></h6>
+                <h6 class="card-subtitle mb-2 text-muted" x-text="'Cook time: ' + (recipe.cook_time || '(unknown)')"></h6>
+                <p class="card-text" x-text="recipe.directions"></p>
+            </div>
+        </div>
+      </div>
+    </div>
 </div>
-
