@@ -600,9 +600,10 @@ class FollowersRepo:
             cur = _conn.cursor()
             cur.execute("""
                 INSERT INTO followers
-                VALUES (%s, %s)
+                VALUES (%s, %s) RETURNING account
                 """, (account, follower))
             _conn.commit()
+            return cur.fetchone()[0]
         except Exception as e:
             _conn.rollback()
             raise e
