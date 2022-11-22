@@ -29,8 +29,8 @@ Scenario: User views the list of recipes they liked while logged in (Normal Flow
 	Then the following list of recipes liked ids is returned:
 		[
 			["recipe_id"],
-			["2"],
-			["3"]
+			[2],
+			[3]
 		]
 Scenario: User with no recipes liked views their list of recipes liked while logged in (Alternative Flow)
 	Given "CatChef" is logged into the system
@@ -53,5 +53,5 @@ Scenario: User Requests views list of recipes they liked with deleted recipe whi
 	Then the following list of recipes liked ids is returned:
 		[
 			["recipe_id"],
-			["2"]
+			[2]
 		]

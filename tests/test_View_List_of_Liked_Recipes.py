@@ -90,7 +90,7 @@ def catchef_attempts_to_view_the_list_of_recipes_they_liked(user_id):
 @then(parsers.parse('the following list of recipes liked ids is returned:{table}'))
 def the_following_list_of_recipes_liked_ids_is_returned(table, res):
     table = json.loads(table)[1:]
+    table = [tuple(e) for e in table]  # convert into list of tuples to compare with res
     for recipe_id in table:
-        m = bytes(f'[{recipe_id},', 'utf-8')
-        assert m in res
+        assert recipe_id in res
     assert len(res) == len(table)
