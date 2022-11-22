@@ -81,7 +81,7 @@ def the_following_recipes_exist_in_the_system(table, postgresql):
                         """, (recipe_id, recipe_title, prep_time, cook_time, directions, author_id))
     postgresql.commit()
 
-@when('attempting to view the list of recipes they liked')
+@when('attempting to view the list of recipes they liked', target_fixture="res")
 @when('"CatChef" attempts to view the list of recipes they liked', target_fixture="res")
 def catchef_attempts_to_view_the_list_of_recipes_they_liked(user_id):
     res = get_recipes_liked_by_liker(user_id)
