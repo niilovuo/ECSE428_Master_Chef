@@ -1,0 +1,16 @@
+{% extends "root.html" %}
+{% block content %}
+
+<div class="container">
+    <h1>Recipes Liked 👍</h1>
+    {% if recipes|length == 0 %}
+        <h4 class="card-subtitle mb-2 text-muted">You did not like any recipes... (´。＿。｀)</h4>
+    {% else %}
+        {% for recipe in recipes %}
+            <div x-data='{ recipe: {{ recipe|tojson }}}'>
+                {% include "partials/recipe_card.html" %}
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -73,6 +73,23 @@
 					  <li class="nav-item active">
 						<a class="nav-link px-3" href="/search">Recipes</a>
 					  </li>
+
+                      <li class="nav-item" x-show="logged_in">
+                        <a class="nav-link px-3" href="/recipes_liked">Recipes Liked 👍</a>
+                      </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link px-3" href="/users">Users</a>
+                      </li>
+
+					  <li class="nav-item" x-show="logged_in">
+						<a class="nav-link px-3" href="/profile">My Recipes</a>
+					  </li>
+					  
+					  <li class="nav-item" x-show="logged_in">
+						<a class="nav-link px-3" href="/recipes/create">Create Recipe</a>
+					  </li>
+
 					  <li class="nav-item">
 						<a class="nav-link px-3" href="/register"> Create Account</a>
 					  </li>
