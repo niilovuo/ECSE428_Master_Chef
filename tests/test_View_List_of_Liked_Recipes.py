@@ -9,15 +9,15 @@ from pytest_bdd import (
 )
 from project.likes import get_recipes_liked_by_liker
 
-@scenario('features\View_List_of_Liked_Recipes.feature', 'User Requests views list of recipes they liked with deleted recipe while logged in (Error Flow)')
+@scenario('features/View_List_of_Liked_Recipes.feature', 'User Requests views list of recipes they liked with deleted recipe while logged in (Error Flow)')
 def test_user_requests_views_list_of_recipes_they_liked_with_deleted_recipe_while_logged_in_error_flow(app):
     pass
 
-@scenario('features\View_List_of_Liked_Recipes.feature', 'User views the list of recipes they liked while logged in (Normal Flow)')
+@scenario('features/View_List_of_Liked_Recipes.feature', 'User views the list of recipes they liked while logged in (Normal Flow)')
 def test_user_views_the_list_of_recipes_they_liked_while_logged_in_normal_flow(app):
     pass
 
-@scenario('features\View_List_of_Liked_Recipes.feature', 'User with no recipes liked views their list of recipes liked while logged in (Alternative Flow)')
+@scenario('features/View_List_of_Liked_Recipes.feature', 'User with no recipes liked views their list of recipes liked while logged in (Alternative Flow)')
 def test_user_with_no_recipes_liked_views_their_list_of_recipes_liked_while_logged_in_alternative_flow(app):
     pass
 
