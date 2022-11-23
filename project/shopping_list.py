@@ -67,7 +67,10 @@ def delete_ingredient_from_shopping_items(ingredient_id, account_id):
         str on failure where str is the error message
     """
     try:
-        ShoppingItemsRepo.delete_by_id(ingredient_id, account_id)
-        return None
+        deleted = ShoppingItemsRepo.delete_by_id(ingredient_id, account_id)
+        if deleted == 0:
+            return "Item not in shopping list"
+        else:
+            return None
     except Exception as e:
-        return "Unknown error occurred. Item could not be deleted"
+        return "Unknown error occurred. Item could not be removed"

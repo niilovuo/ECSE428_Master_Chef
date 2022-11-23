@@ -43,9 +43,9 @@ Feature: Add ingredient to shopping list
           ["7", "leek", "200g"],
           ["8", "coriander", "20g"]]
 
-    And the "already have this ingredient in shopping list" error message is issued
+    And the "Item could not be added" error message is issued
 
   Scenario: Attempt to add item while not logged in (Error Flow)
     Given the user is not logged into the system
     When attempting to add the ingredient with id "8"
-    Then  the "not logged in" error message is issued
+    Then  the "Please login first" error message is issued

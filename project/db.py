@@ -598,8 +598,11 @@ class ShoppingItemsRepo:
             cur.execute("""
                         DELETE FROM shopping_items WHERE ingredient = %s AND account = %s
                         """, (ingredient, account))
+            rowcount = cur.rowcount
             _conn.commit()
-            return None
+            cur.close()
+            return rowcount
+
         except Exception as e:
             _conn.rollback()
             raise e

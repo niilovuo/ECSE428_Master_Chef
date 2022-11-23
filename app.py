@@ -3,14 +3,12 @@ from werkzeug.security import check_password_hash
 
 import os
 import base64
-import random
 from project.db import Db
 from project.account import (
     add_new_account,
     process_account_form,
     search_account_by_id,
     delete_account_by_id,
-    search_account_by_name,
     search_account_by_email,
     search_account_by_filter,
     update_name_by_id,
@@ -29,7 +27,8 @@ from project.recipe import (
     add_image_to_recipe
 )
 
-from project.shopping_list import (get_shopping_list_of_account, add_ingredient_to_shopping_items, delete_ingredient_from_shopping_items)
+from project.shopping_list import (get_shopping_list_of_account, add_ingredient_to_shopping_items,
+                                   delete_ingredient_from_shopping_items)
 
 from project.tag_query import (
     get_all_tags,
@@ -45,7 +44,6 @@ from project.recipe_query import (
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
 from project.recipe import delete_recipe_by_id
 from project.likes import did_user_like, like_recipe, unlike_recipe, get_recipes_liked_by_liker
-
 
 
 def create_app(setup_db=True):
@@ -525,16 +523,20 @@ def create_app(setup_db=True):
         else:
             return err, 500
 
-    @app.route("/api/shopping_list/remove_ingredient/<int:ingredient_id>", methods=["POST"])
+    @app.route("/api/shopping_list/remove_ingredient/<int:ingredient_id>", methods=["DELETE"])
     def remove_ingredient_from_shopping_list(ingredient_id):
         user_id = session.get('id')
         if not user_id:
             return "Please login first", 401
+
+        if not ingredient_id:
             return "Missing parameter", 400
 
         err = delete_ingredient_from_shopping_items(ingredient_id, user_id)
         if err is None:
             return "Item removed successfully", 200
+        if err == "Item not in shopping list":
+            return err, 400
         else:
             return err, 500
 

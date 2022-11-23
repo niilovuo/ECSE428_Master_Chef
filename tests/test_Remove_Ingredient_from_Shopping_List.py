@@ -40,6 +40,7 @@ def the_following_entries_exist_in_the_shopping_list_for_user_abc(postgresql, ap
         for (ingredient_id, name, quantity) in table_data:
             cur.execute("INSERT INTO shopping_items VALUES (%s, %s);", (user_id, ingredient_id))
         postgresql.commit()
+        cur.close()
 
         (shopping_list, err) = get_shopping_list_of_account(user_id)
         assert len(shopping_list) == len(table_data)
@@ -70,6 +71,7 @@ def the_recipe_stew_has_the_following_ingredients(postgresql, app, table_data):
         for (ingredient_id, name, quantity) in table_data:
             cur.execute("INSERT INTO ingredients VALUES (%s, %s, %s, %s);", (ingredient_id, name, quantity, 1))
         postgresql.commit()
+        cur.close()
 
         ingredients = get_ingredients_of_recipe(1)
         assert len(ingredients) == len(table_data)
@@ -92,20 +94,9 @@ def user_abc_is_logged_into_the_system(client, name):
         assert session["id"] == user[0]
 
 
-@when(parsers.parse('attempting to remove the ingredient with id "{ingredient_id}"'))
-def attempting_to_remove_the_ingredient_with_id_8(client, ingredient_id):
-    client.post(f'/api/shopping_list/remove_ingredient/{ingredient_id}')
-
-
-@when(parsers.parse('attempting to remove the ingredient with id "{ingredient_id}"'))
-def attempting_to_remove_the_ingredient_with_id_9(client, ingredient_id):
-    client.post(f'/api/shopping_list/remove_ingredient/{ingredient_id}')
-
-
-@then('the "not logged in" error message is issued')
-def the_not_logged_in_error_message_is_issued(client):
-    with client.session_transaction() as session:
-        assert not ("id" in session)
+@when(parsers.parse('attempting to remove the ingredient with id "{ingredient_id}"'), target_fixture="response")
+def attempting_to_remove_the_ingredient_with_id(client, ingredient_id):
+    return client.delete(f'/api/shopping_list/remove_ingredient/{ingredient_id}')
 
 
 @then(parsers.parse('the user "{username}" has the following ingredients in their shopping list\n{table_data}'))
@@ -117,7 +108,6 @@ def the_user_abc_has_the_following_ingredients_in_their_shopping_list(app, usern
         assert len(shopping_list) == len(table_data)
 
 
-# Response messages from API not supported here
-@then('the "item not in shopping list" error message is issued')
-def the_item_not_in_shopping_list_error_message_is_issued():
-    """the "item not in shopping list" error message is issued."""
+@then(parsers.parse('the "{message}" error message is issued'))
+def the_error_message_is_issued(response, message):
+    assert message in response.data.decode("utf-8")
