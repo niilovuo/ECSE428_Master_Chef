@@ -3,14 +3,12 @@ from werkzeug.security import check_password_hash
 
 import os
 import base64
-import random
 from project.db import Db
 from project.account import (
     add_new_account,
     process_account_form,
     search_account_by_id,
     delete_account_by_id,
-    search_account_by_name,
     search_account_by_email,
     search_account_by_filter,
     update_name_by_id,
@@ -29,7 +27,8 @@ from project.recipe import (
     add_image_to_recipe
 )
 
-from project.shopping_list import get_shopping_list_of_account
+from project.shopping_list import (get_shopping_list_of_account, add_ingredient_to_shopping_items,
+                                   delete_ingredient_from_shopping_items)
 
 from project.tag_query import (
     get_all_tags,
@@ -118,22 +117,22 @@ def create_app(setup_db=True):
 
                 if (name != ''):
                     err = update_name_by_id(name, session.get('id'))
-                    if (err != None): 
-                        flash (err)
+                    if (err != None):
+                        flash(err)
                 if (bio != ''):
                     err = update_bio_by_id(bio, session.get('id'))
-                    if (err != None): 
-                        flash (err)
+                    if (err != None):
+                        flash(err)
                 if (email != ''):
                     err = update_email_by_id(email, session.get('id'))
-                    if (err != None): 
-                        flash (err)
+                    if (err != None):
+                        flash(err)
                 return redirect('/setting')
 
-        return render_template("/setting.html", 
-        name = account[1],
-        email = account[2],
-        bio = account[4])
+        return render_template("/setting.html",
+                               name=account[1],
+                               email=account[2],
+                               bio=account[4])
 
     @app.route("/delete_account")
     def delete_account():
@@ -250,7 +249,7 @@ def create_app(setup_db=True):
         return render_template("/recipe.html",
                                recipe=recipe, author=author, tags=tags, ingredients=ingredients,
                                allow_edits=allow_edits, user=session.get('id'), is_liked=is_liked, image=image)
-                               
+
     @app.route("/recipes/create")
     def render_create_recipe():
         if 'id' not in session:
@@ -384,8 +383,6 @@ def create_app(setup_db=True):
             flash("Could not update recipe")
             return redirect("/")
 
-
-
     @app.route("/api/recipes/<int:id>/ingredients")
     def api_lookup_recipe_ingredients(id):
         if search_recipe_by_id(id) is None:
@@ -511,6 +508,37 @@ def create_app(setup_db=True):
             return 'follow account success', 200
         else:
             return err, 404
+
+    @app.route("/api/shopping_list/add_ingredient/<int:ingredient_id>", methods=["POST"])
+    def add_ingredient_to_shopping_list(ingredient_id):
+        user_id = session.get('id')
+        if not user_id:
+            return "Please login first", 401
+        if not ingredient_id:
+            return "Missing parameter", 400
+
+        err = add_ingredient_to_shopping_items(user_id, ingredient_id)
+        if err is None:
+            return "Item added successfully", 200
+        else:
+            return err, 500
+
+    @app.route("/api/shopping_list/remove_ingredient/<int:ingredient_id>", methods=["DELETE"])
+    def remove_ingredient_from_shopping_list(ingredient_id):
+        user_id = session.get('id')
+        if not user_id:
+            return "Please login first", 401
+
+        if not ingredient_id:
+            return "Missing parameter", 400
+
+        err = delete_ingredient_from_shopping_items(ingredient_id, user_id)
+        if err is None:
+            return "Item removed successfully", 200
+        if err == "Item not in shopping list":
+            return err, 400
+        else:
+            return err, 500
 
     return app
 
