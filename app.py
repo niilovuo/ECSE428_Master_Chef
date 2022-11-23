@@ -44,7 +44,8 @@ from project.recipe_query import (
 )
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
 from project.recipe import delete_recipe_by_id
-from project.likes import did_user_like, like_recipe, unlike_recipe
+from project.likes import did_user_like, like_recipe, unlike_recipe, get_recipes_liked_by_liker
+
 
 
 def create_app(setup_db=True):
@@ -274,6 +275,17 @@ def create_app(setup_db=True):
             return redirect("/")
         ingredients = [{"name": e[1], "quantity": e[2]} for e in get_ingredients_of_recipe(id)]
         return render_template("/upsert_recipe.html", recipe=recipe, ingredients=ingredients)
+
+    @app.route("/recipes_liked")
+    def render_recipes_liked():
+        user_id = session.get('id')
+        if user_id is None:
+            flash('Please login first')
+            return redirect("/login?redirect_url=/recipes_liked")
+        recipe_ids = get_recipes_liked_by_liker(user_id)
+        recipes = [search_recipe_by_id(recipe_id) for recipe_id in recipe_ids]
+        recipes = [convert_recipe_obj(e) for e in recipes]
+        return render_template("/recipes_liked.html", recipes=recipes)
 
     @app.route("/recipes/<int:id>/tags", methods=["POST"])
     def add_tag(id):

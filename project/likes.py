@@ -18,6 +18,20 @@ def did_user_like(recipe_id, user_id):
 
     return LikeRepo.did_user_like(recipe_id, user_id)
 
+def get_recipes_liked_by_liker(liker_id):
+    """
+    Returns all the recipes liked by the liker
+
+    Parameters
+    ----------
+    liker_id: the id of the liker
+
+    Returns
+    -------
+    list of liked recipe IDs or empty list if not found
+    """
+    return LikeRepo.select_all_recipes_liked_by_liker_id(liker_id)
+
 def like_recipe(recipe_id, user_id):
     """
     Attempt to like a recipe; will fail if the recipe has already been liked,

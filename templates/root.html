@@ -56,8 +56,8 @@
 	</head>
 	<body>
 	  <div>
-		<div style=" padding-bottom: 5em;">
-			<nav class="navbar navbar-expand-lg fixed-top navbar-scroll shadow-0" style="background-color: #ffede7; ">
+   		<div class="position-fixed fixed-top w-100 shadow-0 d-flex flex-column">
+			<nav class="w-100 navbar navbar-expand-lg fixed-top navbar-scroll shadow-0" style="background-color: #ffede7;">
 				<div class="container">
 				  <a class="navbar-brand" href="/">Master Chef</a>
 				  <button class="navbar-toggler ps-0" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarExample01"
@@ -73,6 +73,23 @@
 					  <li class="nav-item active">
 						<a class="nav-link px-3" href="/search">Recipes</a>
 					  </li>
+
+                      <li class="nav-item" x-show="logged_in">
+                        <a class="nav-link px-3" href="/recipes_liked">Recipes Liked 👍</a>
+                      </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link px-3" href="/users">Users</a>
+                      </li>
+
+					  <li class="nav-item" x-show="logged_in">
+						<a class="nav-link px-3" href="/profile">My Recipes</a>
+					  </li>
+					  
+					  <li class="nav-item" x-show="logged_in">
+						<a class="nav-link px-3" href="/recipes/create">Create Recipe</a>
+					  </li>
+
 					  <li class="nav-item">
 						<a class="nav-link px-3" href="/register"> Create Account</a>
 					  </li>
@@ -121,9 +138,9 @@
 			<div class="w-100">
 				{% with messages = get_flashed_messages() %}
 				{% if messages %}
-				<ul class="w-100 flashes list-group">
+				<ul class="w-100 flashes list-group" style="margin-top: 4em;">
 				  {% for message in messages %}
-				  <li class="w-100 bg-danger list-group-item"  x-data="{show: true}" x-show="show" x-transition @click="show = false;" style="cursor: pointer;">{{ message }}</li>
+				  <li class="w-100 bg-danger list-group-item" x-data="{show: true}" x-show="show" x-transition @click="show = false;" style="cursor: pointer;">{{ message }}</li>
 				  {% endfor %}
 				</ul>
 				{% endif %}
@@ -131,7 +148,7 @@
   
 			  </div>
 		  </div>
-		  <div>
+		  <div style="margin-top: 5rem;">
 			{% block content %}
 			{% endblock %}
 		  </div>

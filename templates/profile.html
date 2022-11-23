@@ -4,7 +4,7 @@
 {% if user is none %}
   The specified user does not exist!
 {% else %}
-<div>
+<div class="container">
   <h1>{{ user.name }}</h1>
   {% if recipes|length == 1 %}
     <h4>1 recipe</h4>
