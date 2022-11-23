@@ -573,6 +573,20 @@ class ShoppingItemsRepo:
             _conn.rollback()
             raise e
 
+    @staticmethod
+    def delete_by_id(ingredient,account):
+        _conn = Db.get_session()
+        try:
+            cur = _conn.cursor()
+            cur.execute("""
+                        DELETE FROM shopping_items WHERE ingredient = %s AND account = %s
+                        """, (ingredient, account))
+            _conn.commit()
+            return None
+        except Exception as e:
+            _conn.rollback()
+            raise e
+
 
 class FollowersRepo:
 

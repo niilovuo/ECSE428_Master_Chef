@@ -1,4 +1,4 @@
-from project.db import ShoppingItemsRepo, IngredientRepo
+from project.db import ShoppingItemsRepo
 
 
 def get_shopping_list_of_account(account_id):
@@ -21,3 +21,53 @@ def get_shopping_list_of_account(account_id):
     if not shopping_list:
         return None, "No items in shopping list"
     return shopping_list, None
+
+
+def add_ingredient_to_shopping_items(account_id, ingredient_id):
+    """
+        add ingredient to shopping list of account
+        does not add duplicate ingredient
+
+        Parameters
+        ----------
+        account_id:
+        the id of the account
+
+        ingredient_id:
+        the id of ingredient
+
+        Returns
+        -------
+        None on success
+        str on failure where str is the error message
+    """
+    try:
+        ShoppingItemsRepo.insert_row(account_id, ingredient_id)
+        return None
+    except Exception as e:
+        return "Unknown error occurred. Item could not be added"
+
+
+def delete_ingredient_from_shopping_items(ingredient_id, account_id):
+    """
+        remove ingredient from shopping list of account
+
+        Parameters
+        ----------
+
+        ingredient_id:
+        the id of ingredient
+
+        account_id:
+        the id of the account
+
+        Returns
+        -------
+        None on success
+        str on failure where str is the error message
+    """
+    try:
+        ShoppingItemsRepo.delete_by_id(ingredient_id, account_id)
+        return None
+    except Exception as e:
+        return "Unknown error occurred. Item could not be deleted"

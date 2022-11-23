@@ -29,7 +29,7 @@ from project.recipe import (
     add_image_to_recipe
 )
 
-from project.shopping_list import get_shopping_list_of_account
+from project.shopping_list import (get_shopping_list_of_account, add_ingredient_to_shopping_items, delete_ingredient_from_shopping_items)
 
 from project.tag_query import (
     get_all_tags,
@@ -45,6 +45,7 @@ from project.recipe_query import (
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
 from project.recipe import delete_recipe_by_id
 from project.likes import did_user_like, like_recipe, unlike_recipe
+
 
 def create_app(setup_db=True):
     app = Flask(__name__)
@@ -117,22 +118,22 @@ def create_app(setup_db=True):
 
                 if (name != ''):
                     err = update_name_by_id(name, session.get('id'))
-                    if (err != None): 
-                        flash (err)
+                    if (err != None):
+                        flash(err)
                 if (bio != ''):
                     err = update_bio_by_id(bio, session.get('id'))
-                    if (err != None): 
-                        flash (err)
+                    if (err != None):
+                        flash(err)
                 if (email != ''):
                     err = update_email_by_id(email, session.get('id'))
-                    if (err != None): 
-                        flash (err)
+                    if (err != None):
+                        flash(err)
                 return redirect('/setting')
 
-        return render_template("/setting.html", 
-        name = account[1],
-        email = account[2],
-        bio = account[4])
+        return render_template("/setting.html",
+                               name=account[1],
+                               email=account[2],
+                               bio=account[4])
 
     @app.route("/delete_account")
     def delete_account():
@@ -249,7 +250,7 @@ def create_app(setup_db=True):
         return render_template("/recipe.html",
                                recipe=recipe, author=author, tags=tags, ingredients=ingredients,
                                allow_edits=allow_edits, user=session.get('id'), is_liked=is_liked, image=image)
-                               
+
     @app.route("/recipes/create")
     def render_create_recipe():
         if 'id' not in session:
@@ -337,13 +338,13 @@ def create_app(setup_db=True):
 
     @app.route("/api/recipes/<int:id>/like", methods=["DELETE"])
     def api_unlike_recipe(id):
-        
+
         try:
             unlike_recipe(id, session["id"])
             return "Success", 200
         except Exception as e:
             return "Could not unlike recipe", 404
-        
+
     @app.route("/api/recipes/<int:id>/tags")
     def api_lookup_recipe_tags(id):
         if search_recipe_by_id(id) is None:
@@ -361,7 +362,7 @@ def create_app(setup_db=True):
         except Exception as e:
             flash("Could not create recipe")
             return redirect("/")
-        
+
     @app.route("/api/recipes/edit/<int:id>", methods=["POST"])
     def api_edit_recipe(id):
         data = request.form.to_dict()
@@ -371,8 +372,6 @@ def create_app(setup_db=True):
         except Exception as e:
             flash("Could not update recipe")
             return redirect("/")
-
-
 
     @app.route("/api/recipes/<int:id>/ingredients")
     def api_lookup_recipe_ingredients(id):
@@ -387,7 +386,7 @@ def create_app(setup_db=True):
         if search_recipe_by_id(recipe_id) is None:
             return "Invalid recipe id", 404
         return search_comment_by_recipe_id(recipe_id)
-        
+
     @app.route("/api/comments/add", methods=["POST"])
     def api_add_comment_to_recipe():
 
@@ -499,6 +498,33 @@ def create_app(setup_db=True):
             return 'follow account success', 200
         else:
             return err, 404
+
+    @app.route("/api/shopping_list/add_ingredient/<int:ingredient_id>", methods=["POST"])
+    def add_ingredient_to_shopping_list(ingredient_id):
+        user_id = session.get('id')
+        if not user_id:
+            return "Please login first", 401
+        if not ingredient_id:
+            return "Missing parameter", 400
+
+        err = add_ingredient_to_shopping_items(user_id, ingredient_id)
+        if err is None:
+            return "Item added successfully", 200
+        else:
+            return err, 500
+
+    @app.route("/api/shopping_list/remove_ingredient/<int:ingredient_id>", methods=["POST"])
+    def remove_ingredient_from_shopping_list(ingredient_id):
+        user_id = session.get('id')
+        if not user_id:
+            return "Please login first", 401
+            return "Missing parameter", 400
+
+        err = delete_ingredient_from_shopping_items(ingredient_id, user_id)
+        if err is None:
+            return "Item removed successfully", 200
+        else:
+            return err, 500
 
     return app
 
