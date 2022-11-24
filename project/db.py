@@ -425,14 +425,24 @@ class RecipeTagRepo:
 class IngredientRepo:
 
     @staticmethod
-    def select_by_recipe(recipe_id):
+    def select_by_recipe(recipe_id, user_id=None):
         _conn = Db.get_session()
         cur = _conn.cursor()
-
-        cur.execute("""
-            SELECT * FROM ingredients
-            WHERE recipe = %s
-            """, (recipe_id,))
+        if user_id:
+            cur.execute("""
+                SELECT ingredients.*,
+                EXISTS(
+                    SELECT id FROM shopping_items
+                    WHERE ingredients.id = shopping_items.ingredient
+                    AND shopping_items.account = %s)
+                FROM ingredients 
+                WHERE ingredients.recipe = %s;
+                """, (user_id, recipe_id))
+        else:
+            cur.execute("""
+                SELECT * FROM ingredients
+                WHERE recipe = %s;
+                """, (recipe_id,))
         return cur.fetchall()
 
     @staticmethod

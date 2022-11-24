@@ -1,6 +1,6 @@
 from project.db import IngredientRepo
 
-def get_ingredients_of_recipe(recipe_id):
+def get_ingredients_of_recipe(recipe_id, user_id=None):
     """
     Returns all the ingredients of the specified recipe
 
@@ -15,5 +15,5 @@ def get_ingredients_of_recipe(recipe_id):
     will happily return an empty list if id is does not exist
     """
 
-    return IngredientRepo.select_by_recipe(recipe_id)
+    return IngredientRepo.select_by_recipe(recipe_id, user_id)
 
