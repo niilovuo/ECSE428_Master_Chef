@@ -79,6 +79,6 @@ def i_should_have_ingredients(ingredients, res):
     ingredients = json.loads(ingredients)
     assert len(res) == len(ingredients)
 
-    for (_, name, quant, _) in res:
+    for (_, name, quant, _, _) in res:
         assert [name, quant] in ingredients
 
