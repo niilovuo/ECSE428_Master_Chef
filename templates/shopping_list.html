@@ -1,0 +1,31 @@
+{% extends "root.html" %}
+{% block content %}
+
+<div class="container">
+    <h1>Shopping List 🛒</h1>
+    <div align="right">
+        <button onClick="window.print()">🖨</button>
+    </div>
+
+    {% if err != None %}
+    <h4 class="card-subtitle mb-2 text-muted"> {{err}}</h4>
+    {% else %}
+
+        {% for ingredient in shopping_list %}
+            <div class="py-3" x-data='{ingredient: {{ingredient|tojson}}}'>
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="d-inline">-</h5>
+                            <h5 class="d-inline" x-text="ingredient[1]"></h5>
+                            <h5 class="d-inline" x-text="ingredient[0]"></h5>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

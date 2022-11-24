@@ -491,6 +491,15 @@ def create_app(setup_db=True):
         else:
             return err, 404
 
+    @app.route("/shopping_list")
+    def render_shopping_list():
+        user_id = session.get('id')
+        if user_id is None:
+            flash('Please login first')
+            return redirect("/login?redirect_url=/shopping_list")
+        shopping_list, err = get_shopping_list_of_account(user_id)
+        return render_template("/shopping_list.html", shopping_list=shopping_list, err=err)
+
     @app.route("/api/followed_accounts/<int:account_id>", methods=["DELETE"])
     def unfollow_account(account_id):
         user_id = session.get('id')
