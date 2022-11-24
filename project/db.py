@@ -440,7 +440,7 @@ class IngredientRepo:
                 """, (user_id, recipe_id))
         else:
             cur.execute("""
-                SELECT * FROM ingredients
+                SELECT *, FALSE FROM ingredients
                 WHERE recipe = %s;
                 """, (recipe_id,))
         return cur.fetchall()
