@@ -44,6 +44,18 @@
 		}
 	  }
 	}));
+	Alpine.data('addShoppingList', () => ({
+	  added: false,
+	  ingredient_id: null,
+	  toggle() {
+		let method = this.added?'DELETE':'POST';
+		let add_rm = this.added?'remove':'add';
+		fetch('/api/shopping_list/'+add_rm+'_ingredient/'+this.ingredient_id, { method: method }).then(res => {
+		  if (!res.ok) console.log("failed");
+		});
+		this.added=!this.added;
+	  }
+	}));
   });
 </script>
 
@@ -111,7 +123,17 @@
             {% for ingredient in ingredients %}
               <li class="list-group-item">
                 <div class="ms-2 me-auto">
-                  <div class="fw-bold">{{ ingredient[1] }}</div>
+				  <div style="display: flex; justify-content: space-between;">
+					<div class="fw-bold">{{ ingredient[1] }}</div>
+					{% if user is not none %}
+				  	  <button class="btn" x-data="addShoppingList"
+				  	  		x-init="added={{ "true" if ingredient[4] else "false" }}; ingredient_id='{{ ingredient[0] }}';"
+				  	  		x-text="added?'Remove from Shopping List':'Add to Shopping List'"
+				  	  		x-bind:class="added?'btn-danger':'btn-primary'"
+				  	  		x-on:click="toggle()"
+				  	  />
+					{% endif %}
+				  </div>
                   <label>{{ ingredient[2] }}</label>
                 </div>
               </li>

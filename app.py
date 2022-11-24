@@ -238,7 +238,7 @@ def create_app(setup_db=True):
         recipe['image'] = image
         author = convert_account_obj(search_account_by_id(recipe["author"]))
         tags = get_tags_of_recipe(id)
-        ingredients = get_ingredients_of_recipe(id)
+        ingredients = get_ingredients_of_recipe(id, session.get('id'))
         allow_edits = session.get('id') == recipe["author"]
         is_liked = did_user_like(id, session.get('id')) if 'id' in session else False
         if recipe["image"] is not None:
