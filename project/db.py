@@ -260,6 +260,15 @@ class RecipeRepo:
         return cur.fetchall()
 
     @staticmethod
+    def select_followed_user_recipes_by_user_id(follower):
+        _conn = Db.get_session()
+        cur = _conn.cursor()
+        cur.execute("""SELECT id FROM recipes
+            WHERE recipes.author in (SELECT account FROM followers where follower = %s)
+            ORDER BY recipes.id""", (follower,))
+        return cur.fetchall()
+
+    @staticmethod
     def insert_recipe(title, author_id, prep_time=None, cook_time=None, directions="", ingredients=[]):
         _conn = Db.get_session()
         try:

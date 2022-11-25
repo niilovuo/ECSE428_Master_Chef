@@ -39,7 +39,7 @@ from project.recipe_query import (
     search_recipes_by_filter,
     search_recipe_by_id,
     search_recipes_by_author,
-    convert_recipe_obj
+    convert_recipe_obj, search_followed_user_recipes
 )
 from project.comment import add_comment, search_comment_by_id, delete_comment_by_id, search_comment_by_recipe_id
 from project.recipe import delete_recipe_by_id
@@ -293,6 +293,17 @@ def create_app(setup_db=True):
         recipes = [search_recipe_by_id(recipe_id) for recipe_id in recipe_ids]
         recipes = [convert_recipe_obj(e) for e in recipes]
         return render_template("/recipes_liked.html", recipes=recipes)
+
+    @app.route("/recipes_followed")
+    def render_recipes_followed():
+        user_id = session.get('id')
+        if user_id is None:
+            flash('Please login first')
+            return redirect("/login?redirect_url=/recipes_followed")
+        recipes_ids = search_followed_user_recipes(user_id)
+        recipes = [search_recipe_by_id(recipe_id) for recipe_id in recipes_ids]
+        recipes = [convert_recipe_obj(e) for e in recipes]
+        return render_template("/recipes_followed.html", recipes=recipes)
 
     @app.route("/recipes/<int:id>/tags", methods=["POST"])
     def add_tag(id):
