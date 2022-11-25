@@ -49,3 +49,9 @@ def follow_account_by_id(account_id, follower_id):
     except Exception:
         return "Could not follow account, please try again"
 
+def check_follow(account_id, follower_id):
+    follow_status = FollowersRepo.select_by_id(account_id, follower_id)
+    if follow_status is None:
+        return False
+    else:
+        return True

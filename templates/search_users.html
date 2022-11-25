@@ -5,12 +5,12 @@
   function unfollow(id) {
     fetch('/api/followed_accounts/' + id, {
       method: 'DELETE'
-    })
+    }).then(response => window.location.reload(true))
   }
   function follow(id) {
     fetch('/api/followed_accounts/' + id, {
       method: 'POST'
-    })
+    }).then(response => window.location.reload(true))
   }
 </script>
 
@@ -62,12 +62,15 @@
     </div>
   </div>
   <div class="row"style="width:210px">
+      {% if user['follow'] != 'True' %}
       <div class="col">
-        <a x-data="{follow}" @click='follow({{ user['id'] }})' class="btn btn-secondary">Follow</a>
+        <a x-data="{follow}" style="background-color:Green;" @click='follow({{ user['id'] }})' class="btn btn-secondary" >Follow</a>
       </div>
+      {% else %}
       <div class="col">
-        <a x-data="{unfollow}" @click='unfollow({{ user['id'] }})' class="btn btn-secondary">Unfollow</a>
+        <a x-data="{unfollow}" style="background-color:Red;" @click='unfollow({{ user['id'] }})' class="btn btn-secondary">Unfollow</a>
       </div>
+      {% endif %}
   </div>
   {% endfor %}
 </div>

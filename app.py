@@ -14,10 +14,10 @@ from project.account import (
     update_name_by_id,
     update_bio_by_id,
     update_email_by_id,
-    convert_account_obj
+    convert_account_obj, convert_account_obj_2
 )
 
-from project.followers import unfollow_account_by_id, follow_account_by_id
+from project.followers import unfollow_account_by_id, follow_account_by_id, check_follow
 
 from project.recipe import (
     add_tag_to_recipe,
@@ -208,10 +208,19 @@ def create_app(setup_db=True):
         name = request.args.get("q", "")
         page = request.args.get("start", 0, type=int)
         results = search_account_by_filter(name, page * PAGE_ENTRIES, PAGE_ENTRIES)
+
+        my_user_id = session.get('id')
+
+        for i in range(len(results)):
+            user_id = results[i][0]
+            temp_list = list(results[i])
+            temp_list.append(str(check_follow(user_id, my_user_id)))
+            results[i] = tuple(temp_list)
+
         return render_template("/search_users.html",
                                default_query=name,
                                default_page=page,
-                               results=[convert_account_obj(e) for e in results])
+                               results=[convert_account_obj_2(e) for e in results])
 
     @app.route("/search")
     def search():
