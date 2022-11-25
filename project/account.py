@@ -420,6 +420,31 @@ def convert_account_obj(account):
         'name': account[1],
         'email': account[2],
         'bio': account[4],   # skip [3], it's the password
-        "follow": account[5]
     }
 
+def convert_account_obj_2(account):
+    """
+    Converts account to a dict that can be jsonified
+    (notably, the hashed password is dropped)
+
+    Parameters
+    ----------
+    account:
+      returned from the database
+
+    Returns
+    -------
+    None if account was None
+    a dict, password field is removed
+    """
+
+    if account is None:
+        return None
+
+    return {
+        'id': account[0],
+        'name': account[1],
+        'email': account[2],
+        'bio': account[4],   # skip [3], it's the password
+        'follow': account[5]
+    }

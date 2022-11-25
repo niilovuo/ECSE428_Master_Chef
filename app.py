@@ -14,7 +14,7 @@ from project.account import (
     update_name_by_id,
     update_bio_by_id,
     update_email_by_id,
-    convert_account_obj
+    convert_account_obj, convert_account_obj_2
 )
 
 from project.followers import unfollow_account_by_id, follow_account_by_id, check_follow
@@ -220,7 +220,7 @@ def create_app(setup_db=True):
         return render_template("/search_users.html",
                                default_query=name,
                                default_page=page,
-                               results=[convert_account_obj(e) for e in results])
+                               results=[convert_account_obj_2(e) for e in results])
 
     @app.route("/search")
     def search():
