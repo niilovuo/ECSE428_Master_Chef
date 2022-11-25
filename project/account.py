@@ -419,6 +419,7 @@ def convert_account_obj(account):
         'id': account[0],
         'name': account[1],
         'email': account[2],
-        'bio': account[4]   # skip [3], it's the password
+        'bio': account[4],   # skip [3], it's the password
+        "follow": account[5]
     }
 
