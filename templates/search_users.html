@@ -1,6 +1,19 @@
 {% extends "root.html" %}
 {% block content %}
 
+<script>
+  function unfollow(id) {
+    fetch('/api/followed_accounts/' + id, {
+      method: 'DELETE'
+    })
+  }
+  function follow(id) {
+    fetch('/api/followed_accounts/' + id, {
+      method: 'POST'
+    })
+  }
+</script>
+
 <div class="container">
     <h1>Users 👥</h1>
   <form action="/users">
@@ -44,8 +57,17 @@
               </h5>
             </div>
          </div>
+
       </div>
     </div>
+  </div>
+  <div class="row"style="width:210px">
+      <div class="col">
+        <a x-data="{follow}" @click='follow({{ user['id'] }})' class="btn btn-secondary">Follow</a>
+      </div>
+      <div class="col">
+        <a x-data="{unfollow}" @click='unfollow({{ user['id'] }})' class="btn btn-secondary">Unfollow</a>
+      </div>
   </div>
   {% endfor %}
 </div>
