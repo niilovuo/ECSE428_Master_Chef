@@ -75,6 +75,23 @@ def search_recipe_by_id(id):
     """
     return RecipeRepo.select_by_id(id)
 
+def search_followed_user_recipes(user_id):
+    """
+    Searches recipes by the author id
+
+    Parameters
+    ----------
+    user_id:
+      the id of the user
+
+    Returns
+    -------
+    list of all recipes created by accounts followed by the user
+    will happily return an empty list if author does not follow anyone
+    """
+    result = RecipeRepo.select_followed_user_recipes_by_user_id(user_id)
+    return result
+
 def convert_recipe_obj(recipe):
     """
     Converts recipe to a dict that can be jsonified
