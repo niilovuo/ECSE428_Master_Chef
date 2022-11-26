@@ -89,9 +89,9 @@ def the_following_list_of_recipes_is_returned(table, result):
     assert len(result) == len(table)
 
 @then(parsers.parse('the system issues an error message "{error}"'))
-def the_system_issues_an_error_message(error):
-    user_id = session.get('id')
-    if user_id is None:
+def the_system_issues_an_error_message(error,user1_id):
+    user_id = user1_id
+    if user_id == None:
         res = "Please login first"
     assert res == error
 
